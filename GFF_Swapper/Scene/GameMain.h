@@ -104,6 +104,9 @@ private:
     int decision_se;    //決定SE
 
     int blackout;   //暗転用
+
+    int test_image;
+    int test_image2;
 public:
 
     //コンストラクタ

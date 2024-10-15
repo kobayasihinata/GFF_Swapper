@@ -59,6 +59,10 @@ void GameMain::Initialize()
 
 	blackout =255;
 
+	test_image = LoadGraph("Resource/Images/sozai/glow.PNG");
+	test_image2 = LoadGraph("Resource/Images/sozai/ground.PNG");
+	
+
 }
 
 void GameMain::Finalize()
@@ -193,6 +197,10 @@ void GameMain::Draw() const
 	//チュートリアル表示テスト
 	SetFontSize(35);
 	//DrawFormatString(0, 160, 0xff0000, "%0.1f x %0.1f y",  camera_location.x + KeyInput::GetMouseCursor().x, stage_height - KeyInput::GetMouseCursor().y - camera_location.y);
+	DrawGraph(100, 100, test_image, TRUE);
+	DrawGraph(140, 100, test_image, TRUE);
+	DrawGraph(100, 140, test_image2, TRUE);
+	DrawGraph(140, 140, test_image2, TRUE);
 #endif
 }
 
