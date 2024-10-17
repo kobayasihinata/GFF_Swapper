@@ -57,12 +57,10 @@ void GameMain::Initialize()
 
 	SetWindowIconID(102);
 
-	blackout =255;
-
 	test_image = LoadGraph("Resource/Images/sozai/glow.PNG");
 	test_image2 = LoadGraph("Resource/Images/sozai/ground.PNG");
 	
-
+	blackout = 255;
 }
 
 void GameMain::Finalize()
@@ -145,10 +143,13 @@ AbstractScene* GameMain::Update()
 
 		if (KeyInput::OnKey(KEY_INPUT_1))
 		{
-			//ResourceManager::StopSound(0);
-			impact = 10;
+			SetStage(0, false);
 		}
 		if (KeyInput::OnKey(KEY_INPUT_2))
+		{
+			SetStage(1, false);
+		}
+		if (KeyInput::OnKey(KEY_INPUT_3))
 		{
 			SetStage(2, false);
 		}
@@ -381,11 +382,11 @@ void GameMain::UpdateCamera()
 
 void GameMain::LoadStageData(int _stage)
 {
-	const char* a = "../Resource/Dat/TestStageData.txt";
+	const char* a = "../Resource/Dat/1stStageData.txt";
 	switch (_stage)
 	{
 	case 0:
-		a = "Resource/Dat/TestStageData.txt";
+		a = "Resource/Dat/TutorialStageData.txt";
 		break;
 	case 1:
 		a = "Resource/Dat/1stStageData.txt";
@@ -417,6 +418,8 @@ void GameMain::LoadStageData(int _stage)
 
 void GameMain::SetStage(int _stage, bool _delete_player)
 {
+
+	boss_blind_flg = false;
 	object_num = 0;
 
 	//すべてのオブジェクトを削除
@@ -453,6 +456,12 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 			case WEATHER_SEED:
 				//ステージ内ブロックを生成
 				CreateObject(new Stage(stage_data[i][j],stage_height), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
+				break;
+			case TUTOSTAGE_TRANSITION:
+			case FIRSTSTAGE_TRANSITION:
+			case BOSSSTAGE_TRANSITION:
+				//遷移ブロックを生成
+				CreateObject(new Stage(stage_data[i][j], 0 , stage_data[i][j]), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
 				break;
 			case PLAYER_BLOCK:
 				//プレイヤーがリセットされないまま別のステージへ遷移する場合はリスポーン位置を変更する
@@ -647,7 +656,6 @@ void GameMain::PlayerUpdate()
 		{
 			if (object[i]->GetCanSwap() == TRUE && object[i]->GetObjectType() != PLAYER && boss_blind_flg == false) {
 				object[player_object]->SearchColor(object[i]);
-				
 			}
 			
 			//各オブジェクトとの当たり判定
@@ -656,11 +664,7 @@ void GameMain::PlayerUpdate()
 				object[i]->Hit(object[player_object]);
 				object[player_object]->Hit(object[i]);
 			}
-
-
 		}
-
-
 
 		//プレイヤーが落下したときに死亡判定とする
 		if (GetPlayerLocation().y > stage_height + 100)

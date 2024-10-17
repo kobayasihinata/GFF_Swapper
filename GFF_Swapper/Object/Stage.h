@@ -29,6 +29,9 @@ enum BlockList	{
 	WEATHER_RAIN,
 	WEATHER_FIRE,
 	WEATHER_SEED,
+	TUTOSTAGE_TRANSITION,
+	FIRSTSTAGE_TRANSITION,
+	BOSSSTAGE_TRANSITION
 };
 
 //ColorData格納用
@@ -46,7 +49,7 @@ static int color_data[9]
 };
 
 //Edit表示用文字色データ
-static int text_color[25]
+static int text_color[28]
 {
 	0xffffff,	//無
 	0x000000,	//白ブロック
@@ -78,6 +81,17 @@ static int text_color[25]
 	0xff0000,	//火球
 	0x00ff00,	//種
 
+	0x000000,	//チュートリアルステージ遷移
+	0x000000,	//１ステージ遷移
+	0x000000	//ボスステージ遷移
+
+};
+
+static char stage_string[3][256] =
+{
+	"tuto",
+	"1st",
+	"boss"
 };
 
 class Stage :
@@ -101,13 +115,14 @@ private:
 	int touch_object;					//弱点のブロックに触れている時間を測る
 	bool default_object;				//ステージに始めから設置されているオブジェクトか判断
 	bool se_play_once;					//SEを一回だけ再生する
+	int next_stage;						//遷移先のステージ(ステージ遷移ブロック専用)
 
 	int change_fire;					//色更新時のSE
 	int change_wood;					//色更新時のSE
 	int change_water;					//色更新時のSE
 	int checkpoint_se;					//中間地点に触れた時のSE
 public:
-	Stage(int _type, int _stage_height = 0);
+	Stage(int _type, int _stage_height = 0, int _next_stage = 0);
 	~Stage();
 	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
 	void Update(GameMain* _g)override;

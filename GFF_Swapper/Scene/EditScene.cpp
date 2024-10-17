@@ -588,11 +588,11 @@ void EditScene::Draw()const
 
 void EditScene::LoadStageData(int _stage)
 {
-	const char* a = "../Resource/Dat/TestStageData.txt";
+	const char* a = "../Resource/Dat/1stStageData.txt";
 	switch (_stage)
 	{
 	case 0:
-		a = "Resource/Dat/TestStageData.txt";
+		a = "Resource/Dat/TutorialStageData.txt";
 		break;
 	case 1:
 		a = "Resource/Dat/1stStageData.txt";
@@ -622,11 +622,11 @@ void EditScene::LoadStageData(int _stage)
 
 void EditScene::UpdateStageData(int _stage)
 {
-	const char* a = "../Resource/Dat/TestStageData.txt";
+	const char* a = "../Resource/Dat/1stStageData.txt";
 	switch (_stage)
 	{
 	case 0:
-		a = "Resource/Dat/TestStageData.txt";
+		a = "Resource/Dat/TutorialStageData.txt";
 		break;
 	case 1:
 		a = "Resource/Dat/1stStageData.txt";

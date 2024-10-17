@@ -5,8 +5,10 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height) :old_color(0),inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false),respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0),change_water(0),change_wood(0), se_play_once(false)
+Stage::Stage(int _type, int _stage_height,int _next_stage) :old_color(0),inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false),respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0),change_water(0),change_wood(0), se_play_once(false)
 {
+	block_type = _type;
+	next_stage = _next_stage - 25;
 	//炎
 	if (_type == RED_BLOCK || _type == FIRE_BLOCK)
 	{
@@ -27,12 +29,13 @@ Stage::Stage(int _type, int _stage_height) :old_color(0),inv_flg(false), debug_f
 	{
 		type = BLOCK;
 	}
-	block_type = _type;
-	if (_type == PLAYER_RESPAWN_BLOCK || _type == WEATHER_NORMAL || _type == WEATHER_RAIN || _type == WEATHER_FIRE || _type == WEATHER_SEED)
+	//すり抜けるブロック
+	if (_type == PLAYER_RESPAWN_BLOCK || _type == WEATHER_NORMAL || _type == WEATHER_RAIN || _type == WEATHER_FIRE || _type == WEATHER_SEED || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
 	{
 		can_hit = FALSE;
 		weather = _type - WEATHER_NORMAL;
 	}
+	//すり抜けないブロック
 	else
 	{
 		can_hit = TRUE;
@@ -141,6 +144,15 @@ void Stage::Update(GameMain* _g)
 		//更新
 		old_color = color;
 	}
+
+	//ステージ遷移ブロックに触れたら遷移
+	if (hit_flg == true && (block_type == TUTOSTAGE_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION))
+	{
+		_g->SetStage(next_stage, false);
+	}
+
+	//リセット
+	hit_flg = false;
 }
 
 void Stage::Update()
@@ -199,9 +211,6 @@ void Stage::Update()
 		delete_fire = 0;
 	}
 
-	//リセット
-	hit_flg = false;
-
 	//hit_timerに0が入ったらアニメーション開始
 	if (hit_timer >= 0)
 	{
@@ -211,6 +220,7 @@ void Stage::Update()
 			hit_timer = -1;
 		}
 	}
+
 }
 
 void Stage::Draw()const
@@ -284,6 +294,17 @@ void Stage::Draw()const
 			DrawStringF(local_location.x, local_location.y, "天気", text_color[block_type]);
 			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, text_color[block_type], false);
 			break;
+			//ステージ遷移ブロック
+		case TUTOSTAGE_TRANSITION:
+		case FIRSTSTAGE_TRANSITION:
+		case BOSSSTAGE_TRANSITION:
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, GetColor(GetRand(255), GetRand(255), GetRand(255)), true);
+#ifdef _DEBUG
+			//デバッグ時はどこに飛ぶか分かりやすいように
+			if (debug_flg == false)DrawFormatStringF(local_location.x, local_location.y, 0x000000, "%d", next_stage);
+
+#endif // DEBUG
+			break;
 			//その他（無）
 		default:
 			break;
@@ -333,6 +354,12 @@ void Stage::Draw()const
 		case WEATHER_SEED:
 			DrawStringF(local_location.x, local_location.y, "weather", text_color[block_type]);
 			break;
+			//ステージ遷移ブロック
+		case TUTOSTAGE_TRANSITION:
+		case FIRSTSTAGE_TRANSITION:
+		case BOSSSTAGE_TRANSITION:
+			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%s", stage_string[next_stage]);
+			break;
 		default:
 			//ブロックなら数字を表示
 			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%d", block_type);
@@ -348,6 +375,11 @@ void Stage::Finalize()
 
 void Stage::Hit(Object* _object)
 {
+	//プレイヤーに当たったらフラグを立てる
+	if (_object->GetObjectType() == PLAYER)
+	{
+		hit_flg = true;
+	}
 	//プレイヤーに当たった時、自身が天気変更ブロックなら、対応した天気に変更させる
 	if (_object->GetObjectType() == PLAYER && (block_type == WEATHER_NORMAL || block_type == WEATHER_RAIN || block_type == WEATHER_FIRE || block_type == WEATHER_SEED))
 	{
