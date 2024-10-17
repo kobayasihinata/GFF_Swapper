@@ -399,7 +399,7 @@ void EffectSpawner::SpawnEffect(Location _location, Erea _erea,int _effect_type,
 				_time,
 				5,
 				_color,
-				(float)((GetRand(12) + (GetRand(1) * 38)) / 100.0f)
+				(float)((48+GetRand(12) + (GetRand(1) * 38)) / 100.0f)
 			);
 		}
 		break;
