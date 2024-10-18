@@ -57,7 +57,7 @@ void GameMain::Initialize()
 
 	SetWindowIconID(102);
 
-	test_image = LoadGraph("Resource/Images/sozai/glow.PNG");
+	test_image = LoadGraph("Resource/Images/sozai/grow.PNG");
 	test_image2 = LoadGraph("Resource/Images/sozai/ground.PNG");
 	
 	blackout = 255;

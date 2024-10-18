@@ -8,17 +8,21 @@
 #define BG_BLOCK_WIDTH_NUM 32   //ブロックの横の数
 #define BG_BLOCK_HEIGHT_NUM 18   //ブロックの横の数
 
+#define MENU_NUM 4              //タイトルから遷移できるシーンの数
+
 enum class TITLE_MENU
 {
     GAME_START = 0,
     HELP,
+    OPTION,
     GAME_END
 };
 
-static char menu_string[3][256] =
+static char menu_string[MENU_NUM][256] =
 {
     "PLAY",
     "HELP",
+    "OPTION",
     "END"
 };
 
@@ -60,8 +64,8 @@ class Title :
 {
 private:
     int frame;                  //フレーム測定用   
-    Location menu_location[3];  //メニュー項目の座標
-    Erea menu_size[3];          //メニュー項目の大きさ
+    Location menu_location[MENU_NUM];  //メニュー項目の座標
+    Erea menu_size[MENU_NUM];          //メニュー項目の大きさ
     Location player_location;   //プレイヤーの見た目の描画位置
     Location logo_location[7];  //タイトルロゴの文字位置
     int player_color;           //プレイヤーの色

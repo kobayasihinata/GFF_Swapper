@@ -146,6 +146,10 @@ private:
     bool minimap_pickup_flg;                              //ミニマップを持っているか判断
     Location minimap_button;                              //ミニマップを表示するか切り替えるボタンの位置
     bool minimap_disp_flg;                                //ミニマップを表示するか
+
+    bool range_selection_flg;                             //範囲選択後の操作待ちか判断
+    bool now_range_selection;                             //範囲選択中か判断
+    Location range_selection[2];                          //範囲選択時の座標 始点と終点
 public:
     //コンストラクタ
     EditScene(int _stage);
@@ -193,6 +197,9 @@ public:
 
     //そのオブジェクトが画面内に居るか判断
     bool CheckInScreen(Stage* _stage)const;
+
+    //範囲選択の処理
+    void RangeSelection();
 };
 
 

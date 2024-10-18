@@ -58,6 +58,9 @@ void EditScene::Initialize()
 	minimap_size = 1.5f;
 	minimap_location = { (float)SCREEN_WIDTH - (stage_width_num * minimap_size),0 };
 	minimap_button = { minimap_location.x,minimap_location.y + (stage_height_num * minimap_size) };
+
+	range_selection_flg = false;
+	now_range_selection = false;
 }
 
 void EditScene::Finalize()
@@ -97,8 +100,7 @@ AbstractScene* EditScene::Update()
 		{
 			for (int j = 0; j < stage_width_num; j++)
 			{
-
-				if (cursor.x > stage[i][j]->GetLocalLocation().x && cursor.x<stage[i][j]->GetLocalLocation().x + BOX_WIDTH && cursor.y>stage[i][j]->GetLocalLocation().y && cursor.y < stage[i][j]->GetLocalLocation().y + BOX_HEIGHT && tool_pickup_flg == false)
+				if (cursor.x > stage[i][j]->GetLocalLocation().x && cursor.x<stage[i][j]->GetLocalLocation().x + BOX_WIDTH && cursor.y>stage[i][j]->GetLocalLocation().y && cursor.y < stage[i][j]->GetLocalLocation().y + BOX_HEIGHT && !tool_pickup_flg && range_selection_flg == false)
 				{
 					//リセットしてから選択されたselect_dataをtrueにする
 					ResetSelectData();
@@ -131,8 +133,9 @@ AbstractScene* EditScene::Update()
 							stage_data[i][j] = current_type;
 						}
 					}
-					//変えようとしているステージのデータが変更後のデータと一緒でないなら
-					if (stage_data[i][j] != 0)
+
+					//範囲選択中でない＆変えようとしているステージのデータが変更後のデータと一緒でないなら
+					if (!now_range_selection && stage_data[i][j] != 0)
 					{
 						//ひとつ前の状態を保持
 						if (KeyInput::OnMouse(MOUSE_INPUT_RIGHT))
@@ -148,6 +151,10 @@ AbstractScene* EditScene::Update()
 				}
 			}
 		}
+
+		//範囲選択の処理
+		RangeSelection();
+		
 		break;
 	case TOOL_BOX:
 		for (int i = 0; i < UI_OBJECT_TYPE_NUM; i++)
@@ -177,10 +184,10 @@ AbstractScene* EditScene::Update()
 						current_type = n;
 						ui_current_type = i;
 					}
-					//プレイヤーをダブルクリックしたならプレイヤーリスポーンブロックまで移動
+					//プレイヤーをダブルクリックしたならプレイヤーリスポーンブロックまで移動(今UIの都合上動きません)
 					if (old_current_type == PLAYER_BLOCK && current_type == PLAYER_BLOCK)
 					{
-						camera_location = { player_spawn_location.x-(SCREEN_WIDTH/2),player_spawn_location.y - (SCREEN_HEIGHT / 2) };
+						camera_location = { player_spawn_location.x - (SCREEN_WIDTH / 2),player_spawn_location.y - (SCREEN_HEIGHT / 2) };
 					}
 				}
 			}
@@ -584,6 +591,9 @@ void EditScene::Draw()const
 			minimap_button.y + (MINIMAP_BUTTON_HEIGHT / 2) - 5,
 			0xffffff, TRUE);
 	}
+
+	//範囲選択の四角表示
+	DrawBoxAA(range_selection[0].x, range_selection[0].y, range_selection[1].x, range_selection[1].y, 0x0000ff, false);
 }
 
 void EditScene::LoadStageData(int _stage)
@@ -886,4 +896,102 @@ bool EditScene::CheckInScreen(Stage* _stage)const
 		return true;
 	}
 	return false;
+}
+
+void EditScene::RangeSelection()
+{
+	//右クリックされた時と離された時の座標を保存し、範囲内のブロック全てを変更する
+
+
+	if (KeyInput::OnPresed(KEY_INPUT_LCONTROL))
+	{
+		//Ctrl & 右クリックしたらその地点の座標を保存する
+		if (KeyInput::OnMouse(MOUSE_INPUT_RIGHT))
+		{
+			range_selection[0].x = KeyInput::GetMouseCursor().x;
+			range_selection[0].y = KeyInput::GetMouseCursor().y;
+			//範囲選択中に立てるフラグ
+			now_range_selection = true;
+		}
+		//Ctrl & 右クリックを押し続けたら２つ目の座標が随時更新されていく
+		if (KeyInput::OnPressedMouse(MOUSE_INPUT_RIGHT))
+		{
+			range_selection[1].x = KeyInput::GetMouseCursor().x;
+			range_selection[1].y = KeyInput::GetMouseCursor().y;
+		}
+		//Ctrl & 右クリックを離したら座標が確定されると同時にフラグが立つ
+		if (KeyInput::OnReleaseMouse(MOUSE_INPUT_RIGHT))
+		{
+			now_range_selection = false;
+			range_selection_flg = true;
+			//範囲内の一番数字が小さい頂点と大きい頂点を分ける
+			Location range_selection_min;
+			Location range_selection_max;
+			if (range_selection[0].x < range_selection[1].x)
+			{
+				range_selection_min.x = range_selection[0].x;
+				range_selection_max.x = range_selection[1].x;
+			}
+			else
+			{
+				range_selection_min.x = range_selection[1].x;
+				range_selection_max.x = range_selection[0].x;
+			}
+
+			if (range_selection[0].y < range_selection[1].y)
+			{
+				range_selection_min.y = range_selection[0].y;
+				range_selection_max.y = range_selection[1].y;
+			}
+			else
+			{
+				range_selection_min.y = range_selection[1].y;
+				range_selection_max.y = range_selection[0].y;
+			}
+
+			for (int i = 0; i < stage_height_num; i++)
+			{
+				for (int j = 0; j < stage_width_num; j++)
+				{
+					if (range_selection_min.x < stage[i][j]->GetLocalLocation().x && range_selection_max.x > stage[i][j]->GetLocalLocation().x && range_selection_min.y < stage[i][j]->GetLocalLocation().y && range_selection_max.y > stage[i][j]->GetLocalLocation().y)
+					{
+						select_data[i][j] = true;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		//フラグが立っている状態で左クリックをすると範囲選択を解除する
+		if (range_selection_flg && KeyInput::OnMouse(MOUSE_INPUT_LEFT))
+		{
+			ResetSelectData();
+			range_selection[0] = { 0,0 };
+			range_selection[1] = { 0,0 };
+			range_selection_flg = false;
+		}
+
+		//フラグが立っている状態で右クリックをすると範囲内のブロックが現在選択されているブロックに置き換わる
+		if (range_selection_flg && KeyInput::OnMouse(MOUSE_INPUT_RIGHT))
+		{
+
+			SaveOldData();
+
+			for (int i = 0; i < stage_height_num; i++)
+			{
+				for (int j = 0; j < stage_width_num; j++)
+				{
+					if (select_data[i][j] == true)
+					{
+						stage_data[i][j] = current_type;
+					}
+				}
+			}
+			ResetSelectData();
+			range_selection[0] = { 0,0 };
+			range_selection[1] = { 0,0 };
+			range_selection_flg = false;
+		}
+	}
 }
