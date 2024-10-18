@@ -360,6 +360,10 @@ void Stage::Draw()const
 		case BOSSSTAGE_TRANSITION:
 			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%s", stage_string[next_stage]);
 			break;
+			//チュートリアル開始範囲
+		case TUTORIAL_RANGE :
+			DrawStringF(local_location.x, local_location.y, "range", text_color[block_type]);
+			break;
 		default:
 			//ブロックなら数字を表示
 			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%d", block_type);

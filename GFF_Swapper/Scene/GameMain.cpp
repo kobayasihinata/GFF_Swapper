@@ -508,6 +508,9 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 				//ボスの生成
 				CreateObject(new Boss, { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 250,250 }, ColorList[stage_data[i][j] - 20]);
 				break;
+				//チュートリアル開始範囲
+			case TUTORIAL_RANGE:
+				CreateObject(new Tutorial, { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 750,750 }, stage_data[i][j]);
 			default:
 				break;
 			}
@@ -750,7 +753,7 @@ void GameMain::UpdateGameMain()
 	//各オブジェクトの更新
 	if (object[player_object]->GetSearchFlg() == FALSE || (object[player_object]->GetSearchFlg() == TRUE && frame % 10 == 0))
 	{
-		tutorial.Update(camera_location, GetPlayerLocation(), stage_height);
+		tutorial_text.Update(camera_location, GetPlayerLocation(), stage_height);
 		for (int i = 0; object[i] != nullptr; i++)
 		{
 			object[i]->SetScreenPosition(camera_location, impact_rand);
@@ -841,7 +844,7 @@ void GameMain::DrawGameMain()const
 	// チュートリアルテキストはボスエリアで描画しない
 	if (now_stage != 2)
 	{
-		tutorial.Draw();
+		tutorial_text.Draw();
 	}
 
 	int enemy_pos[32];
