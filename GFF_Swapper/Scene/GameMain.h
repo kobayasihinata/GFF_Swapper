@@ -16,6 +16,7 @@
 #include "../Object/BossAttackWater.h"
 #include "../Object/BossAttackFire.h"
 #include "../Object/TutorialText.h"
+#include "../Object/Tutorial.h"
 
 class Player;
 
@@ -55,7 +56,8 @@ private:
     WeatherManager* weather;                        //天気管理オブジェクト
     EffectSpawner* effect_spawner;                  //エフェクト管理オブジェクト
     BackGround* back_ground;                        //背景描画用
-    TutorialText tutorial;
+    TutorialText tutorial_text;
+    //Tutorial* tutorial;
     int object_num;         //オブジェクト数
     int move_object_num;    //Updateされているオブジェクト数
     int now_stage;          //現在のステージ数

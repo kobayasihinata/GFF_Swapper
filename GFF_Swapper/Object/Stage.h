@@ -31,7 +31,8 @@ enum BlockList	{
 	WEATHER_SEED,
 	TUTOSTAGE_TRANSITION,
 	FIRSTSTAGE_TRANSITION,
-	BOSSSTAGE_TRANSITION
+	BOSSSTAGE_TRANSITION,
+	TUTORIAL_RANGE
 };
 
 //ColorData格納用
@@ -49,7 +50,7 @@ static int color_data[9]
 };
 
 //Edit表示用文字色データ
-static int text_color[28]
+static int text_color[29]
 {
 	0xffffff,	//無
 	0x000000,	//白ブロック
@@ -83,7 +84,9 @@ static int text_color[28]
 
 	0x000000,	//チュートリアルステージ遷移
 	0x000000,	//１ステージ遷移
-	0x000000	//ボスステージ遷移
+	0x000000,	//ボスステージ遷移
+
+	0xff00ff,	//チュートリアル開始範囲
 
 };
 
