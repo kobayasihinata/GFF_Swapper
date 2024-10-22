@@ -105,7 +105,7 @@ AbstractScene* EditScene::Update()
 		//編集ステージ変更ボタンの処理
 		for (int i = 0; i < STAGE_NUM; i++)
 		{
-			if (editstage_button[i].x < cursor.x && editstage_button[i].x + STAGE_CHANGE_BUTTON_WIDTH > cursor.x && editstage_button[i].y < cursor.y && editstage_button[i].y + STAGE_CHANGE_BUTTON_HEIGHT > cursor.y)
+			if (CheckInArea(editstage_button[i], STAGE_CHANGE_BUTTON_WIDTH, STAGE_CHANGE_BUTTON_HEIGHT))
 			{
 				if (KeyInput::OnMouse(MOUSE_INPUT_LEFT))
 				{
@@ -117,7 +117,7 @@ AbstractScene* EditScene::Update()
 		{
 			for (int j = 0; j < stage_width_num; j++)
 			{
-				if (cursor.x > stage[i][j]->GetLocalLocation().x && cursor.x<stage[i][j]->GetLocalLocation().x + BOX_WIDTH && cursor.y>stage[i][j]->GetLocalLocation().y && cursor.y < stage[i][j]->GetLocalLocation().y + BOX_HEIGHT && !tool_pickup_flg && range_selection_flg == false)
+				if (CheckInArea(stage[i][j]->GetLocalLocation(),BOX_WIDTH,BOX_HEIGHT) && !tool_pickup_flg && !range_selection_flg)
 				{
 					//リセットしてから選択されたselect_dataをtrueにする
 					ResetSelectData();
@@ -176,7 +176,7 @@ AbstractScene* EditScene::Update()
 	case TOOL_BOX:
 		for (int i = 0; i < UI_OBJECT_TYPE_NUM; i++)
 		{
-			if (cursor.x > tool_location.x + (i * 50) && cursor.x < tool_location.x + (i * 50) + 50 && cursor.y>tool_location.y && cursor.y < tool_location.y + 50)
+			if (CheckInArea(tool_location.x + (i * 50), tool_location.y,50,50))
 			{
 				if (KeyInput::OnMouse(MOUSE_INPUT_LEFT))
 				{
@@ -211,7 +211,7 @@ AbstractScene* EditScene::Update()
 		}
 
 		//幅を減らす
-		if (cursor.x > width_button_location.x && cursor.x < width_button_location.x + 15 && cursor.y>width_button_location.y && cursor.y < width_button_location.y + 25)
+		if (CheckInArea(width_button_location,15,25))
 		{
 			current_leftbutton_flg = true;
 			if (KeyInput::OnPressedMouse(MOUSE_INPUT_LEFT) && --button_interval < 0)
@@ -230,7 +230,7 @@ AbstractScene* EditScene::Update()
 		}
 
 		//幅を増やす
-		if (cursor.x > width_button_location.x + 65 && cursor.x < width_button_location.x + 80 && cursor.y>width_button_location.y && cursor.y < width_button_location.y + 25)
+		if (CheckInArea(width_button_location.x + 65, width_button_location.y, 15, 25))
 		{
 			current_rightbutton_flg = true;
 			if (KeyInput::OnPressedMouse(MOUSE_INPUT_LEFT) && --button_interval < 0)
@@ -249,7 +249,7 @@ AbstractScene* EditScene::Update()
 		}
 
 		//高さを増やす
-		if (cursor.x > height_button_location.x && cursor.x < height_button_location.x + 65 && cursor.y>height_button_location.y - 15 && cursor.y < height_button_location.y)
+		if (CheckInArea(height_button_location.x, height_button_location.y - 15, 65,15))
 		{
 			current_upbutton_flg = true;
 			if (KeyInput::OnPressedMouse(MOUSE_INPUT_LEFT) && --button_interval < 0)
@@ -268,7 +268,7 @@ AbstractScene* EditScene::Update()
 		}
 
 		//高さを減らす
-		if (cursor.x > height_button_location.x && cursor.x < height_button_location.x + 65 && cursor.y>height_button_location.y + 25 && cursor.y < height_button_location.y + 40)
+		if (CheckInArea(height_button_location.x, height_button_location.y + 25,65,15))
 		{
 			current_downbutton_flg = true;
 			if (KeyInput::OnPressedMouse(MOUSE_INPUT_LEFT) && --button_interval < 0)
@@ -295,7 +295,7 @@ AbstractScene* EditScene::Update()
 		//種類選択処理
 		for (int i = 0; i < can_select_type[current_type_select][1]; i++)
 		{
-			if (cursor.x > current_type_location.x && cursor.x < current_type_location.x + current_type_erea.width && cursor.y>current_type_location.y + (i * 50) && cursor.y < current_type_location.y + current_type_erea.height + (i * 50))
+			if (CheckInArea(current_type_location.x, current_type_location.y + (i * 50), current_type_erea.width, current_type_erea.height))
 			{
 				if (KeyInput::OnReleaseMouse(MOUSE_INPUT_LEFT))
 				{
@@ -318,12 +318,7 @@ AbstractScene* EditScene::Update()
 			minimap_pickup_flg = true;
 		}
 		//表示切替
-		if (
-			cursor.x > minimap_button.x &&
-			cursor.x < minimap_button.x + MINIMAP_BUTTON_WIDTH &&
-			cursor.y > minimap_button.y &&
-			cursor.y < minimap_button.y + MINIMAP_BUTTON_HEIGHT
-			)
+		if (CheckInArea(minimap_button, MINIMAP_BUTTON_WIDTH, MINIMAP_BUTTON_HEIGHT))
 		{
 			if (KeyInput::OnMouse(MOUSE_INPUT_LEFT))
 			{
@@ -355,7 +350,7 @@ AbstractScene* EditScene::Update()
 		//編集ステージ変更ボタンの処理
 		for (int i = 0; i < STAGE_NUM; i++)
 		{
-			if (editstage_button[i].x < cursor.x && editstage_button[i].x + STAGE_CHANGE_BUTTON_WIDTH > cursor.x && editstage_button[i].y < cursor.y && editstage_button[i].y + STAGE_CHANGE_BUTTON_HEIGHT > cursor.y)
+			if (CheckInArea(editstage_button[i], STAGE_CHANGE_BUTTON_WIDTH, STAGE_CHANGE_BUTTON_HEIGHT))
 			{
 				if (KeyInput::OnMouse(MOUSE_INPUT_LEFT))
 				{
@@ -1055,4 +1050,35 @@ void EditScene::ChangeEditStage(int _num)
 	//ステージ変更
 	now_stage = _num;
 	Initialize();
+}
+
+bool EditScene::CheckInArea(Location _loc, Erea _size)
+{
+	if (_loc.x < cursor.x && _loc.x + _size.width > cursor.x && _loc.y < cursor.y && _loc.y + _size.height > cursor.y)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool EditScene::CheckInArea(Location _loc, float _width, float _height)
+{
+	Erea size = { _height,_width };
+	if (CheckInArea(_loc, size))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool EditScene::CheckInArea(float _x, float _y, float _width, float _height)
+{
+	Location location{ _x,_y };
+	Erea size = { _height,_width };
+
+	if (CheckInArea(location, size))
+	{
+		return true;
+	}
+	return false;
 }

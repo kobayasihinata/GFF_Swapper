@@ -211,6 +211,12 @@ public:
 
     //編集するステージの切り替え _stage = 切り替えるステージ
     void ChangeEditStage(int _num);
+
+    //指定した範囲内にカーソルがあるか判断 _loc1 = 左上座標 _size = 大きさ
+    bool CheckInArea(Location _loc, Erea _size);
+    bool CheckInArea(Location _loc, float _width, float _height);
+    bool CheckInArea(float _x, float _y , float _width, float _height);
+
 };
 
 
