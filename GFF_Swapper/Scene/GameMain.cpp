@@ -510,7 +510,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 				break;
 				//チュートリアル開始範囲
 			case TUTORIAL_RANGE:
-				CreateObject(new Tutorial, { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 750,750 }, stage_data[i][j]);
+				CreateObject(new Tutorial, {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {500, 50}, stage_data[i][j]);
 			default:
 				break;
 			}
