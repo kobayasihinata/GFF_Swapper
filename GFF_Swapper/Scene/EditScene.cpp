@@ -61,6 +61,12 @@ void EditScene::Initialize()
 
 	range_selection_flg = false;
 	now_range_selection = false;
+
+	for (int i = 0; i < STAGE_NUM; i++)
+	{
+		editstage_button[i].x = SCREEN_WIDTH - (STAGE_CHANGE_BUTTON_WIDTH * (STAGE_NUM - i));
+		editstage_button[i].y = SCREEN_HEIGHT - STAGE_CHANGE_BUTTON_HEIGHT;
+	}
 }
 
 void EditScene::Finalize()
@@ -96,6 +102,17 @@ AbstractScene* EditScene::Update()
 	switch (ChechSelectErea())
 	{
 	case STAGE_EDIT:
+		//編集ステージ変更ボタンの処理
+		for (int i = 0; i < STAGE_NUM; i++)
+		{
+			if (editstage_button[i].x < cursor.x && editstage_button[i].x + STAGE_CHANGE_BUTTON_WIDTH > cursor.x && editstage_button[i].y < cursor.y && editstage_button[i].y + STAGE_CHANGE_BUTTON_HEIGHT > cursor.y)
+			{
+				if (KeyInput::OnMouse(MOUSE_INPUT_LEFT))
+				{
+					ChangeEditStage(i);
+				}
+			}
+		}
 		for (int i = 0; i < stage_height_num; i++)
 		{
 			for (int j = 0; j < stage_width_num; j++)
@@ -335,6 +352,17 @@ AbstractScene* EditScene::Update()
 		}
 		break;
 	default:
+		//編集ステージ変更ボタンの処理
+		for (int i = 0; i < STAGE_NUM; i++)
+		{
+			if (editstage_button[i].x < cursor.x && editstage_button[i].x + STAGE_CHANGE_BUTTON_WIDTH > cursor.x && editstage_button[i].y < cursor.y && editstage_button[i].y + STAGE_CHANGE_BUTTON_HEIGHT > cursor.y)
+			{
+				if (KeyInput::OnMouse(MOUSE_INPUT_LEFT))
+				{
+					ChangeEditStage(i);
+				}
+			}
+		}
 		break;
 	}
 	//つかんで動かす
@@ -538,7 +566,6 @@ void EditScene::Draw()const
 			DrawFormatStringF(current_type_location.x, current_type_location.y + i * current_type_erea.height, 0xffffff, "%s", block_type_string[current_type_select][i]);
 		}
 	}
-	SetFontSize(old_size);
 
 	//ミニマップ
 	if (minimap_disp_flg == true)
@@ -594,6 +621,27 @@ void EditScene::Draw()const
 
 	//範囲選択の四角表示
 	DrawBoxAA(range_selection[0].x, range_selection[0].y, range_selection[1].x, range_selection[1].y, 0x0000ff, false);
+
+	DrawBoxAA(editstage_button[0].x - 1, editstage_button[0].y - 1, editstage_button[STAGE_NUM-1].x + STAGE_CHANGE_BUTTON_WIDTH+1, editstage_button[STAGE_NUM - 1].y + STAGE_CHANGE_BUTTON_HEIGHT + 1, 0xffffff, true);
+
+	SetFontSize(36);
+	//ステージ変更ボタン
+	for (int i = 0; i < STAGE_NUM; i++)
+	{
+		if (now_stage == i)
+		{
+			DrawBoxAA(editstage_button[i].x + 1, editstage_button[i].y + 1, editstage_button[i].x + STAGE_CHANGE_BUTTON_WIDTH - 1, editstage_button[i].y + STAGE_CHANGE_BUTTON_HEIGHT - 1, 0x000000, true);
+			DrawFormatString(editstage_button[i].x+10, editstage_button[i].y, 0xffffff, "%d", i);
+		}
+		else
+		{
+			DrawBoxAA(editstage_button[i].x, editstage_button[i].y, editstage_button[i].x + STAGE_CHANGE_BUTTON_WIDTH, editstage_button[i].y + STAGE_CHANGE_BUTTON_HEIGHT, 0xffffff, false);
+			DrawFormatString(editstage_button[i].x+10, editstage_button[i].y, 0x000000, "%d", i);
+		}
+	}
+
+	//フォントサイズを元に戻す
+	SetFontSize(old_size);
 }
 
 void EditScene::LoadStageData(int _stage)
@@ -994,4 +1042,17 @@ void EditScene::RangeSelection()
 			range_selection_flg = false;
 		}
 	}
+}
+
+void EditScene::ChangeEditStage(int _num)
+{
+	//変更しようとしているステージが現在のステージと同じなら処理終了
+	if (now_stage == _num)return;
+
+	//現在のステージ保存
+	UpdateStageData(now_stage);
+	
+	//ステージ変更
+	now_stage = _num;
+	Initialize();
 }

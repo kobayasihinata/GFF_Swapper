@@ -13,6 +13,8 @@
 #define HEIGHT_BUTTON_POS_Y 35   //縦幅調節ボタンのY位置
 #define MINIMAP_BUTTON_WIDTH 30     //ミニマップ表示切り替えボタンの幅
 #define MINIMAP_BUTTON_HEIGHT 20     //ミニマップ表示切り替えボタンの高さ
+#define STAGE_CHANGE_BUTTON_WIDTH 40     //編集ステージ変更ボタンの幅
+#define STAGE_CHANGE_BUTTON_HEIGHT 40     //編集ステージ変更ボタンの高さ
 
 //エリア区分
 enum SelectErea
@@ -154,6 +156,8 @@ private:
     bool range_selection_flg;                             //範囲選択後の操作待ちか判断
     bool now_range_selection;                             //範囲選択中か判断
     Location range_selection[2];                          //範囲選択時の座標 始点と終点
+
+    Location editstage_button[STAGE_NUM];                 //ステージ変更ボタン座標
 public:
     //コンストラクタ
     EditScene(int _stage);
@@ -204,6 +208,9 @@ public:
 
     //範囲選択の処理
     void RangeSelection();
+
+    //編集するステージの切り替え _stage = 切り替えるステージ
+    void ChangeEditStage(int _num);
 };
 
 
