@@ -57,7 +57,7 @@ EnemyDeer::~EnemyDeer()
 
 }
 
-void EnemyDeer::Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)
+void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	//一旦引数はパス 鹿がどこにでるかの座標 
 	//地面と完全に座標が一致していると地面に引っかかって動かなくなる 859
@@ -183,35 +183,35 @@ void EnemyDeer::Draw()const
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
 
 		//頭
-		ResourceManager::DrawRotaBox(local_location.x - erea.width + 15.0f, local_location.y - 10.0f, 30.0f, 20.0f, local_location.x, local_location.y, d_rad, draw_color, true);
-		ResourceManager::DrawRotaBox(local_location.x - erea.width + 15.0f, local_location.y - 10.0f, 30.0f, 20.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
+		ResourceManager::DrawRotaBox(local_location.x - erea.x + 15.0f, local_location.y - 10.0f, 30.0f, 20.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x - erea.x + 15.0f, local_location.y - 10.0f, 30.0f, 20.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
 		//目
-		ResourceManager::DrawRotaBox(local_location.x - erea.width + 8.0f, local_location.y - 10.0f, 8.0f, 9.0f, local_location.x, local_location.y, d_rad, 0x000000, true);
+		ResourceManager::DrawRotaBox(local_location.x - erea.x + 8.0f, local_location.y - 10.0f, 8.0f, 9.0f, local_location.x, local_location.y, d_rad, 0x000000, true);
 
 		switch (deer_draw)
 		{
 		case d_draw::vr_one:
 
 			//首 vr.1
-			//ResourceManager::DrawRotaBox(local_location.x - erea.width + 21.0f, local_location.y - 30.0f, 17.0f, 10.0f, local_location.x, local_location.y, d_rad, color, true);
-			//ResourceManager::DrawRotaBox(local_location.x - erea.width + 25.0f, local_location.y - 45.0f, 10.0f, 10.0f, local_location.x, local_location.y, d_rad, color, true);
+			//ResourceManager::DrawRotaBox(local_location.x - erea.x + 21.0f, local_location.y - 30.0f, 17.0f, 10.0f, local_location.x, local_location.y, d_rad, color, true);
+			//ResourceManager::DrawRotaBox(local_location.x - erea.x + 25.0f, local_location.y - 45.0f, 10.0f, 10.0f, local_location.x, local_location.y, d_rad, color, true);
 
-			ResourceManager::DrawRotaBox(local_location.x - erea.width + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, draw_color, true);
-			ResourceManager::DrawRotaBox(local_location.x - erea.width + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
 
 			//胴体 vr.1
-			ResourceManager::DrawRotaBox(local_location.x - erea.width + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
-			ResourceManager::DrawRotaBox(local_location.x - erea.width + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
 			break;
 
 		case d_draw::vr_two:
 
 			//首 vr.2
-			ResourceManager::DrawRotaBox(local_location.x - erea.width + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, draw_color, true);
 
 			//胴体 vr.2
-			ResourceManager::DrawRotaBox(local_location.x - erea.width + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
-			ResourceManager::DrawRotaBox(local_location.x - erea.width + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
 			break;
 		}
 
@@ -286,8 +286,8 @@ void EnemyDeer::Hit(Object* _object)
 {
 	/*DrawTest1 = _object->GetLocation().x;
 	DrawTest2 = _object->GetLocation().y;
-	DrawTest3 = _object->GetErea().height;
-	DrawTest4 = _object->GetErea().width;
+	DrawTest3 = _object->GetErea().y;
+	DrawTest4 = _object->GetErea().x;
 	DrawTest5 = _object->GetObjectType();
 	DrawTest6 = _object->GetColerData();*/
 
@@ -299,8 +299,8 @@ void EnemyDeer::Hit(Object* _object)
 			(_object->GetObjectType() == WATER && _object->GetCanSwap() == TRUE && this->color == BLUE)
 		)
 	{
-		Location tmpl = location;
-		Erea tmpe = erea;
+		Vector2D tmpl = location;
+		Vector2D tmpe = erea;
 		move[0] = 0;
 		move[1] = 0;
 		move[2] = 0;
@@ -308,8 +308,8 @@ void EnemyDeer::Hit(Object* _object)
 
 		//上下判定用に座標とエリアの調整
 		location.x += 10.f;
-		erea.height = 1.f;
-		erea.width = tmpe.width - 20.f;
+		erea.y = 1.f;
+		erea.x = tmpe.x - 20.f;
 
 		//プレイヤー上方向の判定
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][top]) {
@@ -321,7 +321,7 @@ void EnemyDeer::Hit(Object* _object)
 		}
 
 		//プレイヤー下方向の判定
-		location.y += tmpe.height + 1;
+		location.y += tmpe.y + 1;
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][bottom]) {
 			stageHitFlg[0][bottom] = true;
 			stageHitFlg[1][bottom] = true;
@@ -339,12 +339,12 @@ void EnemyDeer::Hit(Object* _object)
 		//戻す
 		location.x = tmpl.x;
 		location.y = tmpl.y;
-		erea.height = tmpe.height;
-		erea.width = tmpe.width;
+		erea.y = tmpe.y;
+		erea.x = tmpe.x;
 
 		//上方向に埋まらないようにする
 		if (stageHitFlg[0][top]) {//上方向に埋まっていたら
-			float t = (_object->GetLocation().y + _object->GetErea().height) - location.y;
+			float t = (_object->GetLocation().y + _object->GetErea().y) - location.y;
 			if (t != 0) {
 				move[top] = t;
 			}
@@ -352,7 +352,7 @@ void EnemyDeer::Hit(Object* _object)
 
 		//下方向に埋まらないようにする
 		if (stageHitFlg[0][bottom]) {//下方向に埋まっていたら
-			float t = _object->GetLocation().y - (location.y + erea.height);
+			float t = _object->GetLocation().y - (location.y + erea.y);
 			if (t != 0) {
 				move[bottom] = t;
 			}
@@ -365,8 +365,8 @@ void EnemyDeer::Hit(Object* _object)
 
 		//左右判定用に座標とエリアの調整
 		//location.y += 20.f;
-		erea.height = tmpe.height - 20.f;
-		erea.width = 1;
+		erea.y = tmpe.y - 20.f;
+		erea.x = 1;
 
 		//プレイヤー左方向の判定
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][left]) {
@@ -381,7 +381,7 @@ void EnemyDeer::Hit(Object* _object)
 
 
 		//プレイヤー右方向の判定
-		location.x = tmpl.x + tmpe.width + 1;
+		location.x = tmpl.x + tmpe.x + 1;
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right]) {
 			stageHitFlg[0][right] = true;
 			stageHitFlg[1][right] = true;
@@ -397,14 +397,14 @@ void EnemyDeer::Hit(Object* _object)
 
 		location.x = tmpl.x;
 		//location.y += -20.f;
-		erea.height = tmpe.height;
-		erea.width = tmpe.width;
+		erea.y = tmpe.y;
+		erea.x = tmpe.x;
 
 
 
 		//左方向に埋まらないようにする
 		if (stageHitFlg[0][left]) {//左方向に埋まっていたら
-			float t = (_object->GetLocation().x + _object->GetErea().width) - location.x;
+			float t = (_object->GetLocation().x + _object->GetErea().x) - location.x;
 			if (t != 0) {
 				move[left] = t;
 			}
@@ -412,7 +412,7 @@ void EnemyDeer::Hit(Object* _object)
 
 		//右方向に埋まらないようにする
 		if (stageHitFlg[0][right]) {//右方向に埋まっていたら
-			float t = _object->GetLocation().x - (location.x + erea.width);
+			float t = _object->GetLocation().x - (location.x + erea.x);
 			if (t != 0) {
 				move[right] = t;
 			}
@@ -423,15 +423,15 @@ void EnemyDeer::Hit(Object* _object)
 		//左右移動させてみてまだ埋まってたら戻す
 		location.x += move[left];
 		location.x += move[right];
-		if (location.x + erea.width < _object->GetLocation().x || location.x > _object->GetLocation().x + _object->GetErea().width) {
+		if (location.x + erea.x < _object->GetLocation().x || location.x > _object->GetLocation().x + _object->GetErea().x) {
 			if (stageHitFlg[1][top] || stageHitFlg[1][bottom]) {
 				location.x -= move[left];
 				location.x -= move[right];
 			}
 		}
 
-		erea.height = tmpe.height;
-		erea.width = tmpe.width;
+		erea.y = tmpe.y;
+		erea.x = tmpe.x;
 	}
 
 	// 死亡判定
@@ -460,7 +460,7 @@ void EnemyDeer::Hit(Object* _object)
 	}
 }
 
-bool EnemyDeer::CheckCollision(Location l, Erea e)
+bool EnemyDeer::CheckCollision(Vector2D l, Vector2D e)
 {
 	bool ret = false;
 
@@ -468,21 +468,21 @@ bool EnemyDeer::CheckCollision(Location l, Erea e)
 	float my_x = location.x;
 	float my_y = location.y;
 	//自分の中央座標
-	float my_cx = my_x + (erea.width / 2);
-	float my_cy = my_y + (erea.height / 2);
+	float my_cx = my_x + (erea.x / 2);
+	float my_cy = my_y + (erea.y / 2);
 	//自分の幅と高さの半分
-	float my_harf_width = erea.width / 2;
-	float my_harf_height = erea.height / 2;
+	float my_harf_width = erea.x / 2;
+	float my_harf_height = erea.y / 2;
 
 	//相手の左上座標
 	float sub_x = l.x;
 	float sub_y = l.y;
 	//相手の中央座標
-	float sub_cx = sub_x + (e.width / 2);
-	float sub_cy = sub_y + (e.height / 2);
+	float sub_cx = sub_x + (e.x / 2);
+	float sub_cy = sub_y + (e.y / 2);
 	//相手の幅と高さの半分
-	float sub_harf_width = e.width / 2;
-	float sub_harf_height = e.height / 2;
+	float sub_harf_width = e.x / 2;
+	float sub_harf_height = e.y / 2;
 
 	//自分と相手の中心座標の差
 	float diff_x = my_cx - sub_cx;

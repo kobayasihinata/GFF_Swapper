@@ -24,9 +24,9 @@ void Title::Initialize()
 	menu_location[1] = { 565,250 };
 	menu_location[2] = { 900,300 };
 	draw_stick_location = { 300,600 };
-	menu_size[0] = { 75,150 };
-	menu_size[1] = { 75,150 };
-	menu_size[2] = { 75,150 };
+	menu_size[0] = { 150,75 };
+	menu_size[1] = { 150,75 };
+	menu_size[2] = { 150,75 };
 
 	for (int i = 0; i < 7; i++)
 	{
@@ -39,7 +39,7 @@ void Title::Initialize()
 
 	logo_img = ResourceManager::SetGraph("Resource/Images/Logo1.png");
 	//GraphFilter(ResourceManager::GetGraph(logo_img), DX_GRAPH_FILTER_GAUSS, 16, 1400);
-	GetGraphSizeF(ResourceManager::GetGraph(logo_img), &logo_size.width, &logo_size.height);
+	GetGraphSizeF(ResourceManager::GetGraph(logo_img), &logo_size.x, &logo_size.y);
 
 	swap_se = ResourceManager::SetSound("Resource/Sounds/Effect/swap.wav");
 	rise_se = ResourceManager::SetSound("Resource/Sounds/System/rise.wav");
@@ -162,15 +162,15 @@ AbstractScene* Title::Update()
 		//演出１つ目
 		//if (swap_anim_timer < 30)
 		//{
-		//	menu_location[current_menu].x += (player_location.x - anim_start.x-(menu_size[current_menu].width/4)) / 30;
+		//	menu_location[current_menu].x += (player_location.x - anim_start.x-(menu_size[current_menu].x/4)) / 30;
 		//	menu_location[current_menu].y += (player_location.y - anim_start.y) / 30;
 		//}
 		//else
 		//{
 		//	menu_location[current_menu].y -= (SCREEN_HEIGHT / 30);
-		//	menu_size[current_menu].height += (SCREEN_HEIGHT /15);
+		//	menu_size[current_menu].y += (SCREEN_HEIGHT /15);
 		//	menu_location[current_menu].x -= (SCREEN_WIDTH / 30);
-		//	menu_size[current_menu].width += (SCREEN_WIDTH / 15);
+		//	menu_size[current_menu].x += (SCREEN_WIDTH / 15);
 		//}
 				//演出開始から一定時間経ったら遷移
 		//if (++swap_anim_timer > 60)
@@ -258,12 +258,12 @@ void Title::Draw()const
 				{
 					DrawBoxAA(bg[i][j].location.x- bg[i][j].anim_size, 
 						bg[i][j].location.y- bg[i][j].anim_size, 
-						bg[i][j].location.x + bg[i][j].erea.width + bg[i][j].anim_size, 
-						bg[i][j].location.y + bg[i][j].erea.height+ bg[i][j].anim_size, bg[i][j].color, TRUE);
+						bg[i][j].location.x + bg[i][j].erea.x + bg[i][j].anim_size, 
+						bg[i][j].location.y + bg[i][j].erea.y+ bg[i][j].anim_size, bg[i][j].color, TRUE);
 					DrawBoxAA(bg[i][j].location.x- bg[i][j].anim_size, 
 						bg[i][j].location.y- bg[i][j].anim_size,
-						bg[i][j].location.x + bg[i][j].erea.width+ bg[i][j].anim_size, 
-						bg[i][j].location.y + bg[i][j].erea.height+ bg[i][j].anim_size, 0x444444, FALSE);
+						bg[i][j].location.x + bg[i][j].erea.x+ bg[i][j].anim_size, 
+						bg[i][j].location.y + bg[i][j].erea.y+ bg[i][j].anim_size, 0x444444, FALSE);
 				}
 			}
 		}
@@ -276,12 +276,12 @@ void Title::Draw()const
 				{
 					DrawBoxAA(bg[i][j].location.x - bg[i][j].anim_size,
 						bg[i][j].location.y - bg[i][j].anim_size,
-						bg[i][j].location.x + bg[i][j].erea.width + bg[i][j].anim_size,
-						bg[i][j].location.y + bg[i][j].erea.height + bg[i][j].anim_size, bg[i][j].color+0x111111, TRUE);
+						bg[i][j].location.x + bg[i][j].erea.x + bg[i][j].anim_size,
+						bg[i][j].location.y + bg[i][j].erea.y + bg[i][j].anim_size, bg[i][j].color+0x111111, TRUE);
 					DrawBoxAA(bg[i][j].location.x - bg[i][j].anim_size,
 						bg[i][j].location.y - bg[i][j].anim_size,
-						bg[i][j].location.x + bg[i][j].erea.width + bg[i][j].anim_size,
-						bg[i][j].location.y + bg[i][j].erea.height + bg[i][j].anim_size, 0x555555, FALSE);
+						bg[i][j].location.x + bg[i][j].erea.x + bg[i][j].anim_size,
+						bg[i][j].location.y + bg[i][j].erea.y + bg[i][j].anim_size, 0x555555, FALSE);
 				}
 			}
 		}
@@ -354,27 +354,27 @@ void Title::Draw()const
 			{
 				if (swap_anim_timer <= 30)
 				{
-					DrawBoxAA(menu_location[i].x, menu_location[i].y, menu_location[i].x + menu_size[i].width, menu_location[i].y + menu_size[i].height, 0x000000, TRUE);
-					DrawBoxAA(menu_location[i].x+frame%60/30, menu_location[i].y + frame % 60 / 30, menu_location[i].x + menu_size[i].width - frame % 60 / 30, menu_location[i].y + menu_size[i].height - frame % 60 / 30, 0xffffff, FALSE);
+					DrawBoxAA(menu_location[i].x, menu_location[i].y, menu_location[i].x + menu_size[i].x, menu_location[i].y + menu_size[i].y, 0x000000, TRUE);
+					DrawBoxAA(menu_location[i].x+frame%60/30, menu_location[i].y + frame % 60 / 30, menu_location[i].x + menu_size[i].x - frame % 60 / 30, menu_location[i].y + menu_size[i].y - frame % 60 / 30, 0xffffff, FALSE);
 				}
 				else if (current_menu == i)
 				{
-					DrawBoxAA(menu_location[i].x, menu_location[i].y, menu_location[i].x + menu_size[i].width, menu_location[i].y + menu_size[i].height, 0x000000, TRUE);
-					DrawBoxAA(menu_location[i].x, menu_location[i].y, menu_location[i].x + menu_size[i].width, menu_location[i].y + menu_size[i].height, 0xffffff, FALSE);
+					DrawBoxAA(menu_location[i].x, menu_location[i].y, menu_location[i].x + menu_size[i].x, menu_location[i].y + menu_size[i].y, 0x000000, TRUE);
+					DrawBoxAA(menu_location[i].x, menu_location[i].y, menu_location[i].x + menu_size[i].x, menu_location[i].y + menu_size[i].y, 0xffffff, FALSE);
 				}
 				if (swap_anim_timer <= 30)
 				{
-					DrawFormatStringF(menu_location[i].x + (menu_size[i].width / 2) - (GetDrawStringWidth(menu_string[i], (int)strlen(menu_string[i])) / 2), menu_location[i].y + (menu_size[i].height / 2) - 24, 0xffffff, "%s", menu_string[i]);
+					DrawFormatStringF(menu_location[i].x + (menu_size[i].x / 2) - (GetDrawStringWidth(menu_string[i], (int)strlen(menu_string[i])) / 2), menu_location[i].y + (menu_size[i].y / 2) - 24, 0xffffff, "%s", menu_string[i]);
 					//選択中のメニューに交換カーソルを出す
 					if (current_menu == i)
 					{
-						DrawCircleAA(menu_location[i].x + (menu_size[i].width / 2), menu_location[i].y + (menu_size[i].height / 2), 70.f, 40, 0xffff00, FALSE, 4.f * 1.75f);
+						DrawCircleAA(menu_location[i].x + (menu_size[i].x / 2), menu_location[i].y + (menu_size[i].y / 2), 70.f, 40, 0xffff00, FALSE, 4.f * 1.75f);
 
-						Location base;
-						base.x = menu_location[i].x + (menu_size[i].width / 2);
-						base.y = menu_location[i].y + (menu_size[i].height / 2);
+						Vector2D base;
+						base.x = menu_location[i].x + (menu_size[i].x / 2);
+						base.y = menu_location[i].y + (menu_size[i].y / 2);
 
-						Location l[3];
+						Vector2D l[3];
 						l[0].x = base.x;
 						l[0].y = base.y - 70;
 
@@ -606,13 +606,13 @@ void Title::DrawPlayer(int _num)const
 	}
 }
 
-Location Title::RotationLocation(Location BaseLoc, Location Loc, float r) const
+Vector2D Title::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const
 {
-	Location l;
+	Vector2D l;
 	l.x = Loc.x - BaseLoc.x;
 	l.y = Loc.y - BaseLoc.y;
 
-	Location ret;
+	Vector2D ret;
 	ret.x = l.x * cosf(r) - l.y * sinf(r);
 	ret.y = l.x * sinf(r) + l.y * cosf(r);
 

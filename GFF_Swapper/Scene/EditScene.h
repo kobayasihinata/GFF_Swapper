@@ -125,39 +125,39 @@ private:
     Stage* stage[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH];      //床のオブジェクト
     int current_type;                                     //今選ばれているオブジェクトタイプ
     int ui_current_type;                                  //今選ばれているオブジェクトタイプ(見た目)
-    Location width_button_location;                       //ステージ幅変更用ボタンの位置
-    Location height_button_location;                      //ステージ高さ変更用ボタンの位置
+    Vector2D width_button_location;                       //ステージ幅変更用ボタンの位置
+    Vector2D height_button_location;                      //ステージ高さ変更用ボタンの位置
     bool current_leftbutton_flg;                          //ステージサイズ変更用の左ボタンが選ばれているか
     bool current_rightbutton_flg;                         //ステージサイズ変更用の右ボタンが選ばれているか
     bool current_upbutton_flg;                            //ステージサイズ変更用の上ボタンが選ばれているか
     bool current_downbutton_flg;                          //ステージサイズ変更用の下ボタンが選ばれているか
     int button_interval;                                  //ステージ幅変更のインターバル
-    Location tool_location;                               //ツールボックスの左上座標
-    Erea tool_size;                                       //左上のツールボックスの幅
+    Vector2D tool_location;                               //ツールボックスの左上座標
+    Vector2D tool_size;                                       //左上のツールボックスの幅
     bool tool_pickup_flg;                                 //ツールボックスを持っているか判断
     bool select_data[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH];  //そのデータが現在選択中かどうか
     int current_type_select;                              //ブロックのタイプ選択画面が開かれているかどうか(-1=何も開いていない 0以降=その数字の選択画面を開いている)
     int disp_num;                                         //現在選択されているブロックのタイプ
     int now_current_type;                                 //現在置けるブロックのタイプ
-    Location current_type_location;                       //ブロックのタイプを選択するボックスの座標
-    Erea current_type_erea;                               //ブロックのタイプを選択するボックスの大きさ
+    Vector2D current_type_location;                       //ブロックのタイプを選択するボックスの座標
+    Vector2D current_type_erea;                               //ブロックのタイプを選択するボックスの大きさ
 
     int stage_width_num;                                  //ステージのブロックの横の個数 
     int stage_height_num;                                 //ステージのブロックの縦の個数
     int double_click;                                     //ダブルクリックの受付時間測定
-    Location player_spawn_location;                       //プレイヤースポーンブロックの位置
+    Vector2D player_spawn_location;                       //プレイヤースポーンブロックの位置
 
-    Location minimap_location;                            //ミニマップの位置
+    Vector2D minimap_location;                            //ミニマップの位置
     float minimap_size;                                   //ミニマップの大きさ
     bool minimap_pickup_flg;                              //ミニマップを持っているか判断
-    Location minimap_button;                              //ミニマップを表示するか切り替えるボタンの位置
+    Vector2D minimap_button;                              //ミニマップを表示するか切り替えるボタンの位置
     bool minimap_disp_flg;                                //ミニマップを表示するか
 
     bool range_selection_flg;                             //範囲選択後の操作待ちか判断
     bool now_range_selection;                             //範囲選択中か判断
-    Location range_selection[2];                          //範囲選択時の座標 始点と終点
+    Vector2D range_selection[2];                          //範囲選択時の座標 始点と終点
 
-    Location editstage_button[STAGE_NUM];                 //ステージ変更ボタン座標
+    Vector2D editstage_button[STAGE_NUM];                 //ステージ変更ボタン座標
 public:
     //コンストラクタ
     EditScene(int _stage);
@@ -213,8 +213,8 @@ public:
     void ChangeEditStage(int _num);
 
     //指定した範囲内にカーソルがあるか判断 _loc1 = 左上座標 _size = 大きさ
-    bool CheckInArea(Location _loc, Erea _size);
-    bool CheckInArea(Location _loc, float _width, float _height);
+    bool CheckInArea(Vector2D _loc, Vector2D _size);
+    bool CheckInArea(Vector2D _loc, float _width, float _height);
     bool CheckInArea(float _x, float _y , float _width, float _height);
 
 };

@@ -9,9 +9,9 @@ class TutorialText
 
 private:
 
-	Location in_camera;
+	Vector2D in_camera;
 
-	Location Gdraw_stick_shift;   //描画するスティックをずらす座標
+	Vector2D Gdraw_stick_shift;   //描画するスティックをずらす座標
 	float Gstick_angle;          //スティックのアングルを保存
 	bool Gbutton_draw[4];           //どの画像を描画するか
 	int GNum;
@@ -40,14 +40,14 @@ public:
 	TutorialText();														 
 	~TutorialText();													 
 																		 
-	void Update(Location camera, Location _p, int height);				 
+	void Update(Vector2D camera, Vector2D _p, int y);				 
 	void Draw()const;
 	void GDrawPlayer(int xNum, int yNum, int add_x, int add_y, int _c)const;
 	void GDrawFrag()const;
 	void GDrawCircle(bool f)const;
 
 	//引数:もとになる座標、回転させたい座標、回転させたい角度
-	Location RotationLocation(Location BaseLoc, Location Loc, float r) const;
+	Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
 };
 
 

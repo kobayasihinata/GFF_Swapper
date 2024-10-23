@@ -49,10 +49,10 @@ static char logo_string[7][2]
 };
 struct BackGroundImage {
     bool flg;
-    Location location;
-    Erea erea;
+    Vector2D location;
+    Vector2D erea;
     bool move_flg;
-    Location move_goal;
+    Vector2D move_goal;
     float move_speed;
     int color;
     float move_rad;
@@ -64,15 +64,15 @@ class Title :
 {
 private:
     int frame;                  //フレーム測定用   
-    Location menu_location[MENU_NUM];  //メニュー項目の座標
-    Erea menu_size[MENU_NUM];          //メニュー項目の大きさ
-    Location player_location;   //プレイヤーの見た目の描画位置
-    Location logo_location[7];  //タイトルロゴの文字位置
+    Vector2D menu_location[MENU_NUM];  //メニュー項目の座標
+    Vector2D menu_size[MENU_NUM];          //メニュー項目の大きさ
+    Vector2D player_location;   //プレイヤーの見た目の描画位置
+    Vector2D logo_location[7];  //タイトルロゴの文字位置
     int player_color;           //プレイヤーの色
-    Location cursor_location;   //カーソルの座標
-    Location draw_stick_location;   //描画するスティックの座標
-    Location draw_stick_shift;   //描画するスティックをずらす座標
-    Location anim_start;        //アニメーション開始前の位置を保存しておく
+    Vector2D cursor_location;   //カーソルの座標
+    Vector2D draw_stick_location;   //描画するスティックの座標
+    Vector2D draw_stick_shift;   //描画するスティックをずらす座標
+    Vector2D anim_start;        //アニメーション開始前の位置を保存しておく
     bool swap_anim_flg;         //演出開始か判断
     int swap_anim_timer;        //演出の時間測定
     bool button_draw;            //どの画像を描画するか
@@ -80,7 +80,7 @@ private:
     float stick_angle;          //スティックのアングルを保存
 
     int logo_img;       //タイトルロゴの格納
-    Erea logo_size;         //ロゴ画像の大きさ
+    Vector2D logo_size;         //ロゴ画像の大きさ
     int title_bgm;      //タイトルBGM
     int swap_se;        //交換SE
     int rise_se;       //遷移SE
@@ -122,7 +122,7 @@ public:
 
     //座標の回転
     //引数:もとになる座標、回転させたい座標、回転させたい角度
-    Location RotationLocation(Location BaseLoc, Location Loc, float r) const;
+    Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
 };
 
 

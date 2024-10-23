@@ -3,8 +3,8 @@
 
 BackGround::BackGround():stage_erea{0.0}, now_stage(0), is_clear(false), mountain_handle(0), cloud_handle(0)
 {
-	bg_erea.width = 12000;
-	bg_erea.height = 2000;
+	bg_erea.x = 12000;
+	bg_erea.y = 2000;
 }
 
 BackGround::~BackGround()
@@ -12,7 +12,7 @@ BackGround::~BackGround()
 
 }
 
-void BackGround::Initialize(Erea _stage_erea)
+void BackGround::Initialize(Vector2D _stage_erea)
 {
 	stage_erea = _stage_erea;
 
@@ -32,9 +32,9 @@ void BackGround::Update()
 	SetDrawScreen(mountain_handle);
 }
 
-void BackGround::Draw(Location _camera_location)const
+void BackGround::Draw(Vector2D _camera_location)const
 {
-	Location shift_location = { -_camera_location.x / (stage_erea.width / (bg_erea.width / 12)) ,-_camera_location.y / (stage_erea.height / (bg_erea.height / 10)) };
+	Vector2D shift_location = { -_camera_location.x / (stage_erea.x / (bg_erea.x / 12)) ,-_camera_location.y / (stage_erea.y / (bg_erea.y / 10)) };
 	int r = 0, g = 0, b = 0;
 	int bg_color = (_camera_location.x / 80);
 
@@ -75,7 +75,7 @@ void BackGround::Draw(Location _camera_location)const
 		}
 		//青空
 		DrawBoxAA(shift_location.x, shift_location.y + (i * 25),
-			bg_erea.width + shift_location.x, shift_location.y + (i + 1) * 26,
+			bg_erea.x + shift_location.x, shift_location.y + (i + 1) * 26,
 			GetColor(r, g, b), true);
 	}
 
@@ -124,55 +124,55 @@ void BackGround::Draw(Location _camera_location)const
 
 #ifdef _DEBUG
 	DrawStringF(shift_location.x, 300.0f, "左端", 0x00ff00);
-	DrawStringF((bg_erea.width - 50) + shift_location.x, 300.0f, "右端", 0x00ff00);
+	DrawStringF((bg_erea.x - 50) + shift_location.x, 300.0f, "右端", 0x00ff00);
 #endif
 }
 
-void BackGround::DrawWood(Location _shift_location, float move_speed)const
+void BackGround::DrawWood(Vector2D _shift_location, float move_speed)const
 {
 
 }
 
-void BackGround::DrawMountain(Location _shift_location,Erea _erea ,float _move_speed, int  _bg_color)const
+void BackGround::DrawMountain(Vector2D _shift_location,Vector2D _erea ,float _move_speed, int  _bg_color)const
 {
 	if(GetRand(_bg_color) > 100)SetDrawBlendMode(DX_BLENDMODE_INVSRC,220);
 
-	Location shift_location = { _shift_location.x * _move_speed,_shift_location.y * _move_speed };
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x, SCREEN_HEIGHT - shift_location.y - _erea.height, _erea.width, 50, 0x00aa00, TRUE);
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x, SCREEN_HEIGHT - shift_location.y - _erea.height, _erea.width, 50, 0x000000, FALSE);
-	DrawBoxAA(SCREEN_WIDTH + shift_location.x - _erea.width,
-		SCREEN_HEIGHT - shift_location.y - _erea.height,
-		SCREEN_WIDTH + shift_location.x + _erea.width,
+	Vector2D shift_location = { _shift_location.x * _move_speed,_shift_location.y * _move_speed };
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x, SCREEN_HEIGHT - shift_location.y - _erea.y, _erea.x, 50, 0x00aa00, TRUE);
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x, SCREEN_HEIGHT - shift_location.y - _erea.y, _erea.x, 50, 0x000000, FALSE);
+	DrawBoxAA(SCREEN_WIDTH + shift_location.x - _erea.x,
+		SCREEN_HEIGHT - shift_location.y - _erea.y,
+		SCREEN_WIDTH + shift_location.x + _erea.x,
 		SCREEN_HEIGHT,
 		0x00aa00, TRUE);
-	DrawLineAA(SCREEN_WIDTH + shift_location.x - _erea.width,
-		SCREEN_HEIGHT - shift_location.y - _erea.height,
-		SCREEN_WIDTH + shift_location.x - _erea.width,
+	DrawLineAA(SCREEN_WIDTH + shift_location.x - _erea.x,
+		SCREEN_HEIGHT - shift_location.y - _erea.y,
+		SCREEN_WIDTH + shift_location.x - _erea.x,
 		SCREEN_HEIGHT,
 		0x000000, TRUE);
-	DrawLineAA(SCREEN_WIDTH + shift_location.x + _erea.width,
-		SCREEN_HEIGHT - shift_location.y - _erea.height,
-		SCREEN_WIDTH + shift_location.x + _erea.width,
+	DrawLineAA(SCREEN_WIDTH + shift_location.x + _erea.x,
+		SCREEN_HEIGHT - shift_location.y - _erea.y,
+		SCREEN_WIDTH + shift_location.x + _erea.x,
 		SCREEN_HEIGHT,
 		0x000000, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND,255);
 #ifdef _DEBUG
-	DrawStringF(SCREEN_WIDTH + shift_location.x, SCREEN_HEIGHT - shift_location.y - _erea.height, "山", 0x000000);
+	DrawStringF(SCREEN_WIDTH + shift_location.x, SCREEN_HEIGHT - shift_location.y - _erea.y, "山", 0x000000);
 #endif
 }
 
-void BackGround::DrawCloud(Location _shift_location, Erea _erea, float move_speed, int _bg_color)const
+void BackGround::DrawCloud(Vector2D _shift_location, Vector2D _erea, float move_speed, int _bg_color)const
 {
-	Location shift_location = { _shift_location.x * move_speed , _shift_location.y};
+	Vector2D shift_location = { _shift_location.x * move_speed , _shift_location.y};
 
 	if (GetRand(_bg_color) > 100)SetDrawBlendMode(DX_BLENDMODE_ADD, 220);
 
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x, shift_location.y, _erea.width, 30, 0xaaaaaa, TRUE);
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x - 3, shift_location.y-3, _erea.width-1, 30, 0xcccccc, TRUE);
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 30 + (_erea.width / 5), shift_location.y + 2, _erea.width, 30, 0xaaaaaa, TRUE);
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 27 + (_erea.width / 5), shift_location.y - 1, _erea.width - 1, 30, 0xcccccc, TRUE);
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 65 + (_erea.width / 3), shift_location.y - 3, _erea.width, 30, 0xaaaaaa, TRUE);
-	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 62 + (_erea.width / 3), shift_location.y - 6, _erea.width - 1, 30, 0xcccccc, TRUE);
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x, shift_location.y, _erea.x, 30, 0xaaaaaa, TRUE);
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x - 3, shift_location.y-3, _erea.x-1, 30, 0xcccccc, TRUE);
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 30 + (_erea.x / 5), shift_location.y + 2, _erea.x, 30, 0xaaaaaa, TRUE);
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 27 + (_erea.x / 5), shift_location.y - 1, _erea.x - 1, 30, 0xcccccc, TRUE);
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 65 + (_erea.x / 3), shift_location.y - 3, _erea.x, 30, 0xaaaaaa, TRUE);
+	DrawCircleAA(SCREEN_WIDTH + shift_location.x + 62 + (_erea.x / 3), shift_location.y - 6, _erea.x - 1, 30, 0xcccccc, TRUE);
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 }

@@ -25,7 +25,7 @@ EnemyBat::~EnemyBat()
 {
 }
 
-void EnemyBat::Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)
+void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	location = { _location };//x座標 ,y座標 //590 ,400
 	erea = { _erea };		//高さ、幅	//100,150
@@ -62,17 +62,17 @@ void EnemyBat::Update(GameMain* _g)
 		se_once = false;
 	}
 
-	Location player_pos = _g->GetPlayerLocation();
-	Erea player_erea = _g->GetPlayerErea();
+	Vector2D player_pos = _g->GetPlayerLocation();
+	Vector2D player_erea = _g->GetPlayerErea();
 	// プレイヤーとの距離を計算
 	vector = { ENEMY_SPEED };
 	// プレイヤーの中心座標を計算
-	float player_center_x = player_pos.x + player_erea.width / 2;
-	float player_center_y = player_pos.y + player_erea.height / 2;
+	float player_center_x = player_pos.x + player_erea.x / 2;
+	float player_center_y = player_pos.y + player_erea.y / 2;
 
 	// 自分の中心座標を計算
-	float enemy_center_x = location.x + erea.width / 2;
-	float enemy_center_y = location.y + erea.height / 2;
+	float enemy_center_x = location.x + erea.x / 2;
+	float enemy_center_y = location.y + erea.y / 2;
 	
 	// プレイヤーの中心座標との距離を計算
 	float dx = player_center_x - enemy_center_x + 10;
@@ -108,11 +108,11 @@ void EnemyBat::Update(GameMain* _g)
 
 void EnemyBat::Draw() const
 {
-	//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, GetColor(255, 255, 255), FALSE);
+	//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 
 	//各頂点をlocal_locationに置き換えた
 
-	const std::vector<Location> vertices = {
+	const std::vector<Vector2D> vertices = {
 		// 耳
 		{local_location.x + 46, local_location.y}, {local_location.x + 46, local_location.y + 19}, {local_location.x + 55, local_location.y + 9},
 		{local_location.x + 69, local_location.y}, {local_location.x + 69, local_location.y + 19}, {local_location.x + 60, local_location.y + 9},
@@ -212,8 +212,8 @@ void EnemyBat::Hit(Object* _object)
 	/*delete_object = _object;*/
 	//ブロックと当たった時の処理
 	if (_object->GetObjectType() == BLOCK /*|| _object->GetObjectType() == ENEMY*/){
-		Location tmpl = location;
-		Erea tmpe = erea;
+		Vector2D tmpl = location;
+		Vector2D tmpe = erea;
 		move[0] = 0;
 		move[1] = 0;
 		move[2] = 0;
@@ -221,8 +221,8 @@ void EnemyBat::Hit(Object* _object)
 
 		//上下判定用に座標とエリアの調整
 		location.x += 10.f;
-		erea.height = 1.f;
-		erea.width = tmpe.width - 15.f;
+		erea.y = 1.f;
+		erea.x = tmpe.x - 15.f;
 
 		//プレイヤー上方向の判定
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][top]) {
@@ -234,7 +234,7 @@ void EnemyBat::Hit(Object* _object)
 		}
 
 		//プレイヤー下方向の判定
-		location.y += tmpe.height + 1;
+		location.y += tmpe.y + 1;
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][bottom]) {
 			stageHitFlg[0][bottom] = true;
 			stageHitFlg[1][bottom] = true;
@@ -246,12 +246,12 @@ void EnemyBat::Hit(Object* _object)
 		//戻す
 		location.x = tmpl.x;
 		location.y = tmpl.y;
-		erea.height = tmpe.height;
-		erea.width = tmpe.width;
+		erea.y = tmpe.y;
+		erea.x = tmpe.x;
 
 		//上方向に埋まらないようにする
 		if (stageHitFlg[0][top]) {//上方向に埋まっていたら
-			float t = (_object->GetLocation().y + _object->GetErea().height) - location.y;
+			float t = (_object->GetLocation().y + _object->GetErea().y) - location.y;
 			if (t != 0) {
 				vector.y = 0.f;
 				move[top] = t;
@@ -260,7 +260,7 @@ void EnemyBat::Hit(Object* _object)
 
 		//下方向に埋まらないようにする
 		if (stageHitFlg[0][bottom]) {//下方向に埋まっていたら
-			float t = _object->GetLocation().y - (location.y + erea.height);
+			float t = _object->GetLocation().y - (location.y + erea.y);
 			if (t != 0) {
 				move[bottom] = t;
 			}
@@ -269,8 +269,8 @@ void EnemyBat::Hit(Object* _object)
 
 		//左右判定用に座標とエリアの調整
 		location.y += 3.f;
-		erea.height = tmpe.height - 3.f;
-		erea.width = 1;
+		erea.y = tmpe.y - 3.f;
+		erea.x = 1;
 
 		//プレイヤー左方向の判定
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][left]) {
@@ -284,7 +284,7 @@ void EnemyBat::Hit(Object* _object)
 
 
 		//プレイヤー右方向の判定
-		location.x = tmpl.x + tmpe.width + 1;
+		location.x = tmpl.x + tmpe.x + 1;
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right]) {
 			stageHitFlg[0][right] = true;
 			stageHitFlg[1][right] = true;
@@ -297,14 +297,14 @@ void EnemyBat::Hit(Object* _object)
 
 		location.x = tmpl.x;
 		location.y += -3.f;
-		erea.height = tmpe.height;
-		erea.width = tmpe.width;
+		erea.y = tmpe.y;
+		erea.x = tmpe.x;
 
 
 
 		//左方向に埋まらないようにする
 		if (stageHitFlg[0][left]) {//左方向に埋まっていたら
-			float t = (_object->GetLocation().x + _object->GetErea().width) - location.x;
+			float t = (_object->GetLocation().x + _object->GetErea().x) - location.x;
 			if (t != 0) {
 				vector.x = 0.f;
 				move[left] = t;
@@ -315,7 +315,7 @@ void EnemyBat::Hit(Object* _object)
 
 		//右方向に埋まらないようにする
 		if (stageHitFlg[0][right]) {//右方向に埋まっていたら
-			float t = _object->GetLocation().x - (location.x + erea.width);
+			float t = _object->GetLocation().x - (location.x + erea.x);
 			if (t != 0) {
 				vector.x = 0.f;
 				move[right] = t;
@@ -325,7 +325,7 @@ void EnemyBat::Hit(Object* _object)
 
 
 		//上下左右の移動量から移動後も埋まってるか調べる
-		if (location.y < _object->GetLocation().y + _object->GetErea().height && location.y + erea.height > _object->GetLocation().y) {//左右
+		if (location.y < _object->GetLocation().y + _object->GetErea().y && location.y + erea.y > _object->GetLocation().y) {//左右
 			if (stageHitFlg[1][top] || stageHitFlg[1][bottom]) {
 				move[left] = 0.f;
 				move[right] = 0.f;
@@ -337,8 +337,8 @@ void EnemyBat::Hit(Object* _object)
 		location.y += move[top];
 		location.y += move[bottom];
 
-		erea.height = tmpe.height;
-		erea.width = tmpe.width;
+		erea.y = tmpe.y;
+		erea.x = tmpe.x;
 
 	}
 	//赤コウモリ
@@ -389,7 +389,7 @@ void EnemyBat::Hit(Object* _object)
 	}
 }
 
-bool EnemyBat::CheckCollision(Location l, Erea e)
+bool EnemyBat::CheckCollision(Vector2D l, Vector2D e)
 {
 	bool ret = false;
 
@@ -397,21 +397,21 @@ bool EnemyBat::CheckCollision(Location l, Erea e)
 	float my_x = location.x;
 	float my_y = location.y;
 	//自分の中央座標
-	float my_cx = my_x + (erea.width / 2);
-	float my_cy = my_y + (erea.height / 2);
+	float my_cx = my_x + (erea.x / 2);
+	float my_cy = my_y + (erea.y / 2);
 	//自分の幅と高さの半分
-	float my_harf_width = erea.width / 2;
-	float my_harf_height = erea.height / 2;
+	float my_harf_width = erea.x / 2;
+	float my_harf_height = erea.y / 2;
 
 	//相手の左上座標
 	float sub_x = l.x;
 	float sub_y = l.y;
 	//相手の中央座標
-	float sub_cx = sub_x + (e.width / 2);
-	float sub_cy = sub_y + (e.height / 2);
+	float sub_cx = sub_x + (e.x / 2);
+	float sub_cy = sub_y + (e.y / 2);
 	//相手の幅と高さの半分
-	float sub_harf_width = e.width / 2;
-	float sub_harf_height = e.height / 2;
+	float sub_harf_width = e.x / 2;
+	float sub_harf_height = e.y / 2;
 
 	//自分と相手の中心座標の差
 	float diff_x = my_cx - sub_cx;

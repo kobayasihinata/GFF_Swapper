@@ -59,7 +59,7 @@ Boss::~Boss()
 {
 }
 
-void Boss::Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)
+void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	location = { SCREEN_WIDTH - 300.0f, SCREEN_HEIGHT - 400};//x座標 ,y座標 
 	//location = { SCREEN_WIDTH / 2, SCREEN_HEIGHT - 300 };//x座標 ,y座標 
@@ -116,7 +116,7 @@ void Boss::Update(GameMain* _g)
 	//UpdateWingPositions();
 
 	boss_anim = (float)sin(PI * 2.f / 60.f * wing_fps) * 5.f;
-	Location player_pos = _g->GetPlayerLocation();
+	Vector2D player_pos = _g->GetPlayerLocation();
 
 	if (player_pos.x > 140) {
 
@@ -241,7 +241,7 @@ void Boss::Update(GameMain* _g)
 
 void Boss::Draw() const
 {
-	//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, color, FALSE);
+	//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, color, FALSE);
 
 	////本体
 	//DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, 0x000000, TRUE);
@@ -349,7 +349,7 @@ void Boss::Hit(Object* _object)
 	}
 }
 
-bool Boss::CheckCollision(Location l, Erea e)
+bool Boss::CheckCollision(Vector2D l, Vector2D e)
 {
 	bool ret = false;
 
@@ -357,21 +357,21 @@ bool Boss::CheckCollision(Location l, Erea e)
 	float my_x = location.x;
 	float my_y = location.y;
 	//自分の中央座標
-	float my_cx = my_x + (erea.width / 2);
-	float my_cy = my_y + (erea.height / 2);
+	float my_cx = my_x + (erea.x / 2);
+	float my_cy = my_y + (erea.y / 2);
 	//自分の幅と高さの半分
-	float my_harf_width = erea.width / 2;
-	float my_harf_height = erea.height / 2;
+	float my_harf_width = erea.x / 2;
+	float my_harf_height = erea.y / 2;
 
 	//相手の左上座標
 	float sub_x = l.x;
 	float sub_y = l.y;
 	//相手の中央座標
-	float sub_cx = sub_x + (e.width / 2);
-	float sub_cy = sub_y + (e.height / 2);
+	float sub_cx = sub_x + (e.x / 2);
+	float sub_cy = sub_y + (e.y / 2);
 	//相手の幅と高さの半分
-	float sub_harf_width = e.width / 2;
-	float sub_harf_height = e.height / 2;
+	float sub_harf_width = e.x / 2;
+	float sub_harf_height = e.y / 2;
 
 	//自分と相手の中心座標の差
 	float diff_x = my_cx - sub_cx;
@@ -386,7 +386,7 @@ bool Boss::CheckCollision(Location l, Erea e)
 	return ret;
 }
 
-float Boss::DistanceCalc(Location pos1, Location pos2)
+float Boss::DistanceCalc(Vector2D pos1, Vector2D pos2)
 {
 	float dx = pos2.x - pos1.x;
 	float dy = pos2.y - pos1.y;
@@ -427,7 +427,7 @@ void Boss::BossAtack(GameMain *_g)
 				can_swap = true;
 			}
 			if (cnt % 30 == 0) {
-				Erea e = { 20.f,20.f };
+				Vector2D e = { 20.f,20.f };
 				_g->CreateObject(new BossAttackFire, GetCenterLocation(), e, RED);
 			}
 			if (cnt > 300) {
@@ -444,8 +444,8 @@ void Boss::BossAtack(GameMain *_g)
 				can_swap = true;
 			}
 			if (cnt % 30 == 0) {
-				Erea e = { 40.f,40.f };
-				Location l;
+				Vector2D e = { 40.f,40.f };
+				Vector2D l;
 				if (side) {
 					l.x = 300.f;
 					l.y = attack_num * 150.f + 150.f;
@@ -472,8 +472,8 @@ void Boss::BossAtack(GameMain *_g)
 				can_swap = true;
 			}
 			if (cnt % 30 == 0) {
-				Erea e = { (float)(GetRand(400) + 400),40.f };
-				Location l;
+				Vector2D e = { (float)(GetRand(400) + 400),40.f };
+				Vector2D l;
 				float x;
 				int i = 0;
 				bool flg;
@@ -520,9 +520,9 @@ void Boss::BossAtack(GameMain *_g)
 void Boss::DrawHexagonSphere() const
 {
 	// ボスの中心座標
-	Location center = { local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 };
+	Vector2D center = { local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 };
 	// 六角形の中心
-	Location hexa_center;
+	Vector2D hexa_center;
 
 	// バリアの半径の配列を定義
 	float hex_size = 15.0f; // 六角形のサイズ
@@ -553,10 +553,10 @@ void Boss::DrawHexagonSphere() const
 	}
 }
 
-void Boss::DrawHexagon(Location center, float size, int color) const
+void Boss::DrawHexagon(Vector2D center, float size, int color) const
 {
 	float angle_space = (float)(2.0f * PI / 6.0f); // 六角形の各頂点の間の角度
-	Location vertices[6];
+	Vector2D vertices[6];
 
 	// 六角形の頂点座標を計算
 	//6つの頂点を中心から等距離に配置
@@ -575,7 +575,7 @@ void Boss::DrawHexagon(Location center, float size, int color) const
 
 void Boss::DrawWings() const
 {
-	Location center = { local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 };
+	Vector2D center = { local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 };
 
 	// アニメーションに基づいて描画位置を計算
 	float angle = 0.0f;
@@ -667,7 +667,7 @@ void Boss::UpdateWingPositions()
 
 	if(KeyInput::OnPressedMouse(MOUSE_INPUT_LEFT)){
 		//羽全体の移動量を計算
-		Location wingMove = { mousePos_X - wing[num].x, mousePos_Y - wing[num].y };
+		Vector2D wingMove = { mousePos_X - wing[num].x, mousePos_Y - wing[num].y };
 		// 羽全体の座標を更新
 		for (int i = num; i < num + 4; ++i) {
 			wing[i].x += wingMove.x - 500;
@@ -680,7 +680,7 @@ void Boss::UpdateWingPositions()
 void Boss::InvertedWingPositions()
 {
 	// wing_mirror を更新する
-	Location center = { local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 };
+	Vector2D center = { local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 };
 
 	for (size_t i = 0; i < wing.size(); ++i)
 	{

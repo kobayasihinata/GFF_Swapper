@@ -15,8 +15,8 @@
 #include "Help.h"
 
 
-static Location camera_location = { 0,0 };	//カメラの座標
-static Location screen_origin = { (SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2) };
+static Vector2D camera_location = { 0,0 };	//カメラの座標
+static Vector2D screen_origin = { (SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2) };
 
 GameMain::GameMain(int _stage) :frame(0), impact(0), stage_data{ 0 }, now_stage(0), object_num(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), camera_x_lock_flg(true), camera_y_lock_flg(true), x_pos_set_once(false), y_pos_set_once(false), player_object(0), boss_object(0), weather(0), weather_timer(0), move_object_num(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), player_respawn_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
 {
@@ -205,7 +205,7 @@ void GameMain::Draw() const
 #endif
 }
 
-void GameMain::CreateObject(Object* _object, Location _location, Erea _erea, int _color_data)
+void GameMain::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
 {
 	for (int i = 0; i < OBJECT_NUM; i++)
 	{
@@ -224,7 +224,7 @@ void GameMain::CreateObject(Object* _object, Location _location, Erea _erea, int
 			{
 				boss_object = i;
 			}
-			//if (_erea.height == 1200.f)
+			//if (_erea.y == 1200.f)
 			//{
 			//	boss_attack[attack_num++] = i;
 			//}
@@ -476,7 +476,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 					//プレイヤーリスポーン地点の設定
 					//player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
 					//プレイヤーの生成
-					CreateObject(new Player, player_respawn, { PLAYER_HEIGHT,PLAYER_WIDTH }, GREEN);
+					CreateObject(new Player, player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, GREEN);
 				}
 				//プレイヤーが居るなら
 				else
@@ -496,7 +496,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 			case ENEMY_BAT_GREEN:
 			case ENEMY_BAT_BLUE:
 				//コウモリの生成
-				CreateObject(new EnemyBat, { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 75,118 }, ColorList[stage_data[i][j] - 14]);
+				CreateObject(new EnemyBat, { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 118,75 }, ColorList[stage_data[i][j] - 14]);
 				break;
 			case ENEMY_FROG_RED:
 			case ENEMY_FROG_GREEN:
@@ -560,17 +560,17 @@ bool GameMain::GetSearchFlg()
 	return object[player_object]->GetSearchFlg();
 }
 
-Location GameMain::GetPlayerLocation()
+Vector2D GameMain::GetPlayerLocation()
 {
 	return object[player_object]->GetLocation();
 }
 
-Erea GameMain::GetPlayerErea()
+Vector2D GameMain::GetPlayerErea()
 {
 	return object[player_object]->GetErea();
 }
 
-Location GameMain::GetCameraLocation()
+Vector2D GameMain::GetCameraLocation()
 {
 	return camera_location;
 }
@@ -580,7 +580,7 @@ void GameMain::CameraImpact(int _num)
 	impact = _num;
 }
 
-void GameMain::SpawnEffect(Location _location, Erea _erea, int _type, int _time, int _color,float _angle)
+void GameMain::SpawnEffect(Vector2D _location, Vector2D _erea, int _type, int _time, int _color,float _angle)
 {
 	effect_spawner->SpawnEffect(_location, _erea, _type, _time, _color, _angle);
 }
@@ -596,17 +596,17 @@ bool GameMain::CheckInScreen(Object* _object)const
 	if (_object != nullptr &&
 		(
 			(_object->GetObjectType() != ENEMY && 
-			 _object->GetLocation().x > camera_location.x - _object->GetErea().width - 80 &&
-		     _object->GetLocation().x < camera_location.x + SCREEN_WIDTH + _object->GetErea().width + 80 &&
-		     _object->GetLocation().y > camera_location.y - _object->GetErea().height - 80 &&
-		     _object->GetLocation().y < camera_location.y + SCREEN_HEIGHT + _object->GetErea().height + 160
+			 _object->GetLocation().x > camera_location.x - _object->GetErea().x - 80 &&
+		     _object->GetLocation().x < camera_location.x + SCREEN_WIDTH + _object->GetErea().x + 80 &&
+		     _object->GetLocation().y > camera_location.y - _object->GetErea().y - 80 &&
+		     _object->GetLocation().y < camera_location.y + SCREEN_HEIGHT + _object->GetErea().y + 160
 		    )
 			||
 		    (_object->GetObjectType() == ENEMY &&
-		     _object->GetLocation().x > camera_location.x - _object->GetErea().width&&
-		     _object->GetLocation().x < camera_location.x + SCREEN_WIDTH + _object->GetErea().width &&
-		     _object->GetLocation().y > camera_location.y - _object->GetErea().height&&
-		     _object->GetLocation().y < camera_location.y + SCREEN_HEIGHT + _object->GetErea().height
+		     _object->GetLocation().x > camera_location.x - _object->GetErea().x&&
+		     _object->GetLocation().x < camera_location.x + SCREEN_WIDTH + _object->GetErea().x &&
+		     _object->GetLocation().y > camera_location.y - _object->GetErea().y&&
+		     _object->GetLocation().y < camera_location.y + SCREEN_HEIGHT + _object->GetErea().y
 		     ) 
 		)
 	   )
@@ -616,7 +616,7 @@ bool GameMain::CheckInScreen(Object* _object)const
 	return false;
 }
 
-Location GameMain::GetBossLocation()
+Vector2D GameMain::GetBossLocation()
 {
 	return object[boss_object]->GetLocation();
 }
@@ -718,13 +718,13 @@ void GameMain::SetNowCurrentObject(Object* _object)
 	now_current_object = _object;
 }
 
-Location GameMain::RotationLocation(Location BaseLoc, Location Loc, float r) const
+Vector2D GameMain::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const
 {
-	Location l;
+	Vector2D l;
 	l.x = Loc.x - BaseLoc.x;
 	l.y = Loc.y - BaseLoc.y;
 
-	Location ret;
+	Vector2D ret;
 	ret.x = l.x * cosf(r) - l.y * sinf(r);
 	ret.y = l.x * sinf(r) + l.y * cosf(r);
 
@@ -1011,7 +1011,7 @@ void GameMain::DrawPause()const
 	DrawString(580, 436, "Help", 0xffffff);
 	DrawString(860, 436, "TITLE", 0xffffff);
 
-	Location circleLoc;
+	Vector2D circleLoc;
 
 	if (cursor == 0) {
 		circleLoc.x = 350.f;
@@ -1029,11 +1029,11 @@ void GameMain::DrawPause()const
 
 	DrawCircleAA(circleLoc.x, circleLoc.y, 40.f * 2.3f, 40, 0xffff00, FALSE, 4.f * 2.3f);
 
-	Location base;
+	Vector2D base;
 	base.x = circleLoc.x;
 	base.y = circleLoc.y;
 
-	Location l[3];
+	Vector2D l[3];
 	l[0].x = base.x;
 	l[0].y = base.y - 40.f * 2.3f;
 
@@ -1294,7 +1294,7 @@ void GameMain::DrawGameOver()const
 	DrawString(260, 436, "RESTART", 0xffffff);
 	DrawString(860, 436, "TITLE", 0xffffff);
 
-	Location circleLoc;
+	Vector2D circleLoc;
 
 	if (cursor == 0) {
 		circleLoc.x = 350.f;
@@ -1307,11 +1307,11 @@ void GameMain::DrawGameOver()const
 
 	DrawCircleAA(circleLoc.x, circleLoc.y, 40.f * 2.3f, 40, 0xffff00, FALSE, 4.f * 2.3f);
 
-	Location base;
+	Vector2D base;
 	base.x = circleLoc.x;
 	base.y = circleLoc.y;
 
-	Location l[3];
+	Vector2D l[3];
 	l[0].x = base.x;
 	l[0].y = base.y - 40.f * 2.3f;
 
@@ -1386,7 +1386,7 @@ void GameMain::DrawCheck()const
 	DrawString(300, 436, "NO", 0xffffff);
 	DrawString(870, 436, "YES", 0xffffff);
 
-	Location circleLoc;
+	Vector2D circleLoc;
 
 	if (cursor == 0) {
 		circleLoc.x = 350.f;
@@ -1399,11 +1399,11 @@ void GameMain::DrawCheck()const
 
 	DrawCircleAA(circleLoc.x, circleLoc.y, 40.f * 2.3f, 40, 0xffff00, FALSE, 4.f * 2.3f);
 
-	Location base;
+	Vector2D base;
 	base.x = circleLoc.x;
 	base.y = circleLoc.y;
 
-	Location l[3];
+	Vector2D l[3];
 	l[0].x = base.x;
 	l[0].y = base.y - 40.f * 2.3f;
 

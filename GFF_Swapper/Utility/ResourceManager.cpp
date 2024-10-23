@@ -60,8 +60,8 @@ void ResourceManager::StageAnimInitialize()
 		water_anim[i].shift1.x = (float)(GetRand(8) * (BOX_WIDTH / 10));
 		water_anim[i].shift1.y = (float)(GetRand(8) * (BOX_HEIGHT / 10) - 15);
 		water_anim[i].initial_position = water_anim[i].shift1;
-		water_anim[i].erea.width = BOX_WIDTH /3;
-		water_anim[i].erea.height = BOX_HEIGHT /3;
+		water_anim[i].erea.x = BOX_WIDTH /3;
+		water_anim[i].erea.y = BOX_HEIGHT /3;
 	}
 
 	//ハンドルリセット
@@ -88,8 +88,8 @@ void ResourceManager::StageAnimUpdate()
 		{
 			fire_anim[i].shift.x = 0;
 			fire_anim[i].shift.y = BOX_HEIGHT;
-			fire_anim[i].erea.width = 4;
-			fire_anim[i].erea.height = 4;
+			fire_anim[i].erea.x = 4;
+			fire_anim[i].erea.y = 4;
 			fire_anim[i].shift.x += 4 * GetRand(10);
 			fire_anim[i].time = 30 + GetRand(30);
 			fire_anim[i].angle = (float)(GetRand(30) / 10);
@@ -99,8 +99,8 @@ void ResourceManager::StageAnimUpdate()
 			fire_anim[i].shift.x += 0.05f + (fire_anim[i].angle - 1) / 2;
 			fire_anim[i].shift.y -= 1;
 			fire_anim[i].time--;
-			fire_anim[i].erea.width -= 0.05f;
-			fire_anim[i].erea.height -= 0.05f;
+			fire_anim[i].erea.x -= 0.05f;
+			fire_anim[i].erea.y -= 0.05f;
 		}
 	}
 
@@ -156,15 +156,15 @@ void ResourceManager::SaveAnimHandle()
 		{
 			DrawBoxAA(fire_anim[i].shift.x,
 					  fire_anim[i].shift.y,
-					  fire_anim[i].shift.x + fire_anim[i].erea.width,
-					  fire_anim[i].shift.y + fire_anim[i].erea.height, 0xff9900, true);
+					  fire_anim[i].shift.x + fire_anim[i].erea.x,
+					  fire_anim[i].shift.y + fire_anim[i].erea.y, 0xff9900, true);
 		}
 		else
 		{
 			DrawBoxAA(fire_anim[i].shift.x,
 					  fire_anim[i].shift.y,
-					  fire_anim[i].shift.x + fire_anim[i].erea.width,
-					  fire_anim[i].shift.y + fire_anim[i].erea.height, 0xff0000, true);
+					  fire_anim[i].shift.x + fire_anim[i].erea.x,
+					  fire_anim[i].shift.y + fire_anim[i].erea.y, 0xff0000, true);
 		}
 	}
 
@@ -190,8 +190,8 @@ void ResourceManager::SaveAnimHandle()
 	{
 		DrawBoxAA(water_anim[i].shift1.x,
 				  water_anim[i].shift1.y,
-				  water_anim[i].shift1.x + water_anim[i].erea.width,
-				  water_anim[i].shift1.y + water_anim[i].erea.height, 0x0000ee, true);
+				  water_anim[i].shift1.x + water_anim[i].erea.x,
+				  water_anim[i].shift1.y + water_anim[i].erea.y, 0x0000ee, true);
 	}
 
 	//溶岩
@@ -271,12 +271,12 @@ void ResourceManager::SaveAnimHandle()
 	SetDrawScreen(DX_SCREEN_BACK);
 }
 
-void ResourceManager::StageAnimDraw(Location _location, int _type)
+void ResourceManager::StageAnimDraw(Vector2D _location, int _type)
 {
 	DrawGraphF(_location.x, _location.y, anim_handle[_type - 3], TRUE);	
 }
 
-void ResourceManager::StageBlockDraw(Location _location, int _type)
+void ResourceManager::StageBlockDraw(Vector2D _location, int _type)
 {
 	DrawGraphF(_location.x, _location.y, stage_block_handle[_type], TRUE);
 
@@ -423,36 +423,36 @@ void ResourceManager::DrawRotaBox(float _x, float _y, float _w, float _h, float 
 	DrawQuadrangleAA(newloc[0][0], newloc[0][1], newloc[1][0], newloc[1][1], newloc[2][0], newloc[2][1], newloc[3][0], newloc[3][1], _color, _fill);
 }
 
-void ResourceManager::DrawHeart(Location l, Erea e)
+void ResourceManager::DrawHeart(Vector2D l, Vector2D e)
 {
-	Location circle[2];
+	Vector2D circle[2];
 
-	circle[0].x = l.x + ((e.width / 2) / 2);
-	circle[0].y = l.y + ((e.height / 2) / 2);
+	circle[0].x = l.x + ((e.x / 2) / 2);
+	circle[0].y = l.y + ((e.y / 2) / 2);
 
-	circle[1].x = l.x + (e.width / 2) + ((e.width / 2) / 2);
-	circle[1].y = l.y + ((e.height / 2) / 2);
+	circle[1].x = l.x + (e.x / 2) + ((e.x / 2) / 2);
+	circle[1].y = l.y + ((e.y / 2) / 2);
 
-	Location triangle[3];
+	Vector2D triangle[3];
 
 	triangle[0].x = l.x;
-	triangle[0].y = l.y + ((e.height / 2) / 2);
+	triangle[0].y = l.y + ((e.y / 2) / 2);
 
-	triangle[1].x = l.x + e.width;
-	triangle[1].y = l.y + ((e.height / 2) / 2);
+	triangle[1].x = l.x + e.x;
+	triangle[1].y = l.y + ((e.y / 2) / 2);
 
-	triangle[2].x = l.x + (e.width / 2);
-	triangle[2].y = l.y + e.height ;
+	triangle[2].x = l.x + (e.x / 2);
+	triangle[2].y = l.y + e.y ;
 
 
 	for (int i = 0; i < 2; i++)
 	{
-		DrawCircleAA(circle[i].x, circle[i].y, ((e.width / 2) / 2) + 2, 64, 0xffffff, FALSE, 4.f);
+		DrawCircleAA(circle[i].x, circle[i].y, ((e.x / 2) / 2) + 2, 64, 0xffffff, FALSE, 4.f);
 	}
 	
 	for (int i = 0; i < 2; i++)
 	{
-		DrawCircleAA(circle[i].x, circle[i].y, ((e.width / 2) / 2), 64, 0xcc0000);
+		DrawCircleAA(circle[i].x, circle[i].y, ((e.x / 2) / 2), 64, 0xcc0000);
 	}
 
 	DrawTriangleAA(triangle[0].x - 1, triangle[0].y, triangle[1].x + 1, triangle[1].y, triangle[2].x, triangle[2].y, 0xcc0000, TRUE);

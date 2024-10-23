@@ -26,7 +26,7 @@ private:
 		left,
 		right
 	};
-	Location vector;		//ボスのベクトル
+	Vector2D vector;		//ボスのベクトル
 	bool stageHitFlg[2][4]; //bossとステージの当たり判定
 	float move[4];			//各方向加速度格納用
 
@@ -57,10 +57,10 @@ private:
 
 	int state_change_time;		//状態変更のタイミング
 
-	std::vector<Location> vertices; //ボスの頂点情報
-	std::vector<Location> warp_pos; //ワープ位置情報
-	std::array<Location, 40> wing;	//ボスの羽の位置情報
-	std::array<Location, 40> wing_mirror;//ミラー羽の位置情報
+	std::vector<Vector2D> vertices; //ボスの頂点情報
+	std::vector<Vector2D> warp_pos; //ワープ位置情報
+	std::array<Vector2D, 40> wing;	//ボスの羽の位置情報
+	std::array<Vector2D, 40> wing_mirror;//ミラー羽の位置情報
 
 	int wing_fps; //羽の加算用
 	float boss_anim;//アニメーション用
@@ -82,7 +82,7 @@ public:
 	Boss();
 	~Boss();
 
-	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Update(GameMain* _g)override;
 	void Draw()const override;
 	void Finalize()override;
@@ -97,10 +97,10 @@ public:
 		return 0;
 	}
 	//ステージとの当たり判定
-	bool CheckCollision(Location l, Erea e);
+	bool CheckCollision(Vector2D l, Vector2D e);
 
 	//プレイヤーとボスの距離計算
-	float DistanceCalc(Location pos1, Location pos2);
+	float DistanceCalc(Vector2D pos1, Vector2D pos2);
 
 	//ボスのバリア
 	void barrier();
@@ -112,7 +112,7 @@ public:
 	void DrawHexagonSphere() const;
 
 	//六角形描画
-	void DrawHexagon(Location center, float size, int color) const;
+	void DrawHexagon(Vector2D center, float size, int color) const;
 
 	//羽を描画する
 	void DrawWings() const;

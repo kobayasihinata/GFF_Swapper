@@ -47,6 +47,7 @@
     <ClCompile Include="Utility\KeyInput.cpp" />
     <ClCompile Include="Utility\PadInput.cpp" />
     <ClCompile Include="Utility\ResourceManager.cpp" />
+    <ClCompile Include="Utility\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object\BackGround.h" />
@@ -80,6 +81,8 @@
     <ClInclude Include="Utility\KeyInput.h" />
     <ClInclude Include="Utility\PadInput.h" />
     <ClInclude Include="Utility\ResourceManager.h" />
+    <ClInclude Include="Utility\UserTemplate.h" />
+    <ClInclude Include="Utility\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resouce.rc" />

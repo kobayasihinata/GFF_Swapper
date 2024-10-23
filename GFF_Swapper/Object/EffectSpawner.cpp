@@ -223,16 +223,16 @@ void EffectSpawner::Draw()const
 			{
 				//四角形直進移動
 			case 0:
-				DrawBoxAA(effect[i].local_location.x, effect[i].local_location.y, effect[i].local_location.x + effect[i].erea.width, effect[i].local_location.y + effect[i].erea.height, effect[i].color, TRUE);
+				DrawBoxAA(effect[i].local_location.x, effect[i].local_location.y, effect[i].local_location.x + effect[i].erea.x, effect[i].local_location.y + effect[i].erea.y, effect[i].color, TRUE);
 				break;
 				//回転四角形直進移動
 			case 1:
-				ResourceManager::DrawRotaBox(effect[i].local_location.x, effect[i].local_location.y, effect[i].erea.width, effect[i].erea.height, effect[i].local_location.x, effect[i].local_location.y, (float)effect[i].timer * 10, effect[i].color, TRUE);
+				ResourceManager::DrawRotaBox(effect[i].local_location.x, effect[i].local_location.y, effect[i].erea.x, effect[i].erea.y, effect[i].local_location.x, effect[i].local_location.y, (float)effect[i].timer * 10, effect[i].color, TRUE);
 				break;
 				//四角形直進移動(フェードアウト)
 			case 2:
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (effect[i].timer * (255/effect[i].effect_time)));
-				DrawBoxAA(effect[i].local_location.x, effect[i].local_location.y, effect[i].local_location.x + effect[i].erea.width, effect[i].local_location.y + effect[i].erea.height, effect[i].color, TRUE);
+				DrawBoxAA(effect[i].local_location.x, effect[i].local_location.y, effect[i].local_location.x + effect[i].erea.x, effect[i].local_location.y + effect[i].erea.y, effect[i].color, TRUE);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 				break;
 				//輝き
@@ -250,7 +250,7 @@ void EffectSpawner::Draw()const
 				//着地した時
 			case 5:
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (effect[i].timer * (255 / effect[i].effect_time)));
-				DrawBoxAA(effect[i].local_location.x, effect[i].local_location.y, effect[i].local_location.x + effect[i].erea.width, effect[i].local_location.y + effect[i].erea.height, effect[i].color, TRUE);
+				DrawBoxAA(effect[i].local_location.x, effect[i].local_location.y, effect[i].local_location.x + effect[i].erea.x, effect[i].local_location.y + effect[i].erea.y, effect[i].color, TRUE);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 				break;
 				//爆発した時
@@ -334,7 +334,7 @@ void EffectSpawner::Draw()const
 		if (swap_anim_timer > 0)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200 - (swap_anim_timer * 20));
-			DrawBoxAA(swap_anim[i].goal_local.x - (swap_anim_timer * 10), swap_anim[i].goal_local.y - (swap_anim_timer * 10), swap_anim[i].goal_local.x + swap_anim[i].erea.width + (swap_anim_timer * 5), swap_anim[i].goal_local.y + swap_anim[i].erea.height + (swap_anim_timer * 5), swap_anim[i].color, true);
+			DrawBoxAA(swap_anim[i].goal_local.x - (swap_anim_timer * 10), swap_anim[i].goal_local.y - (swap_anim_timer * 10), swap_anim[i].goal_local.x + swap_anim[i].erea.x + (swap_anim_timer * 5), swap_anim[i].goal_local.y + swap_anim[i].erea.y + (swap_anim_timer * 5), swap_anim[i].color, true);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		}
 	}
@@ -345,7 +345,7 @@ void EffectSpawner::Finalize()
 
 }
 
-void EffectSpawner::SpawnEffect(Location _location, Erea _erea,int _effect_type, int _time, int _color, float _angle)
+void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_type, int _time, int _color, float _angle)
 {
 	switch (_effect_type)
 	{
@@ -367,7 +367,7 @@ void EffectSpawner::SpawnEffect(Location _location, Erea _erea,int _effect_type,
 	//輝き
 	case ShineEffect:
 		SpawnParticle(
-			{ _location.x + GetRand((int)(_erea.width)),_location.y + GetRand((int)(_erea.height))},
+			{ _location.x + GetRand((int)(_erea.x)),_location.y + GetRand((int)(_erea.y))},
 			_erea,
 			3,
 			_time,
@@ -379,7 +379,7 @@ void EffectSpawner::SpawnEffect(Location _location, Erea _erea,int _effect_type,
 		//塵になって消える
 	case DeathEffect:
 		SpawnParticle(
-			{ _location.x + GetRand((int)(_erea.width)),_location.y + GetRand((int)(_erea.height))},
+			{ _location.x + GetRand((int)(_erea.x)),_location.y + GetRand((int)(_erea.y))},
 			_erea,
 			4,
 			_time,
@@ -393,7 +393,7 @@ void EffectSpawner::SpawnEffect(Location _location, Erea _erea,int _effect_type,
 		for (int i = 0; i < 7; i++)
 		{
 			SpawnParticle(
-				{ _location.x + (_erea.width / 2) + GetRand(10),_location.y + _erea.height },
+				{ _location.x + (_erea.x / 2) + GetRand(10),_location.y + _erea.y },
 				{ 10,5 },
 				5,
 				_time,
@@ -420,7 +420,7 @@ void EffectSpawner::SpawnEffect(Location _location, Erea _erea,int _effect_type,
 		for (int i = 0; i < 10; i++)
 		{
 			SpawnParticle(
-				{ _location.x + GetRand(_erea.width),_location.y + GetRand(_erea.height) },
+				{ _location.x + GetRand(_erea.x),_location.y + GetRand(_erea.y) },
 				{ 7,7 },
 				7,
 				_time,
@@ -435,7 +435,7 @@ void EffectSpawner::SpawnEffect(Location _location, Erea _erea,int _effect_type,
 }
 }
 
-void EffectSpawner::SetScreenPosition(Location _world_to_screen,int _num)
+void EffectSpawner::SetScreenPosition(Vector2D _world_to_screen,int _num)
 {
 	effect[_num].local_location.x = effect[_num].location.x - _world_to_screen.x;
 	effect[_num].local_location.y = effect[_num].location.y - _world_to_screen.y;
@@ -484,8 +484,8 @@ int EffectSpawner::Swap(Object* _object1, Object* _object2)
 	swap_anim[1].start = _object2->GetCenterLocation();
 	swap_anim[0].goal = _object2->GetCenterLocation();
 	swap_anim[1].goal = _object1->GetCenterLocation();
-	swap_anim[0].goal_local = { _object2->GetLocalLocation().x + (_object2->GetErea().width / 2), _object2->GetLocalLocation().y + (_object2->GetErea().height / 2) };
-	swap_anim[1].goal_local = { _object1->GetLocalLocation().x + (_object1->GetErea().width / 2), _object1->GetLocalLocation().y + (_object1->GetErea().height / 2) };
+	swap_anim[0].goal_local = { _object2->GetLocalLocation().x + (_object2->GetErea().x / 2), _object2->GetLocalLocation().y + (_object2->GetErea().y / 2) };
+	swap_anim[1].goal_local = { _object1->GetLocalLocation().x + (_object1->GetErea().x / 2), _object1->GetLocalLocation().y + (_object1->GetErea().y / 2) };
 	swap_anim[0].erea = { SWAP_EFFECT_SIZE ,SWAP_EFFECT_SIZE };
 	swap_anim[1].erea = { SWAP_EFFECT_SIZE ,SWAP_EFFECT_SIZE };
 	swap_anim[0].move_flg = true;
@@ -494,7 +494,7 @@ int EffectSpawner::Swap(Object* _object1, Object* _object2)
 	swap_anim[1].color = _object2->GetColorData();
 
 	//移動にかかる時間測定
-	Location move;
+	Vector2D move;
 	float g;
 	move.x = fabsf(_object1->GetCenterLocation().x - _object2->GetCenterLocation().x);
 	move.y = fabsf(_object1->GetCenterLocation().y - _object2->GetCenterLocation().y);
@@ -514,7 +514,7 @@ int EffectSpawner::Swap(Object* _object1, Object* _object2)
 	return swap_anim[0].timer;
 }
 
-void EffectSpawner::SpawnParticle(Location _location, Erea _erea, int _type, int _time, float _speed,int _color, float _angle)
+void EffectSpawner::SpawnParticle(Vector2D _location, Vector2D _erea, int _type, int _time, float _speed,int _color, float _angle)
 {
 	for (int i = 0; i < EFFECT_NUM; i++)
 	{

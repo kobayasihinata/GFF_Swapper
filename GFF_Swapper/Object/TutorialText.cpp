@@ -11,13 +11,13 @@ TutorialText::~TutorialText()
 {
 }
 
-void TutorialText::Update(Location camera , Location _p, int height)
+void TutorialText::Update(Vector2D camera , Vector2D _p, int y)
 {
 
 	frame++;
 
 	in_camera = camera;
-	stage_height = height;
+	stage_height = y;
 
 	if (frame % 10 == 0)
 	{
@@ -388,7 +388,7 @@ void TutorialText::GDrawFrag()const
 
 void TutorialText::GDrawCircle(bool f) const
 {
-	Location base;
+	Vector2D base;
 	if (f) {
 		DrawCircleAA(4410 - in_camera.x, stage_height - 530 - in_camera.y, 40, 40, 0xffff00, FALSE, 4);
 		base.x = 4410 - in_camera.x;
@@ -399,7 +399,7 @@ void TutorialText::GDrawCircle(bool f) const
 		base.x = 1800 - in_camera.x + 2600 + 20;
 		base.y = stage_height - 540 - in_camera.y + 65 + 20;
 	}
-	Location l[3];
+	Vector2D l[3];
 	l[0].x = base.x;
 	l[0].y = base.y - 40;
 
@@ -412,13 +412,13 @@ void TutorialText::GDrawCircle(bool f) const
 	DrawCircleAA(l[2].x, l[2].y, 15, 32, 0x6aa84f, TRUE);
 }
 
-Location TutorialText::RotationLocation(Location BaseLoc, Location Loc, float r) const
+Vector2D TutorialText::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const
 {
-	Location l;
+	Vector2D l;
 	l.x = Loc.x - BaseLoc.x;
 	l.y = Loc.y - BaseLoc.y;
 
-	Location ret;
+	Vector2D ret;
 	ret.x = l.x * cosf(r) - l.y * sinf(r);
 	ret.y = l.x * sinf(r) + l.y * cosf(r);
 

@@ -127,7 +127,7 @@ private:
 public:
 	Stage(int _type, int _stage_height = 0, int _next_stage = 0);
 	~Stage();
-	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Update(GameMain* _g)override;
 	void Update();	//Edit用アップデート
 	void Draw()const override;

@@ -26,7 +26,7 @@ public:
 	bool is_boss_attack = false;	//ボスが生成した攻撃オブジェクトかどうか
 
 	//_location _erea=スポーン座標、大きさ ,_color_data=色情報, object_pos=Object配列内の自分自身の位置
-	virtual void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos) = 0;
+	virtual void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos) = 0;
 
 	virtual void Update(GameMain* _g)
 	{
