@@ -29,7 +29,7 @@ void Tutorial::Update(GameMain* _g)
 
 void Tutorial::Draw() const
 {
-	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.width, local_location.y + erea.height, GetColor(255, 255, 255), FALSE);
+	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 
 	/*if (is_tutorial) {
 		DrawFormatString(0, 400, 0xFFFFFF, "TUTORIAL",TRUE);
