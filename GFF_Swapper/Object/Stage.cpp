@@ -379,6 +379,9 @@ void Stage::Finalize()
 
 void Stage::Hit(Object* _object)
 {
+	//ブロックに当たっていたら処理終了
+	if (_object->GetObjectType() == BLOCK)return;
+
 	//プレイヤーに当たったらフラグを立てる
 	if (_object->GetObjectType() == PLAYER)
 	{
@@ -388,6 +391,7 @@ void Stage::Hit(Object* _object)
 	if (_object->GetObjectType() == PLAYER && (block_type == WEATHER_NORMAL || block_type == WEATHER_RAIN || block_type == WEATHER_FIRE || block_type == WEATHER_SEED))
 	{
 		change_weather_flg = true;
+		return;
 	}
 
 	//草ブロック同士が当たった場合、座標に応じて描画を切り替える
@@ -398,18 +402,21 @@ void Stage::Hit(Object* _object)
 		{
 			draw_wood_flg = true;
 		}
+		return;
 	}
 
 	//火ブロックと溶岩ブロックが当たっている場合は火を消さない
 	if (this->type == FIRE && this->can_swap == FALSE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == TRUE)
 	{
 		delete_fire = 0;
+		return;
 	}
 
 	//プレイヤーに当たった時、このブロックがプレイヤーリスポーン位置設定ブロックなら、フラグを立てる
 	if (block_type == PLAYER_RESPAWN_BLOCK && _object->GetObjectType() == PLAYER)
 	{
 		set_respawn_flg = true;
+		return;
 	}
 
 	//属性の相性が悪いブロックに継続的に当たっていた時、色を変える
@@ -423,6 +430,7 @@ void Stage::Hit(Object* _object)
 			//ゲーム中で変更されたオブジェクト
 			default_object = FALSE;
 			touch_object = 0;
+			return;
 		}
 		//火が水に触れ続けているなら
 		if (this->type == FIRE && _object->GetObjectType() == WATER && ++touch_object > 10)
@@ -432,6 +440,7 @@ void Stage::Hit(Object* _object)
 			//ゲーム中で変更されたオブジェクト
 			default_object = FALSE;
 			touch_object = 0;
+			return;
 		}
 		//水が草に触れ続けているなら
 		if (this->type == WATER && _object->GetObjectType() == WOOD && ++touch_object > 10)
@@ -441,6 +450,7 @@ void Stage::Hit(Object* _object)
 			//ゲーム中で変更されたオブジェクト
 			default_object = FALSE;
 			touch_object = 0;
+			return;
 		}
 	}
 }
