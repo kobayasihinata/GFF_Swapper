@@ -82,6 +82,8 @@ private:
 	bool emoteFlg;
 	int emoteCnt;
 
+	bool is_tutorial; //チュートリアル中か
+
 public:
 	Player();
 	~Player();

@@ -108,232 +108,234 @@ void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int
 void Player::Update(GameMain* _g)
 {
 	
-	__super::Update(_g);
+	if (!is_tutorial) {
+		__super::Update(_g);
 
 
-	//意図しない変更を防止
-	SavePlayerSound();
+		//意図しない変更を防止
+		SavePlayerSound();
 
-	if (searchFlg) {
-		if (fps++ > 6000) {
+		if (searchFlg) {
+			if (fps++ > 6000) {
+				fps = 0;
+			}
+		}
+		else {
 			fps = 0;
 		}
-	}
-	else {
-		fps = 0;
-	}
 
-	//移動エフェクト
-	if (vector.x != 0 || vector.y != 0)
-	{
-		_g->SpawnEffect(location, erea, ShineEffect, 20, color);
-	}
-	//ステージ遷移時に座標だけ移動させる用（体力や色情報などはそのまま）
-	if (_g->GetPlayerRespawnFlg())
-	{
-		location = _g->GetPlayerRespawnLocation();
-		_g->SetPlayerRespawnFlg(false);
-	}
-	if (stageHitFlg[1][bottom] != true) { //重力
-		switch (state)
+		//移動エフェクト
+		if (vector.x != 0 || vector.y != 0)
 		{
-		case 0:
-			if (searchFlg) {
-				vector.y += 1.f * 0.02f;
-			}
-			else {
-				vector.y += 1.f;
-			}
-			if (vector.y > 16.f) {
-				vector.y = 16.f;
-			}
-			break;
-
-		case 1:
-			if (searchFlg) {
-				vector.y += 0.5f * 0.02f;
-			}
-			else {
-				vector.y += 0.5f;
-			}
-			if (vector.y > 8.f) {
-				vector.y = 8.f;
-			}
-			break;
-
-		default:
-			break;
+			_g->SpawnEffect(location, erea, ShineEffect, 20, color);
 		}
-		
-		effect_once = false;
-	}
-	else {
-		//一回だけエフェクトを出す
-		if (effect_once == false)
+		//ステージ遷移時に座標だけ移動させる用（体力や色情報などはそのまま）
+		if (_g->GetPlayerRespawnFlg())
 		{
-			_g->SpawnEffect(location, erea, LandingEffect, 15, color);
-			ResourceManager::StartSound(landing_se);
-			effect_once = true;
+			location = _g->GetPlayerRespawnLocation();
+			_g->SetPlayerRespawnFlg(false);
 		}
-		vector.y = 0.f;
-	}
-
-	if (objNum <= 0) {
-		searchedObjFlg = false;
-	}
-	else {
-		searchedObjFlg = true;
-	}
-
-	oldSearchFlg = searchFlg;
-	//Bボタンで色の交換ができるモードと切り替え
-	if (PadInput::OnPressed(XINPUT_BUTTON_B) && !_g->GetPauseAfter() && swapTimer < 0) {
-		SelectObject();
-		searchFlg = true;
-	}
-	else if (PadInput::OnRelease(XINPUT_BUTTON_B) && searchFlg && searchedObj != nullptr && swapTimer < 0) {
-		//交換エフェクトにかかる時間を受け取る
-		swapTimer = _g->Swap(this, searchedObj);
-		objSelectNumTmp = 0;
-
-		//描画する色を白に
-		draw_color = WHITE;
-	}
-	else if (PadInput::OnRelease(XINPUT_BUTTON_B) && swapTimer < 0) {//交換できるオブジェクトが画面内になかった時
-		searchFlg = false;
-	}
-	
-	
-
-	//交換後エフェクト用の硬直
-	if (swapTimer >= 0)
-	{
-		if (swapTimer <= SWAP_EFFECT_STOP_TIME)
-		{
-			if (swap_once == false)
+		if (stageHitFlg[1][bottom] != true) { //重力
+			switch (state)
 			{
-				ChangePlayerColor();
-				swap_once = true;
-				emoteFlg = true;
+			case 0:
+				if (searchFlg) {
+					vector.y += 1.f * 0.02f;
+				}
+				else {
+					vector.y += 1.f;
+				}
+				if (vector.y > 16.f) {
+					vector.y = 16.f;
+				}
+				break;
+
+			case 1:
+				if (searchFlg) {
+					vector.y += 0.5f * 0.02f;
+				}
+				else {
+					vector.y += 0.5f;
+				}
+				if (vector.y > 8.f) {
+					vector.y = 8.f;
+				}
+				break;
+
+			default:
+				break;
+			}
+
+			effect_once = false;
+		}
+		else {
+			//一回だけエフェクトを出す
+			if (effect_once == false)
+			{
+				_g->SpawnEffect(location, erea, LandingEffect, 15, color);
+				ResourceManager::StartSound(landing_se);
+				effect_once = true;
+			}
+			vector.y = 0.f;
+		}
+
+		if (objNum <= 0) {
+			searchedObjFlg = false;
+		}
+		else {
+			searchedObjFlg = true;
+		}
+
+		oldSearchFlg = searchFlg;
+		//Bボタンで色の交換ができるモードと切り替え
+		if (PadInput::OnPressed(XINPUT_BUTTON_B) && !_g->GetPauseAfter() && swapTimer < 0) {
+			SelectObject();
+			searchFlg = true;
+		}
+		else if (PadInput::OnRelease(XINPUT_BUTTON_B) && searchFlg && searchedObj != nullptr && swapTimer < 0) {
+			//交換エフェクトにかかる時間を受け取る
+			swapTimer = _g->Swap(this, searchedObj);
+			objSelectNumTmp = 0;
+
+			//描画する色を白に
+			draw_color = WHITE;
+		}
+		else if (PadInput::OnRelease(XINPUT_BUTTON_B) && swapTimer < 0) {//交換できるオブジェクトが画面内になかった時
+			searchFlg = false;
+		}
+
+
+
+		//交換後エフェクト用の硬直
+		if (swapTimer >= 0)
+		{
+			if (swapTimer <= SWAP_EFFECT_STOP_TIME)
+			{
+				if (swap_once == false)
+				{
+					ChangePlayerColor();
+					swap_once = true;
+					emoteFlg = true;
+				}
+
+			}
+			//硬直が終わったら色を交換
+			if (--swapTimer < 0)
+			{
+				searchFlg = false;
+				swapTimer = -1;
+				searchedObj = nullptr;
+				swap_once = false;
+				//emoteFlg = false;
 			}
 
 		}
-		//硬直が終わったら色を交換
-		if (--swapTimer < 0)
+
+		//交換ポーズカウント
+		if (emoteFlg) {
+			emoteCnt++;
+			if (emoteCnt >= 15) {
+				emoteCnt = 0;
+				emoteFlg = false;
+			}
+		}
+
+		pStateOld = pState;
+		if (hp > 0) {
+			MoveActor();
+		}
+		PlayerAnim();
+
+		if (searchFlg) {
+			location.x += vector.x * 0.02f;
+			location.y += vector.y * 0.02f;
+		}
+		else {
+			location.x += vector.x;
+			location.y += vector.y;
+		}
+
+		//交換中だけ対象のオブジェクトの見た目を白くする
+		if (swapTimer > SWAP_EFFECT_STOP_TIME)
 		{
-			searchFlg = false;
-			swapTimer = -1;
-			searchedObj = nullptr;
-			swap_once = false;
-			//emoteFlg = false;
+			//選択中のオブジェクトを更新
+			_g->SetNowCurrentObject(searchedObj);
+		}
+		else
+		{
+			_g->SetNowCurrentObject(nullptr);
+		}
+		//音声の周波数設定
+		if (searchFlg == TRUE)
+		{
+			ResourceManager::SetSoundFreq(8000);
+		}
+		else
+		{
+			ResourceManager::SetSoundFreq(DEFAULT_FREQ);
 		}
 
-	}
-	
-	//交換ポーズカウント
-	if (emoteFlg) {
-		emoteCnt++;
-		if (emoteCnt >= 15) {
-			emoteCnt = 0;
-			emoteFlg = false;
+		PlayerSound();		//音声再生関連処理
+
+
+		//damage
+		if (damageFlg && !damageOldFlg/* && d == 1*/) {
+			if (damageEffectFlg == false) {
+				damageEffectFlg = true;
+				hp--;
+			}
 		}
-	}
+		if (damageEffectFlg) {
+			if (damageEffectTime == 90) {
 
-	pStateOld = pState;
-	if (hp > 0) {
-		MoveActor();
-	}
-	PlayerAnim();
-
-	if (searchFlg) {
-		location.x += vector.x * 0.02f;
-		location.y += vector.y * 0.02f;
-	}
-	else {
-		location.x += vector.x;
-		location.y += vector.y;
-	}
-
-	//交換中だけ対象のオブジェクトの見た目を白くする
-	if (swapTimer > SWAP_EFFECT_STOP_TIME)
-	{
-		//選択中のオブジェクトを更新
-		_g->SetNowCurrentObject(searchedObj);
-	}
-	else
-	{
-		_g->SetNowCurrentObject(nullptr);
-	}
-	//音声の周波数設定
-	if (searchFlg == TRUE)
-	{
-		ResourceManager::SetSoundFreq(8000);
-	}
-	else
-	{
-		ResourceManager::SetSoundFreq(DEFAULT_FREQ);
-	}
-
-	PlayerSound();		//音声再生関連処理
-
-	
-	//damage
-	if (damageFlg && !damageOldFlg/* && d == 1*/) {
-		if (damageEffectFlg == false) {
-			damageEffectFlg = true;
-			hp--;
+				_g->CameraImpact(10);
+				_g->SpawnEffect(location, erea, DamageEffect, 20, color);
+			}
+			damageEffectTime--;
+			if (damageEffectTime <= 0) {
+				damageEffectFlg = false;
+				damageEffectTime = 90;
+				damageFlg = false;
+				//エフェクトが終わった後に体力が0ならプレイヤーを削除
+			}
 		}
-	}
-	if (damageEffectFlg) {
-		if (damageEffectTime == 90) {
-			
-			_g->CameraImpact(10);
-			_g->SpawnEffect(location, erea, DamageEffect, 20, color);
-		}
-		damageEffectTime--;
-		if (damageEffectTime <= 0) {
+
+		if (hp <= 0) {
 			damageEffectFlg = false;
-			damageEffectTime = 90;
-			damageFlg = false;
-			//エフェクトが終わった後に体力が0ならプレイヤーを削除
+			vector.x = 0.f;
+			vector.y = 0.f;
 		}
-	}
 
-	if (hp <= 0) {
-		damageEffectFlg = false;
-		vector.x = 0.f;
-		vector.y = 0.f;
-	}
-
-	for (int i = 0; i < 4; i++) {
-		stageHitFlg[0][i] = false;
-		stageHitFlg[1][i] = false;
-	}
-
-	objNum = 0;
-	for (int i = 0; i < 19; i++) {
-		for (int j = 0; j < 32; j++) {
-			posRelation[i][j] = -1;
+		for (int i = 0; i < 4; i++) {
+			stageHitFlg[0][i] = false;
+			stageHitFlg[1][i] = false;
 		}
-	}
 
-	damageOldFlg = damageFlg;
-	damageFlg = false;
+		objNum = 0;
+		for (int i = 0; i < 19; i++) {
+			for (int j = 0; j < 32; j++) {
+				posRelation[i][j] = -1;
+			}
+		}
 
-	stateFlg = false;
+		damageOldFlg = damageFlg;
+		damageFlg = false;
 
-	now_riding = 0;
+		stateFlg = false;
 
-	if (circleAng++ >= 360.f) {
-		circleAng = 0.f;
-	}
-	
-	//ゲームオーバー
-	if (hp <= 0) {
-		deathTimer++;
-		if (deathTimer > 90)
-		{
-			_g->UpdateState(GameMainState::GameOver);
+		now_riding = 0;
+
+		if (circleAng++ >= 360.f) {
+			circleAng = 0.f;
+		}
+
+		//ゲームオーバー
+		if (hp <= 0) {
+			deathTimer++;
+			if (deathTimer > 90)
+			{
+				_g->UpdateState(GameMainState::GameOver);
+			}
 		}
 	}
 
@@ -635,6 +637,12 @@ void Player::Hit(Object* _object)
 	if (_object->GetObjectType() == BLOCK && _object->GetIsBossAttack() == TRUE && _object->GetLocation().y > this->location.y)
 	{
 		vector.y = -20;
+	}
+
+	//チュートリアル
+	if (_object->GetObjectType() == TUTORIAL)
+	{
+		//is_tutorial = true;
 	}
 }
 
