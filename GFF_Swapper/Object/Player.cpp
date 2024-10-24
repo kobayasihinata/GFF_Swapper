@@ -754,73 +754,98 @@ bool Player::ChangePlayerColor()
 		}
 		return true;
 	}
-	return false;
+	return false;	
 }
 
 void Player::SelectObject()
 {
 	bool flg = false;//選択したかどうか
+	
+	// スワップタイマーが未設定で、オブジェクトが検索されている場合の処理
 	if (swapTimer == -1 && searchedObjFlg && searchedObj != nullptr) {
-		//X軸
+		// X軸の右方向の入力がある場合
 		if ((PadInput::TipLeftLStick(STICKL_X) > 0.8f || PadInput::OnPressed(XINPUT_BUTTON_DPAD_RIGHT)) && oldStick[0]) {
 			ResourceManager::StartSound(cursor_se);
 			oldStick[0] = false;
 			flg = true;
-			int snum[4] = { -1,-1,-1,-1 };
+			int snum[4] = { -1,-1,-1,-1 };// オブジェクトのインデックス保存用配列
+			int current_color = searchedObj->GetColorData();// 現在の選択オブジェクトの色を取得
 			
+			// 全オブジェクトを探索
 			for (int i = 0;  i < objNum; i++)
 			{
+				// 他のオブジェクトとの距離が0でない場合に処理を行う
 				if (GetLength(searchedObj->GetLocalLocation(), searchedObjAll[i]->GetLocalLocation()) != 0) {
-
 					int x = (int)searchedObj->GetLocalLocation().x / 40;
 					int y = (int)searchedObj->GetLocalLocation().y / 40;
 
+					// 現在の位置の一時保存と、探索中マークの設定
 					int tmp = posRelation[y][x];
 					posRelation[y][x] = 999;
 
-					//真横探知
+					// 真横のオブジェクトを探す
 					for (int j = x; j < 1280 / 40; j++)
 					{
+						// 真横に有効なオブジェクトがあり、かつ現在の色と異なる場合
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
-							snum[0] = posRelation[y][j];
-							break;
+
+							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
+							if (next_color != current_color) {
+								// 選択対象を更新
+								snum[0] = posRelation[y][j];
+								break;
+							}
+					
 						}
 					}
 
 					//縦横探知
 					int h = 0;
+					// 真横で見つからなければ上下も探す
 					while (snum[0] == -1)
 					{
 						h++;
 						for (int j = x; j < 1280 / 40; j++)
 						{
+							// 上方向に探索
 							if (y - h > -1) {
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
-									snum[0] = posRelation[y - h][j];
-									break;
+
+									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
+									if (next_color != current_color) {
+										snum[0] = posRelation[y - h][j];
+										break;
+									}
+									
 								}
 							}
 
 							if (y + h < 19) {
+								// 下方向に探索
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
-									snum[0] = posRelation[y + h][j];
-									break;
+
+									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
+									if (next_color != current_color) {
+										snum[0] = posRelation[y + h][j];
+										break;
+									}
+									
 								}
 							}
 						}	
-
+						// 探索範囲を超えたらループ終了
 						if (y - h <= -1 && y + h >= 19) {
 							break;
 						}
 					}
-
+					// 見つからなければ元の位置に戻す
 					if (snum[0] == -1) {
 						snum[0] = tmp;
 					}
 
 				}
 			}
-
+			// 選択対象が有効であれば一時変数に保存
 			if (snum[0] > -1 && snum[0] < 999) {
 				objSelectNumTmp = snum[0];
 			}
@@ -831,8 +856,10 @@ void Player::SelectObject()
 			oldStick[1] = false;
 			flg = true;
 
+
 			float nearLen[4] = { 1000.f,1000.f,1000.f,1000.f };
 			int snum[4] = { -1,-1,-1,-1 };
+			int current_color = searchedObj->GetColorData();
 			
 			for (int i = 0; i < objNum; i++)
 			{
@@ -844,12 +871,17 @@ void Player::SelectObject()
 					int tmp = posRelation[y][x];
 					posRelation[y][x] = 999;
 
+
 					//真横探知
 					for (int j = x; j > -1; j--)
 					{
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
-							snum[0] = posRelation[y][j];
-							break;
+
+							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
+							if (next_color != current_color) {
+								snum[0] = posRelation[y][j];
+								break;
+							}
 						}
 					}
 
@@ -862,15 +894,23 @@ void Player::SelectObject()
 						{
 							if (y - h > -1) {
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
-									snum[0] = posRelation[y - h][j];
-									break;
+
+									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
+									if (next_color != current_color) {
+										snum[0] = posRelation[y - h][j];
+										break;
+									}
 								}
 							}
 
 							if (y + h < 19) {
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
-									snum[0] = posRelation[y + h][j];
-									break;
+
+									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
+									if (next_color != current_color) {
+										snum[0] = posRelation[y + h][j];
+										break;
+									}
 								}
 							}
 						}
@@ -912,6 +952,7 @@ void Player::SelectObject()
 			oldStick[2] = false;
 			flg = true;
 			int num = -1;
+			int current_color = searchedObj->GetColorData();
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -927,8 +968,11 @@ void Player::SelectObject()
 					for (int j = y; j > -1; j--)
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
-							num = posRelation[j][x];
-							break;
+							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
+							if (next_color != current_color) {
+								num = posRelation[j][x];
+								break;
+							}
 						}
 					}
 
@@ -941,15 +985,21 @@ void Player::SelectObject()
 						{
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
-									num = posRelation[j][x - w];
-									break;
+									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
+									if (next_color != current_color) {
+										num = posRelation[j][x - w];
+										break;
+									}
 								}
 							}
 
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
-									num = posRelation[j][x + w];
-									break;
+									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
+									if (next_color != current_color) {
+										num = posRelation[j][x + w];
+										break;
+									}
 								}
 							}
 						}
@@ -975,6 +1025,7 @@ void Player::SelectObject()
 			oldStick[3] = false;
 			flg = true;
 			int num = -1;
+			int current_color = searchedObj->GetColorData();
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -990,8 +1041,11 @@ void Player::SelectObject()
 					for (int j = y; j < 720 / 40; j++)
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
-							num = posRelation[j][x];
-							break;
+							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
+							if (next_color != current_color) {
+								num = posRelation[j][x];
+								break;
+							}
 						}
 					}
 
@@ -1004,15 +1058,21 @@ void Player::SelectObject()
 						{
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
-									num = posRelation[j][x - w];
-									break;
+									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
+									if (next_color != current_color) {
+										num = posRelation[j][x - w];
+										break;
+									}
 								}
 							}
 
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
-									num = posRelation[j][x + w];
-									break;
+									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
+									if (next_color != current_color) {
+										num = posRelation[j][x + w];
+										break;
+									}
 								}
 							}
 						}
