@@ -93,6 +93,7 @@
     <ProjectGuid>{1cd97259-2f0c-4dbb-9b46-ea2345ddce2d}</ProjectGuid>
     <RootNamespace>TGS_Sitazumi</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>GFF_Swapper</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

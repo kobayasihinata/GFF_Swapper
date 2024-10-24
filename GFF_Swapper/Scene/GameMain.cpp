@@ -521,9 +521,9 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 	if (player_flg == false)
 	{
 		//プレイヤーリスポーン地点の設定
-		player_respawn = { (float)100,(float)100 };
+		player_respawn = { (float)100,(float)stage_height - 200 };
 		//プレイヤーの生成
-		CreateObject(new Player, player_respawn, { PLAYER_HEIGHT,PLAYER_WIDTH }, RED);
+		CreateObject(new Player, player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, RED);
 	}
 	//壁生成フラグリセット
 	create_once = false;
@@ -551,8 +551,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 
 void GameMain::ResetCamera()
 {
-	camera_location.x = screen_origin.x;
-	camera_location.y = screen_origin.y;
+	camera_location = screen_origin;
 }
 
 bool GameMain::GetSearchFlg()
