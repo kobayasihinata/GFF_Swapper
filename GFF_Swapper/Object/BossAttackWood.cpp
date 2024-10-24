@@ -30,8 +30,8 @@ void BossAttackWood::Initialize(Vector2D _location, Vector2D _erea, int _color_d
 	velocity.y = -10.f;
 
 	//erea.y = 0.f;
-	erea.y = _erea.x;
-	erea.x = _erea.x;
+	erea.y = _erea.x;//_erea.y;
+	erea.x = _erea.y;
 	//bambooHeight = _location.y + _erea.y;
 	bambooHeight = _erea.y;
 
