@@ -8,18 +8,18 @@ class Help :
 {
 private:
 
-    Location l_help_red;
-    Location l_help_blue;
-    Location l_help_fire;
-    Location l_help_water;
-    Location l_help_wood;
-    Location l_help_bamboo;
-    Location l_help_respawn;
+    Vector2D l_help_red;
+    Vector2D l_help_blue;
+    Vector2D l_help_fire;
+    Vector2D l_help_water;
+    Vector2D l_help_wood;
+    Vector2D l_help_bamboo;
+    Vector2D l_help_respawn;
 
-    Location player_location;
-    Location l_Deer;
-    Location l_Bat;
-    Location l_Frog;
+    Vector2D player_location;
+    Vector2D l_Deer;
+    Vector2D l_Bat;
+    Vector2D l_Frog;
 
     int p_color;
     int p_hp;

@@ -282,12 +282,12 @@ void End::BackGroundDraw()const
 			{
 				DrawBoxAA(bg[i][j].location.x - bg[i][j].anim_size,
 					bg[i][j].location.y - bg[i][j].anim_size,
-					bg[i][j].location.x + bg[i][j].erea.width + bg[i][j].anim_size,
-					bg[i][j].location.y + bg[i][j].erea.height + bg[i][j].anim_size, bg[i][j].color, TRUE);
+					bg[i][j].location.x + bg[i][j].erea.x + bg[i][j].anim_size,
+					bg[i][j].location.y + bg[i][j].erea.y + bg[i][j].anim_size, bg[i][j].color, TRUE);
 				DrawBoxAA(bg[i][j].location.x - bg[i][j].anim_size,
 					bg[i][j].location.y - bg[i][j].anim_size,
-					bg[i][j].location.x + bg[i][j].erea.width + bg[i][j].anim_size,
-					bg[i][j].location.y + bg[i][j].erea.height + bg[i][j].anim_size, 0x444444, FALSE);
+					bg[i][j].location.x + bg[i][j].erea.x + bg[i][j].anim_size,
+					bg[i][j].location.y + bg[i][j].erea.y + bg[i][j].anim_size, 0x444444, FALSE);
 			}
 		}
 	}
@@ -296,24 +296,24 @@ void End::BackGroundDraw()const
 void End::PlayerDraw()const
 {
 	//頭
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2), player_location.y - (player_erea.height) + 76, 23, 15, player_location.x, player_location.y, 0, GREEN, true);
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2), player_location.y - (player_erea.height) + 76, 23, 15, player_location.x, player_location.y, 0, 0x000000, false);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2), player_location.y - (player_erea.y) + 76, 23, 15, player_location.x, player_location.y, 0, GREEN, true);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2), player_location.y - (player_erea.y) + 76, 23, 15, player_location.x, player_location.y, 0, 0x000000, false);
 
 	//目
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2) + 6, player_location.y - (player_erea.height) + 76, 6, 7, player_location.x, player_location.y, 0, 0x000000, true);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2) + 6, player_location.y - (player_erea.y) + 76, 6, 7, player_location.x, player_location.y, 0, 0x000000, true);
 
 	//首
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2), player_location.y - (player_erea.height) + 62, 10, 5, player_location.x, player_location.y, 0, GREEN, true);
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2), player_location.y - (player_erea.height) + 62, 10, 5, player_location.x, player_location.y, 0, 0x000000, false);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2), player_location.y - (player_erea.y) + 62, 10, 5, player_location.x, player_location.y, 0, GREEN, true);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2), player_location.y - (player_erea.y) + 62, 10, 5, player_location.x, player_location.y, 0, 0x000000, false);
 
 	//胴体
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2), player_location.y - (player_erea.height) + 37, 21, 37, player_location.x, player_location.y, 0, GREEN, true);
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2), player_location.y - (player_erea.height) + 37, 21, 37, player_location.x, player_location.y, 0, 0x000000, false);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2), player_location.y - (player_erea.y) + 37, 21, 37, player_location.x, player_location.y, 0, GREEN, true);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2), player_location.y - (player_erea.y) + 37, 21, 37, player_location.x, player_location.y, 0, 0x000000, false);
 
 	//バッグ
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2) - 15, player_location.y - (player_erea.height) + 40, 5, 23, player_location.x, player_location.y, 0, GREEN, true);
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2) - 15, player_location.y - (player_erea.height) + 40, 5, 23, player_location.x, player_location.y, 0, GREEN, false);
-	ResourceManager::DrawRotaBox(player_location.x - (player_erea.width / 2) - 15, player_location.y - (player_erea.height) + 40, 3, 15, player_location.x, player_location.y, 0, GREEN, true);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2) - 15, player_location.y - (player_erea.y) + 40, 5, 23, player_location.x, player_location.y, 0, GREEN, true);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2) - 15, player_location.y - (player_erea.y) + 40, 5, 23, player_location.x, player_location.y, 0, GREEN, false);
+	ResourceManager::DrawRotaBox(player_location.x - (player_erea.x / 2) - 15, player_location.y - (player_erea.y) + 40, 3, 15, player_location.x, player_location.y, 0, GREEN, true);
 
 	//腕
 	ResourceManager::DrawRotaBox(player_location.x + 15, player_location.y + 55, 28, 7, player_location.x + 25, player_location.y + 55, 20 + 180, GREEN, true);
@@ -323,14 +323,14 @@ void End::PlayerDraw()const
 	ResourceManager::DrawRotaBox(player_location.x + 30, player_location.y + 70, 7, 27, player_location.x + 30, player_location.y + 80, 20, 0x000000, false);
 
 	//帽子　中央
-	DrawTriangleAA(player_location.x + (player_erea.width / 2), player_location.y, player_location.x + 20, player_location.y + 20, player_location.x + 40, player_location.y + 20, GREEN, true);
-	DrawTriangleAA(player_location.x + (player_erea.width / 2), player_location.y, player_location.x + 20, player_location.y + 20, player_location.x + 40, player_location.y + 20, 0x000000, false);
+	DrawTriangleAA(player_location.x + (player_erea.x / 2), player_location.y, player_location.x + 20, player_location.y + 20, player_location.x + 40, player_location.y + 20, GREEN, true);
+	DrawTriangleAA(player_location.x + (player_erea.x / 2), player_location.y, player_location.x + 20, player_location.y + 20, player_location.x + 40, player_location.y + 20, 0x000000, false);
 	//帽子　右側
-	DrawTriangleAA(player_location.x + (player_erea.width / 2), player_location.y, player_location.x + 40, player_location.y + 20, player_location.x + 52, player_location.y + 15, GREEN, true);
-	DrawTriangleAA(player_location.x + (player_erea.width / 2), player_location.y, player_location.x + 40, player_location.y + 20, player_location.x + 52, player_location.y + 15, 0x000000, false);
+	DrawTriangleAA(player_location.x + (player_erea.x / 2), player_location.y, player_location.x + 40, player_location.y + 20, player_location.x + 52, player_location.y + 15, GREEN, true);
+	DrawTriangleAA(player_location.x + (player_erea.x / 2), player_location.y, player_location.x + 40, player_location.y + 20, player_location.x + 52, player_location.y + 15, 0x000000, false);
 	//帽子　左側
-	DrawTriangleAA(player_location.x + (player_erea.width / 2), player_location.y, player_location.x + 8, player_location.y + 15, player_location.x + 20, player_location.y + 20, GREEN, true);
-	DrawTriangleAA(player_location.x + (player_erea.width / 2), player_location.y, player_location.x + 8, player_location.y + 15, player_location.x + 20, player_location.y + 20, 0x000000, false);
+	DrawTriangleAA(player_location.x + (player_erea.x / 2), player_location.y, player_location.x + 8, player_location.y + 15, player_location.x + 20, player_location.y + 20, GREEN, true);
+	DrawTriangleAA(player_location.x + (player_erea.x / 2), player_location.y, player_location.x + 8, player_location.y + 15, player_location.x + 20, player_location.y + 20, 0x000000, false);
 }
 
 void End::PlayerUpdate()
@@ -394,7 +394,7 @@ void End::BatDraw() const
 {
 	float wing_angle = (float)sin(PI * 2.f / 40.f * up) * 20.f; // 30度の振れ幅で周期的に変化させる
 
-	const std::vector<Location> vertices = {
+	const std::vector<Vector2D> vertices = {
 		// 耳
 		{bat_loction.x + 46, bat_loction.y}, {bat_loction.x + 46, bat_loction.y + 19}, {bat_loction.x + 55, bat_loction.y + 9},
 		{bat_loction.x + 69, bat_loction.y}, {bat_loction.x + 69, bat_loction.y + 19}, {bat_loction.x + 60, bat_loction.y + 9},
@@ -456,34 +456,34 @@ void End::BatUpdate()
 void End::FrogDraw() const
 {
 	//胴体
-	ResourceManager::DrawRotaBox(frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), frog_erea.width, frog_erea.height / 2, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, BLUE, TRUE);
-	ResourceManager::DrawRotaBox(frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), frog_erea.width, frog_erea.height / 2, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0x000000, FALSE);
+	ResourceManager::DrawRotaBox(frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), frog_erea.x, frog_erea.y / 2, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, BLUE, TRUE);
+	ResourceManager::DrawRotaBox(frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), frog_erea.x, frog_erea.y / 2, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0x000000, FALSE);
 
 	//右着地
 	if (face_angle == 0 && frog_speed.x == 0 && frog_speed.y == 0)
 	{
 		//付け根側後ろ足
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width - 10, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, BLUE, TRUE);
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width - 10, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0x000000, FALSE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x - 10, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, BLUE, TRUE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x - 10, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0x000000, FALSE);
 		//後ろ足先端
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width - 10, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, BLUE, TRUE);
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width - 10, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0x000000, FALSE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x - 10, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, BLUE, TRUE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x - 10, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0x000000, FALSE);
 		//目
-		ResourceManager::DrawRotaBox(frog_location.x, frog_location.y + frog_erea.height - 20, 10, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0xffffff, TRUE);
+		ResourceManager::DrawRotaBox(frog_location.x, frog_location.y + frog_erea.y - 20, 10, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0xffffff, TRUE);
 
 	}
 	else {
 		//付け根側後ろ足
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, BLUE, TRUE);
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0x000000, FALSE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, BLUE, TRUE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x, frog_location.y + 20, 30, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0x000000, FALSE);
 		//後ろ足先端
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width + 30, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, BLUE, TRUE);
-		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.width + 30, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0x000000, FALSE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x + 30, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, BLUE, TRUE);
+		ResourceManager::DrawRotaBox(frog_location.x + frog_erea.x + 30, frog_location.y + 10, 40, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0x000000, FALSE);
 		//前足
-		ResourceManager::DrawRotaBox(frog_location.x + 10, frog_location.y + 10, 10, 15, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, BLUE, TRUE);
-		ResourceManager::DrawRotaBox(frog_location.x + 10, frog_location.y + 10, 10, 15, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0x000000, FALSE);
+		ResourceManager::DrawRotaBox(frog_location.x + 10, frog_location.y + 10, 10, 15, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, BLUE, TRUE);
+		ResourceManager::DrawRotaBox(frog_location.x + 10, frog_location.y + 10, 10, 15, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0x000000, FALSE);
 		//目
-		ResourceManager::DrawRotaBox(frog_location.x, frog_location.y + frog_erea.height - 20, 10, 10, frog_location.x + (frog_erea.width / 2), frog_location.y + (frog_erea.height / 2), face_angle, 0xffffff, TRUE);
+		ResourceManager::DrawRotaBox(frog_location.x, frog_location.y + frog_erea.y - 20, 10, 10, frog_location.x + (frog_erea.x / 2), frog_location.y + (frog_erea.y / 2), face_angle, 0xffffff, TRUE);
 	}
 }
 
@@ -531,7 +531,7 @@ void End::BossDraw() const
 
 void End::DrawWing() const
 {
-	Location center = { boss_location.x + 250 / 2, boss_location.y + 250 / 2 };
+	Vector2D center = { boss_location.x + 250 / 2, boss_location.y + 250 / 2 };
 
 	// アニメーションに基づいて描画位置を計算
 	float angle = 0.0f;
@@ -580,9 +580,9 @@ void End::DrawWing() const
 void End::DrawHexagonSphere() const
 {
 	// ボスの中心座標
-	Location center = { boss_location.x + 250 / 2, boss_location.y + 250 / 2 };
+	Vector2D center = { boss_location.x + 250 / 2, boss_location.y + 250 / 2 };
 	// 六角形の中心
-	Location hexa_center;
+	Vector2D hexa_center;
 
 	// バリアの半径の配列を定義
 	float hex_size = 15.0f; // 六角形のサイズ
@@ -613,10 +613,10 @@ void End::DrawHexagonSphere() const
 	}
 }
 
-void End::DrawHexagon(Location center, float size, int color) const
+void End::DrawHexagon(Vector2D center, float size, int color) const
 {
 	float angle_space = (float)(2.0f * PI / 6.0f); // 六角形の各頂点の間の角度
-	Location vertices[6];
+	Vector2D vertices[6];
 
 	// 六角形の頂点座標を計算
 	//6つの頂点を中心から等距離に配置
@@ -636,7 +636,7 @@ void End::DrawHexagon(Location center, float size, int color) const
 void End::InvertedWingPositions()
 {
 	// wing_mirror を更新する
-	Location center = { boss_location.x + 250 / 2, boss_location.y + 250 / 2 };
+	Vector2D center = { boss_location.x + 250 / 2, boss_location.y + 250 / 2 };
 
 	for (size_t i = 0; i < wing.size(); ++i)
 	{

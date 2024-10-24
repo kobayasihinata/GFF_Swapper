@@ -19,7 +19,7 @@ private:
 	int now_weather;	//現在の天気
 	int old_weather;	//ひとつ前の天気
 	int delay;			//指定した天候に変化するまでの待ち時間測定用
-	Location draw_location;	//警告表示位置
+	Vector2D draw_location;	//警告表示位置
 
 public:
 	WeatherManager();

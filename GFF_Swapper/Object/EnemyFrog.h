@@ -27,10 +27,10 @@ private:
 	FrogState frog_state;	//カエルの状態
 
 	bool death_flg;		//生きているか
-	Location vector; //カエルのベクトル
+	Vector2D vector; //カエルのベクトル
 	bool stageHitFlg[2][4]; //カエルとステージの当たり判定
 	float move[4];			//各方向加速度格納用
-	Location old_location;	//ジャンプ前の座標格納
+	Vector2D old_location;	//ジャンプ前の座標格納
 
 	int jump_cooldown_timer; //次のジャンプまでの時間測定
 	int jump_timer;			 //ジャンプしている間の時間測定
@@ -44,7 +44,7 @@ private:
 public:
 	EnemyFrog();
 	~EnemyFrog();
-	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Update(GameMain* _g)override;
 	void Draw()const override;
 	void Finalize()override;
@@ -53,10 +53,10 @@ public:
 		return false;
 	}
 
-	void JumpFrogDraw(Location location,float _angle)const;		//ジャンプ中カエルの描画
-	void IdolFrogDraw(Location location,bool _direction)const;		//通常カエルの描画
+	void JumpFrogDraw(Vector2D location,float _angle)const;		//ジャンプ中カエルの描画
+	void IdolFrogDraw(Vector2D location,bool _direction)const;		//通常カエルの描画
 	void Move(GameMain* _g);		//移動系処理
 	void UpdataState(GameMain* _g);	//カエルの状態更新
-	bool CheckCollision(Location l, Erea e); //ステージとの当たり判定
+	bool CheckCollision(Vector2D l, Vector2D e); //ステージとの当たり判定
 };
 

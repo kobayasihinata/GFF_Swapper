@@ -22,7 +22,7 @@ BossAttackWater::~BossAttackWater()
 {
 }
 
-void BossAttackWater::Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)
+void BossAttackWater::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	location = _location;
 	color = _color_data;
@@ -111,12 +111,12 @@ void BossAttackWater::Draw() const
 	if (flg) {
 		for (int i = 0; i < 5; i++)
 		{
-			DrawCircleAA(local_location.x + (i * 6), local_location.y - (i * 6), erea.width - (i * 8), 32, GetColor(i * 25, i * 25, 255), TRUE);
+			DrawCircleAA(local_location.x + (i * 6), local_location.y - (i * 6), erea.x - (i * 8), 32, GetColor(i * 25, i * 25, 255), TRUE);
 		}
-		//DrawCircleAA(local_location.x + 9, local_location.y - 12, erea.width - 10, 32, GetColor(255, 255, 255), TRUE);
+		//DrawCircleAA(local_location.x + 9, local_location.y - 12, erea.x - 10, 32, GetColor(255, 255, 255), TRUE);
 	}
-	DrawCircleAA(f_location.x, f_location.y, f_erea.width, 32, GetColor(100, 100, 255), TRUE);
-	DrawCircleAA(f_location.x, f_location.y, f_erea.width-2, 32, GetColor(120, 120, 255), TRUE);
+	DrawCircleAA(f_location.x, f_location.y, f_erea.x, 32, GetColor(100, 100, 255), TRUE);
+	DrawCircleAA(f_location.x, f_location.y, f_erea.x-2, 32, GetColor(120, 120, 255), TRUE);
 
 }
 

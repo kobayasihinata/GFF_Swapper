@@ -3,7 +3,7 @@
 class BossAttackFire : public Object
 {
 private:
-	Location velocity;
+	Vector2D velocity;
 	bool flg;
 	bool hitFlg;
 	int boundCnt;
@@ -15,7 +15,7 @@ public:
 	BossAttackFire();
 	~BossAttackFire();
 
-	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Finalize()override;
 
 	void Update(GameMain* _g)override;

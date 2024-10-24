@@ -22,7 +22,7 @@ public:
 		jump
 	};
 private:
-	Location vector; //プレイヤーのベクトル
+	Vector2D vector; //プレイヤーのベクトル
 	bool stageHitFlg[2][4]; //プレイヤーとステージの当たり判定
 	//0の行はステージのブロック一つ一つに対しての判定
 	//1の行は1フレームでステージ全体との判定
@@ -38,7 +38,7 @@ private:
 	bool oldStick[4];
 	int swapTimer;		//交換エフェクトの時間測定
 	bool oldSearchFlg;
-	Location saveVec; //ベクトルの一時保存用
+	Vector2D saveVec; //ベクトルの一時保存用
 
 	bool damageFlg; //ダメージを受けたとき
 	bool damageOldFlg; //ダメージを受けたとき
@@ -87,7 +87,7 @@ private:
 public:
 	Player();
 	~Player();
-	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Update(GameMain* _g)override;
 	void Draw()const override;
 	void Finalize()override;
@@ -102,9 +102,9 @@ public:
 	void SelectObject();
 
 	//bool CheckCollision(Location l, Erea e); //ステージとの当たり判定
-	float ThreePointAngle(Location l1, Location l2, Location referenceP) const;
+	float ThreePointAngle(Vector2D l1, Vector2D l2, Vector2D referenceP) const;
 
-	float GetLength(Location l1, Location l2);
+	float GetLength(Vector2D l1, Vector2D l2);
 
 	void PlayerSound();		//プレイヤーの状態
 
@@ -113,7 +113,7 @@ public:
 	void DrawPlayerFront(bool f)const;
 
 	//引数:もとになる座標、回転させたい座標、回転させたい角度
-	Location RotationLocation(Location BaseLoc, Location Loc, float r) const;
+	Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
 
 	//音源の破損防止
 	void SavePlayerSound();

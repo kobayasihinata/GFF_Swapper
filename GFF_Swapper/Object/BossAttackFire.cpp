@@ -20,7 +20,7 @@ BossAttackFire::~BossAttackFire()
 
 }
 
-void BossAttackFire::Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)
+void BossAttackFire::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	location = _location;
 	color = _color_data;
@@ -44,9 +44,9 @@ void BossAttackFire::Update(GameMain* _g)
 
 	if (!flg) {
 		//プレイヤーとボスの座標からベクトルを計算
-		Location player = _g->GetPlayerLocation();
-		Location boss = { _g->GetBossLocation()};
-		Location v;
+		Vector2D player = _g->GetPlayerLocation();
+		Vector2D boss = { _g->GetBossLocation()};
+		Vector2D v;
 		float len = sqrtf(powf(player.x - boss.x, 2) + powf(player.y - boss.y + (GetRand(6) - 3), 2));
 		v.x = (player.x - boss.x) / len;
 		v.y = (player.y - boss.y) / len;
@@ -94,10 +94,10 @@ void BossAttackFire::Update(GameMain* _g)
 void BossAttackFire::Draw() const
 {
 	ResourceManager::StageAnimDraw({ local_location.x - 20,local_location.y - 20 }, FIRE);
-	DrawCircleAA(local_location.x, local_location.y, erea.width,100, 0xff0000, TRUE);
-	ResourceManager::DrawRotaBox(local_location.x, local_location.y, erea.width, erea.height, local_location.x, local_location.y, 45, 0xff0000, TRUE);
+	DrawCircleAA(local_location.x, local_location.y, erea.x,100, 0xff0000, TRUE);
+	ResourceManager::DrawRotaBox(local_location.x, local_location.y, erea.x, erea.y, local_location.x, local_location.y, 45, 0xff0000, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 120 + (frame%75));
-	DrawCircleAA(local_location.x, local_location.y, erea.width,100, 0x000000, TRUE);
+	DrawCircleAA(local_location.x, local_location.y, erea.x,100, 0x000000, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 }
 

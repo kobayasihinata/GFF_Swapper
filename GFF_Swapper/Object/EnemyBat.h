@@ -24,7 +24,7 @@ private:
 		left,
 		right
 	};
-	Location vector; //コウモリのベクトル
+	Vector2D vector; //コウモリのベクトル
 	BatState bat_state;	//コウモリの状態
 	//Object* delete_object;//消すオブジェクト
 	bool stageHitFlg[2][4]; //コウモリとステージの当たり判定
@@ -45,7 +45,7 @@ private:
 public:
 	EnemyBat();
 	~EnemyBat();
-	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Update(GameMain* _g)override;
 	void Draw()const override;
 	void Finalize()override;
@@ -58,6 +58,6 @@ public:
 		return 0;
 	}
 
-	bool CheckCollision(Location l, Erea e); //ステージとの当たり判定
+	bool CheckCollision(Vector2D l, Vector2D e); //ステージとの当たり判定
 };
 

@@ -12,8 +12,8 @@
 //炎エフェクト用
 struct FireAnim
 {
-	Location shift;		//表示位置
-	Erea erea;			//大きさ
+	Vector2D shift;		//表示位置
+	Vector2D erea;			//大きさ
 	int time;			//表示していられる時間
 	float angle;		//移動の向き
 };
@@ -21,18 +21,18 @@ struct FireAnim
 //木エフェクト用
 struct WoodAnim
 {
-	Location shift1;	//表示位置一点目
-	Location shift2;	//表示位置二点目
-	Location initial_position;	//初期位置保存
+	Vector2D shift1;	//表示位置一点目
+	Vector2D shift2;	//表示位置二点目
+	Vector2D initial_position;	//初期位置保存
 	float shift;		//表示位置ずれ用
 };
 
 //水エフェクト用
 struct WaterAnim
 {
-	Location shift1;	//表示位置
-	Location initial_position;	//初期位置保存
-	Erea erea;			//大きさ
+	Vector2D shift1;	//表示位置
+	Vector2D initial_position;	//初期位置保存
+	Vector2D erea;			//大きさ
 	float shift;		//表示位置ずれ用
 };
 
@@ -71,10 +71,10 @@ public:
 	static void SaveAnimHandle();
 
 	//ステージアニメーション描画
-	static void StageAnimDraw(Location _location,int _type);
+	static void StageAnimDraw(Vector2D _location,int _type);
 
 	//属性ブロックアニメーション描画
-	static void StageBlockDraw(Location _location, int _type);
+	static void StageBlockDraw(Vector2D _location, int _type);
 
 	//画像格納
 	static int SetGraph(const char* p);
@@ -106,5 +106,5 @@ public:
 	//回転四角形描画 _x,_y=描画座標 _w,_h=図形サイズ _cx,_cy=回転の中心 _rad=回転角度 _color=色 _fill=塗りつぶすかどうか _x,_yで指定した座標を中心として_rad度回転した四角形を描画する
 	static void DrawRotaBox(float _x, float _y, float _w, float _h, float _cx, float _cy,float _rad,int _color,bool _fill);
 
-	static void DrawHeart(Location l, Erea e);
+	static void DrawHeart(Vector2D l, Vector2D e);
 };

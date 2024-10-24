@@ -7,7 +7,7 @@
 
 #include "GameMain.h"
 
-Location camera_location = { 0,0 };
+Vector2D camera_location = { 0,0 };
 
 EditScene::EditScene(int _stage) : current_type(0), ui_current_type(0), tool_pickup_flg(false), current_leftbutton_flg(false), current_rightbutton_flg(false), current_upbutton_flg(false), current_downbutton_flg(false), button_interval(0), now_select_erea(0), current_type_select(-1), now_current_type(0), current_type_location{ 0 }, current_type_erea{ 0 }, disp_num(0), double_click(20), player_spawn_location{ 0,0 }, minimap_location{ 0,0 }, minimap_size(0), minimap_pickup_flg(false), minimap_button{ 0,0 }, minimap_disp_flg(true)
 {
@@ -22,15 +22,15 @@ void EditScene::Initialize()
 {
 	tool_location.x = 100;
 	tool_location.y = 0;
-	tool_size.width = (UI_OBJECT_TYPE_NUM * 50) + 210;
-	tool_size.height = 100;
-	width_button_location = { tool_location.x + tool_size.width - 90, tool_location.y + 25 };
-	height_button_location = { tool_location.x + tool_size.width - 190, tool_location.y + 35 };
+	tool_size.x = (UI_OBJECT_TYPE_NUM * 50) + 210;
+	tool_size.y = 100;
+	width_button_location = { tool_location.x + tool_size.x - 90, tool_location.y + 25 };
+	height_button_location = { tool_location.x + tool_size.x - 190, tool_location.y + 35 };
 	LoadStageData(now_stage);
 
 	//stageのintialize用仮格納場所
-	Location kari_location;
-	Erea kari_erea;
+	Vector2D kari_location;
+	Vector2D kari_erea;
 
 	for (int i = 0; i < stage_height_num; i++)
 	{
@@ -39,8 +39,8 @@ void EditScene::Initialize()
 			stage[i][j] = new Stage(stage_data[i][j],stage_height_num*BOX_HEIGHT);
 			kari_location.x = (float)(j * BOX_WIDTH);
 			kari_location.y = (float)(i * BOX_HEIGHT);
-			kari_erea.width = BOX_WIDTH;
-			kari_erea.height = BOX_HEIGHT;
+			kari_erea.x = BOX_WIDTH;
+			kari_erea.y = BOX_HEIGHT;
 			stage[i][j]->Initialize(kari_location, kari_erea, stage_data[i][j], 0);
 			stage[i][j]->SetDebugFlg();
 			select_data[i][j] = false;
@@ -52,8 +52,8 @@ void EditScene::Initialize()
 	}
 	current_type_location.x = tool_location.x;
 	current_type_location.y = 0;
-	current_type_erea.width = 50;
-	current_type_erea.height = 50;
+	current_type_erea.x = 50;
+	current_type_erea.y = 50;
 
 	minimap_size = 1.5f;
 	minimap_location = { (float)SCREEN_WIDTH - (stage_width_num * minimap_size),0 };
@@ -295,7 +295,7 @@ AbstractScene* EditScene::Update()
 		//種類選択処理
 		for (int i = 0; i < can_select_type[current_type_select][1]; i++)
 		{
-			if (CheckInArea(current_type_location.x, current_type_location.y + (i * 50), current_type_erea.width, current_type_erea.height))
+			if (CheckInArea(current_type_location.x, current_type_location.y + (i * 50), current_type_erea.x, current_type_erea.y))
 			{
 				if (KeyInput::OnReleaseMouse(MOUSE_INPUT_LEFT))
 				{
@@ -455,11 +455,11 @@ void EditScene::Draw()const
 		}
 	}
 	SetFontSize(16);
-	DrawBoxAA(tool_location.x, tool_location.y, tool_location.x + tool_size.width, tool_location.y + tool_size.height, 0x000000, true);
-	DrawBoxAA(tool_location.x, tool_location.y, tool_location.x + tool_size.width, tool_location.y + tool_size.height, 0xffffff, false);
+	DrawBoxAA(tool_location.x, tool_location.y, tool_location.x + tool_size.x, tool_location.y + tool_size.y, 0x000000, true);
+	DrawBoxAA(tool_location.x, tool_location.y, tool_location.x + tool_size.x, tool_location.y + tool_size.y, 0xffffff, false);
 	DrawStringF(tool_location.x, tool_location.y + 60, "左クリックで選択＆配置", 0xffffff);
 	DrawStringF(tool_location.x, tool_location.y + 80, "ctrl+zで一つ戻る", 0xffffff);
-	DrawStringF(tool_location.x + tool_size.width - 270, tool_location.y + 80, "Bキーで保存＆ゲームメインへ戻る", 0xffffff);
+	DrawStringF(tool_location.x + tool_size.x - 270, tool_location.y + 80, "Bキーで保存＆ゲームメインへ戻る", 0xffffff);
 
 	//現在選択中のオブジェクトを分かりやすく	
 	for (int i = 0; i < UI_OBJECT_TYPE_NUM; i++)
@@ -555,10 +555,10 @@ void EditScene::Draw()const
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		for (int i = 0; i < can_select_type[current_type_select][1]; i++)
 		{
-			DrawBoxAA(current_type_location.x, current_type_location.y + i * current_type_erea.height, current_type_location.x + current_type_erea.width, current_type_location.y + current_type_erea.height + i * current_type_erea.height, 0x000000, true);
-			DrawBoxAA(current_type_location.x, current_type_location.y + i * current_type_erea.height, current_type_location.x + current_type_erea.width, current_type_location.y + current_type_erea.height + i * current_type_erea.height, 0xffffff, false);
+			DrawBoxAA(current_type_location.x, current_type_location.y + i * current_type_erea.y, current_type_location.x + current_type_erea.x, current_type_location.y + current_type_erea.y + i * current_type_erea.y, 0x000000, true);
+			DrawBoxAA(current_type_location.x, current_type_location.y + i * current_type_erea.y, current_type_location.x + current_type_erea.x, current_type_location.y + current_type_erea.y + i * current_type_erea.y, 0xffffff, false);
 			SetFontSize(24);
-			DrawFormatStringF(current_type_location.x, current_type_location.y + i * current_type_erea.height, 0xffffff, "%s", block_type_string[current_type_select][i]);
+			DrawFormatStringF(current_type_location.x, current_type_location.y + i * current_type_erea.y, 0xffffff, "%s", block_type_string[current_type_select][i]);
 		}
 	}
 
@@ -709,8 +709,8 @@ void EditScene::UpdateStageData(int _stage)
 void EditScene::UpdateStage(int _width, int _height)
 {
 	//stageのintialize用仮格納場所
-	Location kari_location;
-	Erea kari_erea;
+	Vector2D kari_location;
+	Vector2D kari_erea;
 	int old_stage_height_num = stage_height_num;
 	stage_width_num = _width;
 	stage_height_num = _height;
@@ -742,8 +742,8 @@ void EditScene::UpdateStage(int _width, int _height)
 				stage[i][j] = new Stage(stage_data[i][j],stage_height_num * BOX_HEIGHT);
 				kari_location.x = (float)(j * BOX_WIDTH);
 				kari_location.y = (float)(i * BOX_HEIGHT);
-				kari_erea.width = BOX_WIDTH;
-				kari_erea.height = BOX_HEIGHT;
+				kari_erea.x = BOX_WIDTH;
+				kari_erea.y = BOX_HEIGHT;
 				stage[i][j]->Initialize(kari_location, kari_erea, stage_data[i][j],0);
 				stage[i][j]->SetDebugFlg();
 				select_data[i][j] = false;
@@ -831,7 +831,7 @@ int EditScene::ChechSelectErea()
 		return SELECT_TYPE;
 	}
 	//カーソルがツールボックス内かどうか判断
-	if (cursor.x > tool_location.x && cursor.x < tool_location.x + tool_size.width && cursor.y>tool_location.y && cursor.y < tool_location.y + tool_size.height && minimap_pickup_flg == false)
+	if (cursor.x > tool_location.x && cursor.x < tool_location.x + tool_size.x && cursor.y>tool_location.y && cursor.y < tool_location.y + tool_size.y && minimap_pickup_flg == false)
 	{
 		return TOOL_BOX;
 	}
@@ -855,29 +855,29 @@ int EditScene::ChechSelectErea()
 void EditScene::MoveInsideScreen()
 {
 	//スクリーン内から出ないようにツールボックスのX座標をマウスに沿って移動
-	tool_location.x = cursor.x - (tool_size.width / 2);
+	tool_location.x = cursor.x - (tool_size.x / 2);
 	if (tool_location.x < 0)
 	{
 		tool_location.x = 0;
 	}
-	else if (tool_location.x + tool_size.width > SCREEN_WIDTH)
+	else if (tool_location.x + tool_size.x > SCREEN_WIDTH)
 	{
-		tool_location.x = SCREEN_WIDTH - tool_size.width;
+		tool_location.x = SCREEN_WIDTH - tool_size.x;
 	}
 	//UIを追従
-	width_button_location.x = tool_location.x + (tool_size.width - WIDTH_BUTTON_POS_X);
-	height_button_location.x = tool_location.x + (tool_size.width - HEIGHT_BUTTON_POS_X);
+	width_button_location.x = tool_location.x + (tool_size.x - WIDTH_BUTTON_POS_X);
+	height_button_location.x = tool_location.x + (tool_size.x - HEIGHT_BUTTON_POS_X);
 	current_type_location.x = tool_location.x;
 
 	//スクリーン内から出ないようにツールボックスのY座標をマウスに沿って移動
-	tool_location.y = cursor.y - (tool_size.height / 2);
+	tool_location.y = cursor.y - (tool_size.y / 2);
 	if (tool_location.y < 0)
 	{
 		tool_location.y = 0;
 	}
-	else if (tool_location.y + tool_size.height > SCREEN_HEIGHT)
+	else if (tool_location.y + tool_size.y > SCREEN_HEIGHT)
 	{
-		tool_location.y = SCREEN_HEIGHT - tool_size.height;
+		tool_location.y = SCREEN_HEIGHT - tool_size.y;
 	}
 	//UIを追従
 	width_button_location.y = tool_location.y + WIDTH_BUTTON_POS_Y;
@@ -930,10 +930,10 @@ void EditScene::ResetSelectData()
 bool EditScene::CheckInScreen(Stage* _stage)const
 {
 	//画面内に居るか判断
-	if (_stage->GetLocation().x > camera_location.x - _stage->GetErea().width &&
-		_stage->GetLocation().x < camera_location.x + SCREEN_WIDTH + _stage->GetErea().width &&
-		_stage->GetLocation().y > camera_location.y - _stage->GetErea().height &&
-		_stage->GetLocation().y < camera_location.y + SCREEN_HEIGHT + _stage->GetErea().height
+	if (_stage->GetLocation().x > camera_location.x - _stage->GetErea().x &&
+		_stage->GetLocation().x < camera_location.x + SCREEN_WIDTH + _stage->GetErea().x &&
+		_stage->GetLocation().y > camera_location.y - _stage->GetErea().y &&
+		_stage->GetLocation().y < camera_location.y + SCREEN_HEIGHT + _stage->GetErea().y
 		)
 	{
 		return true;
@@ -968,8 +968,8 @@ void EditScene::RangeSelection()
 			now_range_selection = false;
 			range_selection_flg = true;
 			//範囲内の一番数字が小さい頂点と大きい頂点を分ける
-			Location range_selection_min;
-			Location range_selection_max;
+			Vector2D range_selection_min;
+			Vector2D range_selection_max;
 			if (range_selection[0].x < range_selection[1].x)
 			{
 				range_selection_min.x = range_selection[0].x;
@@ -1052,18 +1052,18 @@ void EditScene::ChangeEditStage(int _num)
 	Initialize();
 }
 
-bool EditScene::CheckInArea(Location _loc, Erea _size)
+bool EditScene::CheckInArea(Vector2D _loc, Vector2D _size)
 {
-	if (_loc.x < cursor.x && _loc.x + _size.width > cursor.x && _loc.y < cursor.y && _loc.y + _size.height > cursor.y)
+	if (_loc.x < cursor.x && _loc.x + _size.x > cursor.x && _loc.y < cursor.y && _loc.y + _size.y > cursor.y)
 	{
 		return true;
 	}
 	return false;
 }
 
-bool EditScene::CheckInArea(Location _loc, float _width, float _height)
+bool EditScene::CheckInArea(Vector2D _loc, float _width, float _height)
 {
-	Erea size = { _height,_width };
+	Vector2D size = { _height,_width };
 	if (CheckInArea(_loc, size))
 	{
 		return true;
@@ -1073,8 +1073,8 @@ bool EditScene::CheckInArea(Location _loc, float _width, float _height)
 
 bool EditScene::CheckInArea(float _x, float _y, float _width, float _height)
 {
-	Location location{ _x,_y };
-	Erea size = { _height,_width };
+	Vector2D location{ _x,_y };
+	Vector2D size = { _height,_width };
 
 	if (CheckInArea(location, size))
 	{

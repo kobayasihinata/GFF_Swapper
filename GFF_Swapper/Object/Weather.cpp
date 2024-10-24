@@ -15,7 +15,7 @@ Weather::~Weather()
 
 }
 
-void Weather::Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)
+void Weather::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	location = _location;
 	erea = _erea;
@@ -94,7 +94,7 @@ void Weather::Update(GameMain* _g)
 
 void Weather::Draw()const
 {
-	DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, color, TRUE);
+	DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, color, TRUE);
 }
 
 void Weather::Finalize()

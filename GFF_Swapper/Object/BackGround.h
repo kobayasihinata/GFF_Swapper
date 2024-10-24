@@ -3,8 +3,8 @@
 class BackGround
 {
 private:
-	Erea bg_erea;		//背景の幅
-	Erea stage_erea;	//ステージの幅
+	Vector2D bg_erea;		//背景の幅
+	Vector2D stage_erea;	//ステージの幅
 	int now_stage;			//現在のステージ数
 	bool is_clear;			//クリア演出中か
 	int font_handle[2];        //使用フォント
@@ -16,13 +16,13 @@ public:
 	BackGround();
 	~BackGround();
 
-	void Initialize(Erea _stage_erea);
+	void Initialize(Vector2D _stage_erea);
 	void Finalize();
 	void Update();
-	void Draw(Location _camera_location)const;
-	void DrawWood(Location _shift_location, float move_speed)const;
-	void DrawMountain(Location _shift_location, Erea _erea,float _move_speed,int _bg_color)const;
-	void DrawCloud(Location _shift_location, Erea _erea,float _move_speed, int _bg_color)const;
+	void Draw(Vector2D _camera_location)const;
+	void DrawWood(Vector2D _shift_location, float move_speed)const;
+	void DrawMountain(Vector2D _shift_location, Vector2D _erea,float _move_speed,int _bg_color)const;
+	void DrawCloud(Vector2D _shift_location, Vector2D _erea,float _move_speed, int _bg_color)const;
 	void SetNowStage(int _now_stage) { now_stage = _now_stage; }
 	void SetIsClear(bool _flg) { is_clear = _flg; }
 };

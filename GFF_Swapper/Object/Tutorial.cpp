@@ -9,7 +9,7 @@ Tutorial::~Tutorial()
 {
 }
 
-void Tutorial::Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)
+void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	location = _location;
 	erea = _erea;
@@ -29,12 +29,13 @@ void Tutorial::Update(GameMain* _g)
 
 void Tutorial::Draw() const
 {
-	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.width, local_location.y + erea.height, GetColor(255, 255, 255), FALSE);
+	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 
 	/*if (is_tutorial) {
 		DrawFormatString(0, 400, 0xFFFFFF, "TUTORIAL",TRUE);
 	}*/
 	
+	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 }
 
 void Tutorial::Finalize()

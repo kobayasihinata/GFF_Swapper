@@ -48,7 +48,7 @@ Stage::~Stage()
 
 }
 
-void Stage::Initialize(Location _location, Erea _erea, int _color_data,int _object_pos)
+void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _object_pos)
 {
 	location = _location;
 	erea = _erea;
@@ -114,7 +114,7 @@ void Stage::Update(GameMain* _g)
 		}
 	}
 
-	Location player_respawn = { location.x,location.y - PLAYER_HEIGHT };
+	Vector2D player_respawn = { location.x,location.y - PLAYER_HEIGHT };
 
 	//フラグが立っているなら
 	if (set_respawn_flg && (player_respawn.x != _g->GetPlayerRespawnLocation().x || player_respawn.y != _g->GetPlayerRespawnLocation().y))
@@ -234,7 +234,7 @@ void Stage::Draw()const
 			break;
 			//地面 (白)
 		case WHITE_BLOCK:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, draw_color, true);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
 			break;
 			//地面（灰）
 		case GRAY_BLOCK:
@@ -242,17 +242,17 @@ void Stage::Draw()const
 			break;
 			//地面(赤、緑、青)
 		case RED_BLOCK:
-			//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, draw_color, true);
+			//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
 			ResourceManager::StageBlockDraw(local_location, 0);
 			break;
 		case GREEN_BLOCK:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, draw_color, true);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
 			DrawBoxAA(local_location.x + 10, local_location.y + 20, local_location.x + 15, local_location.y + 25, 0x00ee00, true);
 			DrawBoxAA(local_location.x + 30, local_location.y + 15, local_location.x + 35, local_location.y + 20, 0x00ee00, true);
 			DrawBoxAA(local_location.x + 25, local_location.y + 35, local_location.x + 30, local_location.y + 40, 0x00ee00, true);
 			break;
 		case BLUE_BLOCK:
-			//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, draw_color, true);
+			//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
 			ResourceManager::StageBlockDraw(local_location, 1);
 
 			break;
@@ -268,10 +268,10 @@ void Stage::Draw()const
 			{
 				if (draw_wood_flg == true)
 				{
-					DrawBoxAA(local_location.x+3, local_location.y, local_location.x + erea.width-3, local_location.y + erea.height, 0x00cc00, true);
-					DrawBoxAA(local_location.x +2, local_location.y, local_location.x + erea.width-2, local_location.y + 2, 0x00ff00, true);
-					DrawBoxAA(local_location.x+2, local_location.y + erea.height, local_location.x + erea.width-2, local_location.y + erea.height - 2, 0x00ff00, true);
-					DrawBoxAA(local_location.x + 10, local_location.y+2, local_location.x + 13, local_location.y + erea.height-2, 0x00ee00, true);
+					DrawBoxAA(local_location.x+3, local_location.y, local_location.x + erea.x-3, local_location.y + erea.y, 0x00cc00, true);
+					DrawBoxAA(local_location.x +2, local_location.y, local_location.x + erea.x-2, local_location.y + 2, 0x00ff00, true);
+					DrawBoxAA(local_location.x+2, local_location.y + erea.y, local_location.x + erea.x-2, local_location.y + erea.y - 2, 0x00ff00, true);
+					DrawBoxAA(local_location.x + 10, local_location.y+2, local_location.x + 13, local_location.y + erea.y-2, 0x00ee00, true);
 				}
 				else
 				{
@@ -280,11 +280,11 @@ void Stage::Draw()const
 			}
 			break;
 		case PLAYER_RESPAWN_BLOCK:
-			DrawTriangleAA(local_location.x + (erea.width / 2), local_location.y, 
-						   local_location.x + erea.width, local_location.y + (erea.height / 4), 
-						   local_location.x + (erea.width / 2), local_location.y + (erea.height / 2), respawn_color, TRUE);
-			DrawBoxAA(local_location.x + (erea.width / 2) - 2, local_location.y, local_location.x + (erea.width / 2) + 2, local_location.y + erea.height, respawn_color, TRUE);
-			DrawBoxAA(local_location.x, local_location.y + erea.height - 4, local_location.x + erea.width, local_location.y + erea.height, respawn_color, TRUE);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, 
+						   local_location.x + erea.x, local_location.y + (erea.y / 4), 
+						   local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), respawn_color, TRUE);
+			DrawBoxAA(local_location.x + (erea.x / 2) - 2, local_location.y, local_location.x + (erea.x / 2) + 2, local_location.y + erea.y, respawn_color, TRUE);
+			DrawBoxAA(local_location.x, local_location.y + erea.y - 4, local_location.x + erea.x, local_location.y + erea.y, respawn_color, TRUE);
 			break;
 			//天気更新ブロックは何も表示しなくても良いかも
 		case WEATHER_NORMAL:
@@ -292,13 +292,13 @@ void Stage::Draw()const
 		case WEATHER_FIRE:
 		case WEATHER_SEED:
 			DrawStringF(local_location.x, local_location.y, "天気", text_color[block_type]);
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, text_color[block_type], false);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, text_color[block_type], false);
 			break;
 			//ステージ遷移ブロック
 		case TUTOSTAGE_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
 		case BOSSSTAGE_TRANSITION:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, GetColor(GetRand(255), GetRand(255), GetRand(255)), true);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(GetRand(255), GetRand(255), GetRand(255)), true);
 #ifdef _DEBUG
 			//デバッグ時はどこに飛ぶか分かりやすいように
 			if (debug_flg == false)DrawFormatStringF(local_location.x, local_location.y, 0x000000, "%d", next_stage);
@@ -323,11 +323,11 @@ void Stage::Draw()const
 			break;
 		case PLAYER_BLOCK:
 			//初期スポーン地点を分かりやすく
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, 0xffff00, true);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xffff00, true);
 			DrawStringF(local_location.x, local_location.y, "player", text_color[block_type]);
 			break;
 		case PLAYER_RESPAWN_BLOCK:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, 0xff00ff, true);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff00ff, true);
 			DrawStringF(local_location.x, local_location.y, "tyuukann", text_color[block_type]);
 			break;
 		case ENEMY_DEER_RED:
@@ -379,6 +379,9 @@ void Stage::Finalize()
 
 void Stage::Hit(Object* _object)
 {
+	//ブロックに当たっていたら処理終了
+	if (_object->GetObjectType() == BLOCK)return;
+
 	//プレイヤーに当たったらフラグを立てる
 	if (_object->GetObjectType() == PLAYER)
 	{
@@ -388,28 +391,32 @@ void Stage::Hit(Object* _object)
 	if (_object->GetObjectType() == PLAYER && (block_type == WEATHER_NORMAL || block_type == WEATHER_RAIN || block_type == WEATHER_FIRE || block_type == WEATHER_SEED))
 	{
 		change_weather_flg = true;
+		return;
 	}
 
 	//草ブロック同士が当たった場合、座標に応じて描画を切り替える
 	if (this->type == WOOD && _object->GetObjectType() == WOOD )
 	{
 		//当たったオブジェクトより上か下に自分が居るなら、木の描画に切り替える
-		if ((_object->GetLocation().y < this->location.y || _object->GetLocation().y > this->location.y + this->erea.height) && _object->GetLocation().x + (_object->GetErea().width / 2) > this->location.x && _object->GetLocation().x + (_object->GetErea().width / 2) < this->location.x + this->erea.width)
+		if ((_object->GetLocation().y < this->location.y || _object->GetLocation().y > this->location.y + this->erea.y) && _object->GetLocation().x + (_object->GetErea().x / 2) > this->location.x && _object->GetLocation().x + (_object->GetErea().x / 2) < this->location.x + this->erea.x)
 		{
 			draw_wood_flg = true;
 		}
+		return;
 	}
 
 	//火ブロックと溶岩ブロックが当たっている場合は火を消さない
 	if (this->type == FIRE && this->can_swap == FALSE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == TRUE)
 	{
 		delete_fire = 0;
+		return;
 	}
 
 	//プレイヤーに当たった時、このブロックがプレイヤーリスポーン位置設定ブロックなら、フラグを立てる
 	if (block_type == PLAYER_RESPAWN_BLOCK && _object->GetObjectType() == PLAYER)
 	{
 		set_respawn_flg = true;
+		return;
 	}
 
 	//属性の相性が悪いブロックに継続的に当たっていた時、色を変える
@@ -423,6 +430,7 @@ void Stage::Hit(Object* _object)
 			//ゲーム中で変更されたオブジェクト
 			default_object = FALSE;
 			touch_object = 0;
+			return;
 		}
 		//火が水に触れ続けているなら
 		if (this->type == FIRE && _object->GetObjectType() == WATER && ++touch_object > 10)
@@ -432,6 +440,7 @@ void Stage::Hit(Object* _object)
 			//ゲーム中で変更されたオブジェクト
 			default_object = FALSE;
 			touch_object = 0;
+			return;
 		}
 		//水が草に触れ続けているなら
 		if (this->type == WATER && _object->GetObjectType() == WOOD && ++touch_object > 10)
@@ -441,6 +450,7 @@ void Stage::Hit(Object* _object)
 			//ゲーム中で変更されたオブジェクト
 			default_object = FALSE;
 			touch_object = 0;
+			return;
 		}
 	}
 }
@@ -478,19 +488,19 @@ void Stage::DrawSolidBody(int _color)const
 	//	second_color = _color - 0x111111;
 	//}
 
-	//DrawBox(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, _color, true);
-	//DrawBox(local_location.x, local_location.y, local_location.x + erea.width, local_location.y + erea.height, second_color, false);
+	//DrawBox(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, _color, true);
+	//DrawBox(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, second_color, false);
 	//立体もどき
 	/*DrawQuadrangleAA(local_location.x + 20, local_location.y - 20,
-		local_location.x + erea.width + 20, local_location.y - 20,
-		local_location.x + erea.width, local_location.y,
+		local_location.x + erea.x + 20, local_location.y - 20,
+		local_location.x + erea.x, local_location.y,
 		local_location.x, local_location.y,
 		second_color, TRUE);
-	DrawQuadrangleAA(local_location.x + erea.width, local_location.y,
-		local_location.x + erea.width + 20, local_location.y - 20,
-		local_location.x + erea.width + 20, local_location.y + erea.height - 20,
-		local_location.x + erea.width, local_location.y + erea.height,
+	DrawQuadrangleAA(local_location.x + erea.x, local_location.y,
+		local_location.x + erea.x + 20, local_location.y - 20,
+		local_location.x + erea.x + 20, local_location.y + erea.y - 20,
+		local_location.x + erea.x, local_location.y + erea.y,
 		second_color, TRUE);
-	DrawLine(local_location.x + erea.width, local_location.y, local_location.x + erea.width + 20, local_location.y - 20, _color, TRUE);
-	DrawLine(local_location.x + erea.width, local_location.y + erea.height, local_location.x + erea.width + 20, local_location.y - 20 + erea.height, _color, TRUE);*/
+	DrawLine(local_location.x + erea.x, local_location.y, local_location.x + erea.x + 20, local_location.y - 20, _color, TRUE);
+	DrawLine(local_location.x + erea.x, local_location.y + erea.y, local_location.x + erea.x + 20, local_location.y - 20 + erea.y, _color, TRUE);*/
 }

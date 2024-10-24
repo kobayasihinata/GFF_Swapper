@@ -69,13 +69,13 @@ private:
     bool camera_y_lock_flg;   //カメラが動けるか判断(強制戦闘時以外)
     bool x_pos_set_once;     //カメラのロック位置設定用
     bool y_pos_set_once;     //カメラのロック位置設定用
-    Location lock_pos;       //カメラが動けない時に画面揺れが発生した時、カメラの位置が戻る場所
+    Vector2D lock_pos;       //カメラが動けない時に画面揺れが発生した時、カメラの位置が戻る場所
     int fps = 0;
     int now_weather;            //現在の天気(0=通常　1=雨　2=火　3=木)
     int weather_timer;      //天気オブジェクトを生成するスパン
     bool boss_battle_flg;   //ボス戦が始まっているか判断
     bool player_flg;	    //プレイヤーを生成したか
-    Location player_respawn;    //プレイヤーが生成された地点を保存しておく
+    Vector2D player_respawn;    //プレイヤーが生成された地点を保存しておく
     bool player_respawn_flg;    //プレイヤーをリスポーンさせるか判断
     bool create_once;           //一回だけ壁を作る
     bool fadein_flg;            //遷移してきたときのフェードイン演出
@@ -90,7 +90,7 @@ private:
 
     int cursor;
     int cursorOld;
-    Location cursor_location; 
+    Vector2D cursor_location; 
     bool move_cursor_once;  //ポーズカーソルを一回だけ移動させる
     float circleAng;
 
@@ -131,7 +131,7 @@ public:
     void Draw() const override;
 
     //オブジェクトの生成
-    void CreateObject(Object* _object, Location _location, Erea _erea, int _color_data);
+    void CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);
 
     //オブジェクトの削除 i = 消すオブジェクトの位置  _object = この関数を呼びだしたオブジェクト
     void DeleteObject(int i,Object* _object);
@@ -152,12 +152,12 @@ public:
     bool GetSearchFlg();
 
     //プレイヤーのワールド座標を取得
-    Location GetPlayerLocation();
+    Vector2D GetPlayerLocation();
 
-    Erea GetPlayerErea();
+    Vector2D GetPlayerErea();
 
     //カメラ座標の取得
-    Location GetCameraLocation();
+    Vector2D GetCameraLocation();
 
     //カメラ振動
     void CameraImpact(int _num);
@@ -169,7 +169,7 @@ public:
     void SetNowWeather(int _wearher) { now_weather = _wearher; }
 
     //エフェクトの生成
-    void SpawnEffect(Location _location, Erea _erea, int _type, int _time,int _color, float _angle = 0.0f);
+    void SpawnEffect(Vector2D _location, Vector2D _erea, int _type, int _time,int _color, float _angle = 0.0f);
 
     //交換アニメーション
     int Swap(Object* _object1, Object* _object2);
@@ -177,7 +177,7 @@ public:
     //そのオブジェクトが画面内に居るか判断
     bool CheckInScreen(Object* _object)const;
 
-    Location GetBossLocation();
+    Vector2D GetBossLocation();
 
     //すべてのオブジェクトを空に _player_delete = プレイヤーも消すか
     void DeleteAllObject(bool _player_delete);
@@ -195,10 +195,10 @@ public:
     void SetPlayerRespawnFlg(bool _flg) { player_respawn_flg = _flg; }
 
     //プレイヤーリスポーン座標の取得
-    Location GetPlayerRespawnLocation()const { return player_respawn; }
+    Vector2D GetPlayerRespawnLocation()const { return player_respawn; }
 
     //プレイヤーリスポーン座標の設定
-    void SetPlayerRespawnLocation(Location _location) { player_respawn = _location; }
+    void SetPlayerRespawnLocation(Vector2D _location) { player_respawn = _location; }
 
     //プレイヤーの色取得
     int GetPlayerColor()const { return object[player_object]->GetColorData(); }
@@ -211,7 +211,7 @@ public:
 
     //座標の回転
     //引数:もとになる座標、回転させたい座標、回転させたい角度
-    Location RotationLocation(Location BaseLoc, Location Loc, float r) const;
+    Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
 
     bool GetPauseAfter() { return pause_after_flg; }
 

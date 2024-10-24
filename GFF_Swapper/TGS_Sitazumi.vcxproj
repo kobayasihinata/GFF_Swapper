@@ -47,6 +47,7 @@
     <ClCompile Include="Utility\KeyInput.cpp" />
     <ClCompile Include="Utility\PadInput.cpp" />
     <ClCompile Include="Utility\ResourceManager.cpp" />
+    <ClCompile Include="Utility\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object\BackGround.h" />
@@ -80,6 +81,8 @@
     <ClInclude Include="Utility\KeyInput.h" />
     <ClInclude Include="Utility\PadInput.h" />
     <ClInclude Include="Utility\ResourceManager.h" />
+    <ClInclude Include="Utility\UserTemplate.h" />
+    <ClInclude Include="Utility\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resouce.rc" />
@@ -90,6 +93,7 @@
     <ProjectGuid>{1cd97259-2f0c-4dbb-9b46-ea2345ddce2d}</ProjectGuid>
     <RootNamespace>TGS_Sitazumi</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>GFF_Swapper</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

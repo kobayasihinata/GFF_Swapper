@@ -3,9 +3,9 @@
 class BossAttackWood : public Object
 {
 private:
-	Location velocity;
+	Vector2D velocity;
 	float bambooHeight;  //高さ
-	Location startLoc;
+	Vector2D startLoc;
 
 	int count;	//生え始めるまでのカウント
 	int w_type;	//もとから生えてるのか地面から生えてくるのか
@@ -17,7 +17,7 @@ public:
 	BossAttackWood();
 	~BossAttackWood();
 
-	void Initialize(Location _location, Erea _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Finalize()override;
 
 	void Update(GameMain* _g)override;
