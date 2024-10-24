@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height,int _next_stage) :old_color(0),inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false),respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0),change_water(0),change_wood(0), se_play_once(false)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false)
 {
 	block_type = _type;
 	next_stage = _next_stage - 25;
@@ -78,6 +78,12 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 
 void Stage::Update(GameMain* _g)
 {
+	//処理を省略して良いオブジェクトなのか判断
+	CheckIgnoreObject();
+
+	//処理を省略して良いオブジェクトなら処理終了
+	if (check_ignore_flg)return;
+
 	__super::Update(_g);
 
 	//EditもUpdateを呼べるようにこの書き方
@@ -370,6 +376,15 @@ void Stage::Draw()const
 			break;
 		}
 	}
+#ifdef _DEBUG
+	//描画以外の処理を省かれたブロックを判別
+	if (check_ignore_flg)
+	{
+		DrawStringF(local_location.x, local_location.y,  "省", text_color[block_type]);
+	}
+
+#endif // DEBUG
+
 }
 
 void Stage::Finalize()
@@ -379,7 +394,13 @@ void Stage::Finalize()
 
 void Stage::Hit(Object* _object)
 {
-	//ブロックに当たっていたら処理終了
+	//処理を省略して良いオブジェクトなら処理終了
+	if (check_ignore_flg)return;
+
+	//自分がグレーのブロックなら処理終了
+	if (this->block_type == GRAY_BLOCK)return;
+
+	//相手がブロックなら処理終了
 	if (_object->GetObjectType() == BLOCK)return;
 
 	//プレイヤーに当たったらフラグを立てる
@@ -503,4 +524,32 @@ void Stage::DrawSolidBody(int _color)const
 		second_color, TRUE);
 	DrawLine(local_location.x + erea.x, local_location.y, local_location.x + erea.x + 20, local_location.y - 20, _color, TRUE);
 	DrawLine(local_location.x + erea.x, local_location.y + erea.y, local_location.x + erea.x + 20, local_location.y - 20 + erea.y, _color, TRUE);*/
+}
+
+void Stage::SetAroundBlock(int _num, int _block_type)
+{
+	stage_around_data[_num] = _block_type;
+}
+
+void Stage::CheckIgnoreObject()
+{
+	////周辺に空気が無いブロック(内側)なら、省略可能オブジェクト
+	//check_ignore_flg = !CheckNullAround();
+	////グレーのブロックなら省略可能
+	//if (block_type == GRAY_BLOCK)
+	//{
+	//	check_ignore_flg = true;
+	//}
+}
+
+bool Stage::CheckNullAround()const
+{
+	for (int i = 0; i < 8; i++)
+	{
+		if (stage_around_data[i] == NULL_BLOCK)
+		{
+			return true;
+		}
+	}
+	return false;
 }

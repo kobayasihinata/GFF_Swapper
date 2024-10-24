@@ -43,20 +43,20 @@ public:
 
 
 	//何かと当たった時の処理
-	virtual void Hit(Object* _object) 
+	virtual void Hit(Object* _object)
 	{
-		int a = 0;
+
 	}
 
 	virtual bool SearchColor(Object* ob) = 0;
 
 	//各変数の取得
-	int GetObjectType() { return type; }
-	bool GetCanSwap() { return can_swap; }
-	bool GetCanHit() { return can_hit; }
-	bool GetSearchFlg() { return searchFlg;	}
-	int GetObjectPos() { return object_pos; }
-	int GetIsBossAttack() { return is_boss_attack; }
+	int GetObjectType()const { return type; }
+	bool GetCanSwap()const { return can_swap; }
+	bool GetCanHit()const { return can_hit; }
+	bool GetSearchFlg()const { return searchFlg;	}
+	int GetObjectPos()const { return object_pos; }
+	int GetIsBossAttack()const { return is_boss_attack; }
 
 	//各変数の変更
 	void SetObjectType(int _num) { type = _num; }
