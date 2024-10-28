@@ -1,6 +1,6 @@
 #pragma once
 #include "../Utility/common.h"
-#include "Object.h"
+#include "Base/Object.h"
 
 //StageとEditで使う識別用
 enum BlockList	{

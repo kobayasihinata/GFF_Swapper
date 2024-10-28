@@ -1,6 +1,6 @@
 #pragma once
 #include"DxLib.h"
-#include"../Object/Object.h"
+#include"../Object/Base/Object.h"
 
 #define IMAGE_NUM 100	//画像の最大数
 #define DIV_IMAGE_NUM 100	//分割画像の最大数

@@ -1,7 +1,7 @@
 #pragma once
-#include "Object.h"
-#include "CharaBase.h"
-#include "../Utility/common.h"
+#include "../Base/Object.h"
+#include "../Base/CharaBase.h"
+#include "../../Utility/common.h"
 
 # define PI 3.14159265359
 

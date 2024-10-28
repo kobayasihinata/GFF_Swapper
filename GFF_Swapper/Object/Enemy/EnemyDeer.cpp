@@ -1,6 +1,6 @@
-#include "../Utility/KeyInput.h"
-#include "../Utility/ResourceManager.h"
-#include "../Scene/GameMain.h"
+#include "../../Utility/KeyInput.h"
+#include "../../Utility/ResourceManager.h"
+#include "../../Scene/GameMain.h"
 #include "EnemyDeer.h"
 #include<math.h>
 

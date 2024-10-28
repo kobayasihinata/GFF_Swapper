@@ -1,5 +1,5 @@
 #pragma once
-#include "Object.h"
+#include "Base/Object.h"
 #define EFFECT_NUM	200		//エフェクトの最大数
 #define SWAP_EFFECT_NUM 10		//一回のエフェクト時に発生するパーティクルの数
 #define AFTERIMAGE_NUM 10		//交換エフェクトの残像の数

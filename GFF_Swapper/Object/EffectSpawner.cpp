@@ -420,7 +420,7 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 		for (int i = 0; i < 10; i++)
 		{
 			SpawnParticle(
-				{ _location.x + GetRand(_erea.x),_location.y + GetRand(_erea.y) },
+				{ _location.x + GetRand((int)_erea.x),_location.y + GetRand((int)_erea.y) },
 				{ 7,7 },
 				7,
 				_time,

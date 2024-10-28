@@ -1,7 +1,7 @@
 #pragma once
 #include "../Utility/common.h"
 #include "AbstractScene.h"
-#include "../Object/BoxCollider.h"
+#include "../Object/Base/BoxCollider.h"
 #include "../Object/Stage.h"
 #include "../Utility/KeyInput.h"
 

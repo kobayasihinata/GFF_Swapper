@@ -1,7 +1,7 @@
 #pragma once
 #include "dxlib.h"
-#include"../Utility/common.h"
-#include "../Utility/Vector2D.h"
+#include"../../Utility/common.h"
+#include "../../Utility/Vector2D.h"
 
 class BoxCollider
 {

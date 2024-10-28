@@ -1,5 +1,5 @@
 #include "Tutorial.h"
-#include "../Scene/GameMain.h"
+#include "../../Scene/GameMain.h"
 
 Tutorial::Tutorial() //:is_tutorial(false),num(0)
 {

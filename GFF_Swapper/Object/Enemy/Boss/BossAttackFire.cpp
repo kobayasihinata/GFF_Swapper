@@ -1,6 +1,6 @@
 #include "BossAttackFire.h"
-#include "../Scene/GameMain.h"
-#include "../Utility/ResourceManager.h"
+#include "../../../Scene/GameMain.h"
+#include "../../../Utility/ResourceManager.h"
 
 BossAttackFire::BossAttackFire()
 {

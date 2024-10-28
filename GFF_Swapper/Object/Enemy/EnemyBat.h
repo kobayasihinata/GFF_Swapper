@@ -1,10 +1,8 @@
 #pragma once
-#include "CharaBase.h"
 #include <vector>
-#include "../Utility/common.h"
-#include "Object.h"
-#include "../Scene/GameMain.h"
-
+#include "../../Utility/common.h"
+#include "../Base/Object.h"
+#include "../../Scene/GameMain.h"
 
 enum class BatState {
 	IDLE = 0,

@@ -1,6 +1,6 @@
 #include"EnemyBat.h"
-#include"../Utility/KeyInput.h"
-#include "../Utility/ResourceManager.h"
+#include"../../Utility/KeyInput.h"
+#include "../../Utility/ResourceManager.h"
 #include<math.h>
 
 

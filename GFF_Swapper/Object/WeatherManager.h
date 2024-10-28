@@ -1,5 +1,5 @@
 #pragma once
-#include"BoxCollider.h"
+#include"Base/BoxCollider.h"
 
 #define DELAY_TIME 90	//指定した天候に変化するまでの待ち時間（プレイヤーに警告を出す時間）
 
