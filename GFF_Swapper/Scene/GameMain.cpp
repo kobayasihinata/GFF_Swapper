@@ -16,7 +16,7 @@
 
 
 static Vector2D camera_location = { 0,0 };	//カメラの座標
-static Vector2D screen_origin = { (SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2) };
+static const Vector2D screen_origin = { 0,0 };	//カメラの初期位置
 
 GameMain::GameMain(int _stage) :frame(0), impact(0), stage_data{ 0 }, now_stage(0), object_num(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), camera_x_lock_flg(true), camera_y_lock_flg(true), x_pos_set_once(false), y_pos_set_once(false), player_object(0), boss_object(0), weather(0), weather_timer(0), move_object_num(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), player_respawn_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
 {
@@ -25,7 +25,7 @@ GameMain::GameMain(int _stage) :frame(0), impact(0), stage_data{ 0 }, now_stage(
 
 GameMain::~GameMain()
 {
-	
+
 }
 
 void GameMain::Initialize()
@@ -89,9 +89,6 @@ void GameMain::Finalize()
 
 AbstractScene* GameMain::Update()
 {
-	//if (KeyInput::OnKey(KEY_INPUT_V)) {
-	//	gm_state = GameMainState::GameClear;
-	//}
 	//フレーム測定
 	frame++;
 	//カメラの更新
@@ -135,6 +132,11 @@ AbstractScene* GameMain::Update()
 		}
 
 #ifdef _DEBUG
+		//強制クリア
+		if (KeyInput::OnKey(KEY_INPUT_V)) 
+		{
+			gm_state = GameMainState::GameClear;
+		}
 		//ステージをいじるシーンへ遷移
 		if (KeyInput::OnPresed(KEY_INPUT_E) && KeyInput::OnPresed(KEY_INPUT_D))
 		{
@@ -202,10 +204,11 @@ void GameMain::Draw() const
 	DrawGraph(140, 100, test_image, TRUE);
 	DrawGraph(100, 140, test_image2, TRUE);
 	DrawGraph(140, 140, test_image2, TRUE);
+	DrawFormatString(10, 10, 0xffffff, "camera.x = %f,camera.y = %f", camera_location.x, camera_location.y);
 #endif
 }
 
-void GameMain::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
+int GameMain::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
 {
 	for (int i = 0; i < OBJECT_NUM; i++)
 	{
@@ -229,7 +232,7 @@ void GameMain::CreateObject(Object* _object, Vector2D _location, Vector2D _erea,
 			//	boss_attack[attack_num++] = i;
 			//}
 			object_num++;
-			break;
+			return i;
 		}
 	}
 }
@@ -382,7 +385,7 @@ void GameMain::UpdateCamera()
 
 void GameMain::LoadStageData(int _stage)
 {
-	const char* a = "../Resource/Dat/1stStageData.txt";
+	const char* a = "Resource/Dat/1stStageData.txt";
 	switch (_stage)
 	{
 	case 0:
@@ -393,6 +396,8 @@ void GameMain::LoadStageData(int _stage)
 		break;
 	case 2:
 		a = "Resource/Dat/BossStageData.txt";
+		break;
+	default:
 		break;
 	}
 
@@ -418,7 +423,6 @@ void GameMain::LoadStageData(int _stage)
 
 void GameMain::SetStage(int _stage, bool _delete_player)
 {
-
 	boss_blind_flg = false;
 	object_num = 0;
 
@@ -432,6 +436,9 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 
 	//ファイルの読込
 	LoadStageData(now_stage);
+
+	//デフォルトのプレイヤーリスポーン地点の設定
+	player_respawn = { (float)100,(float)stage_height - 200 };
 
 	for (int i = stage_height_num - 1; i >= 0; i--)
 	{
@@ -454,35 +461,18 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 			case WEATHER_RAIN:
 			case WEATHER_FIRE:
 			case WEATHER_SEED:
-				//ステージ内ブロックを生成
-				CreateObject(new Stage(stage_data[i][j],stage_height), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
+				//ステージ内ブロックを生成＆生成位置を格納
+				stage_block_pos[i][j] = CreateObject(new Stage(stage_data[i][j],stage_height), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
 				break;
 			case TUTOSTAGE_TRANSITION:
 			case FIRSTSTAGE_TRANSITION:
 			case BOSSSTAGE_TRANSITION:
-				//遷移ブロックを生成
-				CreateObject(new Stage(stage_data[i][j], 0 , stage_data[i][j]), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
+				//遷移ブロックを生成＆生成位置を格納
+				stage_block_pos[i][j] = CreateObject(new Stage(stage_data[i][j], 0 , stage_data[i][j]), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
 				break;
 			case PLAYER_BLOCK:
-				//プレイヤーがリセットされないまま別のステージへ遷移する場合はリスポーン位置を変更する
-				if (_delete_player == false)
-				{
-					//プレイヤーリスポーン地点の設定
-					player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
-				}
-				//プレイヤーが居ないなら
-				if (player_flg == false)
-				{
-					//プレイヤーリスポーン地点の設定
-					//player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
-					//プレイヤーの生成
-					CreateObject(new Player, player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, GREEN);
-				}
-				//プレイヤーが居るなら
-				else
-				{
-					player_respawn_flg = true;
-				}
+				//プレイヤーリスポーン地点の設定
+				player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
 				//エフェクトの生成
 				effect_spawner->SpawnEffect({ player_respawn.x + PLAYER_WIDTH / 2 ,player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, object[player_object]->GetColorData());
 				break;
@@ -517,14 +507,23 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 		}
 	}
 
-	//プレイヤーが生成されていないなら
-	if (player_flg == false)
+	//プレイヤーが居るなら
+	if (player_flg)
 	{
-		//プレイヤーリスポーン地点の設定
-		player_respawn = { (float)100,(float)stage_height - 200 };
-		//プレイヤーの生成
-		CreateObject(new Player, player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, RED);
+		//リスポーンフラグを立てる
+		player_respawn_flg = true;
 	}
+
+	//プレイヤーが生成されていない、もしくは再生成が必要なら
+	if (!player_flg || _delete_player)
+	{
+		//プレイヤーの生成
+		CreateObject(new Player, player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, GREEN);
+	}
+
+	//周辺ステージデータの格納
+	SetStageBlockAround();
+
 	//壁生成フラグリセット
 	create_once = false;
 	//カメラのリセット
@@ -591,7 +590,7 @@ int GameMain::Swap(Object* _object1, Object* _object2)
 
 bool GameMain::CheckInScreen(Object* _object)const
 {
-	//画面内に居るか判断
+	//画面内に居るか判断 画面端の敵がすり抜けないように地面の更新範囲を広めに
 	if (_object != nullptr &&
 		(
 			(_object->GetObjectType() != ENEMY && 
@@ -764,7 +763,7 @@ void GameMain::UpdateGameMain()
 				for (int j = i + 1; object[j] != nullptr; j++)
 				{
 					//各オブジェクトとの当たり判定
-					if (object[i] != nullptr && CheckInScreen(object[j]) == true && object[i]->HitBox(object[j]) && j != player_object)
+					if (object[i] != nullptr && CheckInScreen(object[j])&& object[i]->HitBox(object[j]) && j != player_object)
 					{
 						object[i]->Hit(object[j]);
 						object[j]->Hit(object[i]);
@@ -1422,4 +1421,70 @@ void GameMain::DrawCheck()const
 void GameMain::UpdateState(GameMainState _state)
 {
 	gm_state = _state;
+}
+
+void GameMain::SetStageBlockAround()
+{
+	for (int i = 0; i < stage_height_num; i++)
+	{
+		for (int j = 0; j < stage_width_num; j++)
+		{
+
+			for (int k = 0; k < 8; k++)
+			{
+
+				try {
+					static_cast<Stage*>(object[stage_block_pos[i][j]])->SetAroundBlock(k, CheckAroundBlock(i, j, k));
+				}
+				catch (const std::bad_cast&) {
+					std::cout << "ダウンキャスト失敗" << std::endl;
+				}
+			}
+		}
+	}
+}
+
+int GameMain::CheckAroundBlock(int _i, int _j, int _num)
+{
+	//引数_iが0（上端）で、更に上のデータを参照しようとした場合、-1を返す
+	if (_i == 0 && (_num == 0 || _num == 1 || _num == 2))
+	{
+		return -1;
+	}
+	//引数_iがstage_height_num - 1（下端）で、更に下のデータを参照しようとした場合、-1を返す
+	if (_i == stage_height_num - 1 && (_num == 5 || _num == 6 || _num == 7))
+	{
+		return -1;
+	}
+	//引数_jが0（左端）で、更に左のデータを参照しようとした場合、-1を返す
+	if (_i == 0 && (_num == 0 || _num == 3 || _num == 5))
+	{
+		return -1;
+	}
+	//引数_jがstage_width_num - 1（右端）で、更に右のデータを参照しようとした場合、-1を返す
+	if (_i == stage_width_num - 1 && (_num == 2 || _num == 4 || _num == 7))
+	{
+		return -1;
+	}
+	//指定した位置のステージデータを返す
+	switch (_num)
+	{
+	case 0:
+		return stage_data[_i - 1][_j - 1];
+	case 1:
+		return stage_data[_i - 1][_j];
+	case 2:
+		return stage_data[_i - 1][_j + 1];
+	case 3:
+		return stage_data[_i][_j - 1];
+	case 4:
+		return stage_data[_i][_j + 1];
+	case 5:
+		return stage_data[_i + 1][_j - 1];
+	case 6:
+		return stage_data[_i + 1][_j];
+	case 7:
+		return stage_data[_i + 1][_j + 1];
+	}
+	return -1;
 }

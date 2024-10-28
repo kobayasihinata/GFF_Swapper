@@ -45,6 +45,7 @@ private:
     int impact;                                          //画面の振動用(ずらす範囲)
     int impact_rand;                                     //画面の振動用(実際にずらす数値)
     int stage_data[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH];   //ステージデータ格納
+    int stage_block_pos[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH];     //Object配列の何番目に格納されたかを保存
     int player_object;             //プレイヤーが配列の何番目に格納されているか
     int boss_object;    
     //int boss_attack[128];
@@ -131,7 +132,7 @@ public:
     void Draw() const override;
 
     //オブジェクトの生成
-    void CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);
+    int CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);
 
     //オブジェクトの削除 i = 消すオブジェクトの位置  _object = この関数を呼びだしたオブジェクト
     void DeleteObject(int i,Object* _object);
@@ -253,5 +254,11 @@ public:
 
     //ゲームメインの状態を変更
     void UpdateState(GameMainState _state);
+
+    //ステージブロックの周辺ブロックを格納する
+    void SetStageBlockAround();
+
+    //ステージデータの周辺８マスがどこか計算する i,j=確認したいstage_data配列の位置 _num確認したい場所
+    int CheckAroundBlock(int _i, int _j, int _num);
 };
 
