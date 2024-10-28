@@ -500,7 +500,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 				break;
 				//チュートリアル開始範囲
 			case TUTORIAL_RANGE:
-				CreateObject(new Tutorial, {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {500, 50}, stage_data[i][j]);
+				CreateObject(new Tutorial, {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {50, 250}, stage_data[i][j]);
 			default:
 				break;
 			}
@@ -846,7 +846,7 @@ void GameMain::DrawGameMain()const
 	}
 
 	int enemy_pos[32];
-	int num = 0;
+	int tutirial_num = 0;
 
 	//オブジェクトの描画
 	for (int i = 0; object[i] != nullptr; i++)
@@ -866,8 +866,8 @@ void GameMain::DrawGameMain()const
 			{
 				if (object[i]->GetObjectType() == ENEMY) 
 				{
-					enemy_pos[num] = i;
-					num++;
+					enemy_pos[tutirial_num] = i;
+					tutirial_num++;
 				}
 				else 
 				{
@@ -885,7 +885,7 @@ void GameMain::DrawGameMain()const
 	weather->Draw();
 
 	//敵描画
-	for (int i = 0; i < num; i++)
+	for (int i = 0; i < tutirial_num; i++)
 	{
 		object[enemy_pos[i]]->Draw();
 	}

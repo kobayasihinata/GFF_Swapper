@@ -1,7 +1,7 @@
 #include "Tutorial.h"
 #include "../Scene/GameMain.h"
 
-Tutorial::Tutorial() //:is_tutorial(false),num(0)
+Tutorial::Tutorial(): tutorial_num(0) , tutorial_time(0)
 {
 }
 
@@ -29,13 +29,19 @@ void Tutorial::Update(GameMain* _g)
 
 void Tutorial::Draw() const
 {
-	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
+	//DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 
 	/*if (is_tutorial) {
 		DrawFormatString(0, 400, 0xFFFFFF, "TUTORIAL",TRUE);
 	}*/
 	
-	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
+	//DrawBoxAA(local_location.x, local_location.y - 500, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
+
+	if (tutorial_num == 1)
+	{
+		DrawTutorial();
+	}
+
 }
 
 void Tutorial::Finalize()
@@ -48,5 +54,15 @@ void Tutorial::Hit(Object* _object)
 	{
 		is_tutorial = true;
 	}*/
+
+	if (_object->GetObjectType() == PLAYER)
+	{
+		tutorial_num = 1;
+	}
+}
+
+void Tutorial::DrawTutorial() const
+{
+	DrawBoxAA(local_location.x / 2, local_location.y - 500, local_location.x + erea.x + 200, local_location.y + erea.y, GetColor(0, 0, 0), TRUE);
 }
 

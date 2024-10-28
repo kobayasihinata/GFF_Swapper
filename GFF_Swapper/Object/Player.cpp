@@ -951,7 +951,7 @@ void Player::SelectObject()
 			ResourceManager::StartSound(cursor_se);
 			oldStick[2] = false;
 			flg = true;
-			int num = -1;
+			int tutirial_num = -1;
 			int current_color = searchedObj->GetColorData();
 
 			for (int i = 0; i < objNum; i++)
@@ -970,7 +970,7 @@ void Player::SelectObject()
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
 							if (next_color != current_color) {
-								num = posRelation[j][x];
+								tutirial_num = posRelation[j][x];
 								break;
 							}
 						}
@@ -978,7 +978,7 @@ void Player::SelectObject()
 
 					//縦横探知
 					int w = 0;
-					while (num == -1)
+					while (tutirial_num == -1)
 					{
 						w++;
 						for (int j = y - 1; j > 0; j--)
@@ -987,7 +987,7 @@ void Player::SelectObject()
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
 									if (next_color != current_color) {
-										num = posRelation[j][x - w];
+										tutirial_num = posRelation[j][x - w];
 										break;
 									}
 								}
@@ -997,7 +997,7 @@ void Player::SelectObject()
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
 									if (next_color != current_color) {
-										num = posRelation[j][x + w];
+										tutirial_num = posRelation[j][x + w];
 										break;
 									}
 								}
@@ -1009,22 +1009,22 @@ void Player::SelectObject()
 						}
 					}
 
-					if (num == -1) {
-						num = tmp;
+					if (tutirial_num == -1) {
+						tutirial_num = tmp;
 					}
 
 				}
 			}
 
-			if (num > -1 && num < 999) {
-				objSelectNumTmp = num;
+			if (tutirial_num > -1 && tutirial_num < 999) {
+				objSelectNumTmp = tutirial_num;
 			}
 		}
 		else if ((PadInput::TipLeftLStick(STICKL_Y) < -0.8f || PadInput::OnPressed(XINPUT_BUTTON_DPAD_DOWN)) && oldStick[3]) {
 			ResourceManager::StartSound(cursor_se); 
 			oldStick[3] = false;
 			flg = true;
-			int num = -1;
+			int tutirial_num = -1;
 			int current_color = searchedObj->GetColorData();
 
 			for (int i = 0; i < objNum; i++)
@@ -1043,7 +1043,7 @@ void Player::SelectObject()
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
 							if (next_color != current_color) {
-								num = posRelation[j][x];
+								tutirial_num = posRelation[j][x];
 								break;
 							}
 						}
@@ -1051,7 +1051,7 @@ void Player::SelectObject()
 
 					//縦横探知
 					int w = 0;
-					while (num == -1)
+					while (tutirial_num == -1)
 					{
 						w++;
 						for (int j = y + 1; j < 720 / 40; j++)
@@ -1060,7 +1060,7 @@ void Player::SelectObject()
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
 									if (next_color != current_color) {
-										num = posRelation[j][x - w];
+										tutirial_num = posRelation[j][x - w];
 										break;
 									}
 								}
@@ -1070,7 +1070,7 @@ void Player::SelectObject()
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
 									if (next_color != current_color) {
-										num = posRelation[j][x + w];
+										tutirial_num = posRelation[j][x + w];
 										break;
 									}
 								}
@@ -1082,15 +1082,15 @@ void Player::SelectObject()
 						}
 					}
 
-					if (num == -1) {
-						num = tmp;
+					if (tutirial_num == -1) {
+						tutirial_num = tmp;
 					}
 
 				}
 			}
 
-			if (num > -1 && num < 999) {
-				objSelectNumTmp = num;
+			if (tutirial_num > -1 && tutirial_num < 999) {
+				objSelectNumTmp = tutirial_num;
 			}
 		}
 		else if ((PadInput::TipLeftLStick(STICKL_Y) < 0.1f && PadInput::TipLeftLStick(STICKL_Y) > -0.1f) && (!PadInput::OnPressed(XINPUT_BUTTON_DPAD_UP) && !PadInput::OnPressed(XINPUT_BUTTON_DPAD_DOWN))) {

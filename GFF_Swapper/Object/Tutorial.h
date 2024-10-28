@@ -6,7 +6,8 @@ class Tutorial:
 {
 private:
 
-	int num; //何番目のチュートリアルか
+	int tutorial_num; //何番目のチュートリアルか
+	int tutorial_time;
 
 public:
 	//コンストラクタ
@@ -25,5 +26,7 @@ public:
 	bool SearchColor(Object* ob) override {
 		return false;
 	}
+
+	void DrawTutorial()const;
 };
 

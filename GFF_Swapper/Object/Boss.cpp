@@ -42,7 +42,7 @@ Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), dam
 
 	cunt = 1;
 	c = 1;
-	num = 0;
+	tutirial_num = 0;
 
 	boss_anim = 0.0f;
 	shake_anim = 0;
@@ -655,21 +655,21 @@ void Boss::UpdateWingPositions()
 	float mousePos_Y = (float)KeyInput::GetMouseCursor().y;
 
 	if (KeyInput::OnKey(KEY_INPUT_T)) {
-		num += 4;
+		tutirial_num += 4;
 	}
 	if (KeyInput::OnKey(KEY_INPUT_Y)) {
-		num -= 4;
+		tutirial_num -= 4;
 	}
-	if (num < 0) {
-		num = 0;
+	if (tutirial_num < 0) {
+		tutirial_num = 0;
 	}
 
 
 	if(KeyInput::OnPressedMouse(MOUSE_INPUT_LEFT)){
 		//羽全体の移動量を計算
-		Vector2D wingMove = { mousePos_X - wing[num].x, mousePos_Y - wing[num].y };
+		Vector2D wingMove = { mousePos_X - wing[tutirial_num].x, mousePos_Y - wing[tutirial_num].y };
 		// 羽全体の座標を更新
-		for (int i = num; i < num + 4; ++i) {
+		for (int i = tutirial_num; i < tutirial_num + 4; ++i) {
 			wing[i].x += wingMove.x - 500;
 			wing[i].y += wingMove.y - 370;
 		}

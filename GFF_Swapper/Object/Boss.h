@@ -52,7 +52,7 @@ private:
 	//計算用
 	int cunt;
 	int c;
-	int num;
+	int tutirial_num;
 	int t = 0;
 
 	int state_change_time;		//状態変更のタイミング
