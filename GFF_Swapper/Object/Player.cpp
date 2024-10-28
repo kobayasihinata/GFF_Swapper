@@ -642,7 +642,7 @@ void Player::Hit(Object* _object)
 	//チュートリアル
 	if (_object->GetObjectType() == TUTORIAL)
 	{
-		//is_tutorial = true;
+		is_tutorial = true;
 	}
 }
 
