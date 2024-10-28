@@ -84,6 +84,9 @@ void Stage::Update(GameMain* _g)
 	//処理を省略して良いオブジェクトなら処理終了
 	if (check_ignore_flg)return;
 
+	//自分がグレーのブロックなら処理終了
+	if (this->block_type == GRAY_BLOCK)return;
+
 	__super::Update(_g);
 
 	//EditもUpdateを呼べるようにこの書き方
@@ -528,6 +531,9 @@ void Stage::DrawSolidBody(int _color)const
 
 void Stage::SetAroundBlock(int _num, int _block_type)
 {
+	//想定している範囲外のポインタが指定されたら処理終了
+	if (_num < 0 || _num >= 8)return;
+
 	stage_around_data[_num] = _block_type;
 }
 

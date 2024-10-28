@@ -192,19 +192,15 @@ void GameMain::Draw() const
 
 #ifdef _DEBUG
 	SetFontSize(12);
-	/*DrawFormatString(100, 100, 0xffffff, "Object数:%d", object_num);
+	DrawBox(90, 90, 400, 200, 0x000000, true);
+	DrawFormatString(100, 100, 0xffffff, "Object数:%d", object_num);
 	DrawFormatString(100, 120, 0xffffff, "Updeteが呼ばれているObject数:%d", move_object_num);
 
-	DrawFormatString(100, 140, 0xffffff, "normal:%d", 255 - (int)(camera_location.x / 100));
-	DrawFormatString(100, 160, 0xffffff, "noise:%d", (int)(camera_location.x / 100));*/
+	//DrawFormatString(100, 140, 0xffffff, "normal:%d", 255 - (int)(camera_location.x / 100));
+	//DrawFormatString(100, 160, 0xffffff, "noise:%d", (int)(camera_location.x / 100));
 	//チュートリアル表示テスト
 	SetFontSize(35);
 	//DrawFormatString(0, 160, 0xff0000, "%0.1f x %0.1f y",  camera_location.x + KeyInput::GetMouseCursor().x, stage_height - KeyInput::GetMouseCursor().y - camera_location.y);
-	DrawGraph(100, 100, test_image, TRUE);
-	DrawGraph(140, 100, test_image, TRUE);
-	DrawGraph(100, 140, test_image2, TRUE);
-	DrawGraph(140, 140, test_image2, TRUE);
-	DrawFormatString(10, 10, 0xffffff, "camera.x = %f,camera.y = %f", camera_location.x, camera_location.y);
 #endif
 }
 
@@ -475,7 +471,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 				//プレイヤーリスポーン地点の設定
 				player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
 				//エフェクトの生成
-				effect_spawner->SpawnEffect({ player_respawn.x + PLAYER_WIDTH / 2 ,player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, object[player_object]->GetColorData());
+				effect_spawner->SpawnEffect({ player_respawn.x + PLAYER_WIDTH / 2 ,player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, DEFAULT_PLAYER_COLOR);
 				break;
 			case ENEMY_DEER_RED:
 			case ENEMY_DEER_GREEN:
@@ -519,7 +515,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 	if (!player_flg || _delete_player)
 	{
 		//プレイヤーの生成
-		CreateObject(new Player, player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, GREEN);
+		CreateObject(new Player, player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, DEFAULT_PLAYER_COLOR);
 	}
 
 	//周辺ステージデータの格納
@@ -767,7 +763,10 @@ void GameMain::UpdateGameMain()
 					if (object[i] != nullptr && CheckInScreen(object[j])&& object[i]->HitBox(object[j]) && j != player_object)
 					{
 						object[i]->Hit(object[j]);
-						object[j]->Hit(object[i]);
+						if (static_cast<Stage*>(object[i])->GetBlockType() != GRAY_BLOCK)
+						{
+							object[j]->Hit(object[i]);
+						}
 					}
 				}
 				//プレイヤーに選択されているオブジェクトなら、描画色を変える
@@ -1430,15 +1429,12 @@ void GameMain::SetStageBlockAround()
 	{
 		for (int j = 0; j < stage_width_num; j++)
 		{
-
-			for (int k = 0; k < 8; k++)
+			//ブロックだけダウンキャストする
+			if (object[stage_block_pos[i][j]] != nullptr && object[stage_block_pos[i][j]]->GetObjectType() == BLOCK)
 			{
-
-				try {
+				for (int k = 0; k < 8; k++)
+				{
 					static_cast<Stage*>(object[stage_block_pos[i][j]])->SetAroundBlock(k, CheckAroundBlock(i, j, k));
-				}
-				catch (const std::bad_cast&) {
-					std::cout << "ダウンキャスト失敗" << std::endl;
 				}
 			}
 		}
