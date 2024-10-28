@@ -245,6 +245,8 @@ void GameMain::DeleteObject(int i, Object* _object)
 		int a;
 		a = 0;
 
+
+
 		//プレイヤーが消されたなら
 		if (i == player_object)
 		{
@@ -521,7 +523,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 	}
 
 	//周辺ステージデータの格納
-	//SetStageBlockAround();
+	SetStageBlockAround();
 
 	//壁生成フラグリセット
 	create_once = false;
@@ -1431,6 +1433,7 @@ void GameMain::SetStageBlockAround()
 
 			for (int k = 0; k < 8; k++)
 			{
+
 				try {
 					static_cast<Stage*>(object[stage_block_pos[i][j]])->SetAroundBlock(k, CheckAroundBlock(i, j, k));
 				}
@@ -1445,22 +1448,22 @@ void GameMain::SetStageBlockAround()
 int GameMain::CheckAroundBlock(int _i, int _j, int _num)
 {
 	//引数_iが0（上端）で、更に上のデータを参照しようとした場合、-1を返す
-	if (_i <= 0 && (_num == 0 || _num == 1 || _num == 2))
+	if (_i == 0 && (_num == 0 || _num == 1 || _num == 2))
 	{
 		return -1;
 	}
 	//引数_iがstage_height_num - 1（下端）で、更に下のデータを参照しようとした場合、-1を返す
-	if (_i >= stage_height_num - 1 && (_num == 5 || _num == 6 || _num == 7))
+	if (_i == stage_height_num - 1 && (_num == 5 || _num == 6 || _num == 7))
 	{
 		return -1;
 	}
 	//引数_jが0（左端）で、更に左のデータを参照しようとした場合、-1を返す
-	if (_j <= 0 && (_num == 0 || _num == 3 || _num == 5))
+	if (_i == 0 && (_num == 0 || _num == 3 || _num == 5))
 	{
 		return -1;
 	}
 	//引数_jがstage_width_num - 1（右端）で、更に右のデータを参照しようとした場合、-1を返す
-	if (_j >= stage_width_num - 1 && (_num == 2 || _num == 4 || _num == 7))
+	if (_i == stage_width_num - 1 && (_num == 2 || _num == 4 || _num == 7))
 	{
 		return -1;
 	}
@@ -1483,8 +1486,6 @@ int GameMain::CheckAroundBlock(int _i, int _j, int _num)
 		return stage_data[_i + 1][_j];
 	case 7:
 		return stage_data[_i + 1][_j + 1];
-	default:
-		return -1;
 	}
 	return -1;
 }
