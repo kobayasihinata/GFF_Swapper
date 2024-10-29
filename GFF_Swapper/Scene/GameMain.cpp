@@ -763,10 +763,10 @@ void GameMain::UpdateGameMain()
 					if (object[i] != nullptr && CheckInScreen(object[j])&& object[i]->HitBox(object[j]) && j != player_object)
 					{
 						object[i]->Hit(object[j]);
-						if (static_cast<Stage*>(object[i])->GetBlockType() != GRAY_BLOCK)
-						{
+						//if (static_cast<Stage*>(object[i])->GetBlockType() != GRAY_BLOCK)
+						//{
 							object[j]->Hit(object[i]);
-						}
+						//}
 					}
 				}
 				//プレイヤーに選択されているオブジェクトなら、描画色を変える
