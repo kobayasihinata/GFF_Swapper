@@ -18,6 +18,8 @@
 #include "../Object/Tutorial/TutorialText.h"
 #include "../Object/Tutorial/Tutorial.h"
 
+#define DEFAULT_PLAYER_COLOR GREEN
+
 class Player;
 
 static int ColorList[4]
@@ -45,7 +47,7 @@ private:
     int impact;                                          //画面の振動用(ずらす範囲)
     int impact_rand;                                     //画面の振動用(実際にずらす数値)
     int stage_data[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH];   //ステージデータ格納
-    int stage_block_pos[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH];     //Object配列の何番目に格納されたかを保存
+    int stage_block_pos[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH] = { -1 };     //Object配列の何番目に格納されたかを保存
     int player_object;             //プレイヤーが配列の何番目に格納されているか
     int boss_object;    
     //int boss_attack[128];

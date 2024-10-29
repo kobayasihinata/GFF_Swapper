@@ -143,7 +143,7 @@ public:
 	//ステージのタイプ設定
 	void SetStageType(int _type);
 	//ステージのタイプ取得(0=無 1=�白 2=灰 3=赤 4=緑 5=青 6=炎 7=木 8=水 9=初期リスポーン)
-	int GetStageType() { return block_type; }
+	int GetBlockType() { return block_type; }
 
 	//Edit表示設定
 	void SetDebugFlg() { debug_flg = true; }

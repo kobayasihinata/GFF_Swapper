@@ -93,7 +93,7 @@ AbstractScene* EditScene::Update()
 			{
 				stage[i][j]->Update();
 			}
-			if (stage[i][j]->GetStageType() == PLAYER_BLOCK)
+			if (stage[i][j]->GetBlockType() == PLAYER_BLOCK)
 			{	
 				player_spawn_location = { (float)(j * BOX_WIDTH),(float)(i * BOX_HEIGHT) };
 			}
@@ -571,13 +571,13 @@ void EditScene::Draw()const
 		{
 			for (int j = 0; j < stage_width_num; j++)
 			{
-				if (stage[i][j]->GetStageType() != NULL_BLOCK)
+				if (stage[i][j]->GetBlockType() != NULL_BLOCK)
 				{
 					DrawBoxAA(minimap_location.x + (j * minimap_size),
 						minimap_location.y + (i * minimap_size),
 						minimap_location.x + (j * minimap_size) + minimap_size,
 						minimap_location.y + (i * minimap_size) + minimap_size,
-						draw_block_color[stage[i][j]->GetStageType()], true);
+						draw_block_color[stage[i][j]->GetBlockType()], true);
 				}
 			}
 		}
