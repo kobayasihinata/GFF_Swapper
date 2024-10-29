@@ -1,5 +1,5 @@
 #include "BossAttackWater.h"
-#include "../Scene/GameMain.h"
+#include "../../../Scene/GameMain.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

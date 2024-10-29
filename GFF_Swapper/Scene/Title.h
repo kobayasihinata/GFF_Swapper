@@ -1,6 +1,6 @@
 #pragma once
 #include "AbstractScene.h"
-#include"../Object/BoxCollider.h"
+#include"../Object/Base/BoxCollider.h"
 #include "DxLib.h"
 #include<vector>
 #include<random>

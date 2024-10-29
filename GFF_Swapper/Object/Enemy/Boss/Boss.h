@@ -1,10 +1,10 @@
 #pragma once
-#include "Object.h"
+#include "../../Base/Object.h"
 #include <vector>
 #include <array>
 #include <ctime>
 #include <mutex> 
-#include "EnemyBat.h"
+#include "../EnemyBat.h"
 #include "BossAttackFire.h"
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"

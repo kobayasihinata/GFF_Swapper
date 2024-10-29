@@ -1,7 +1,7 @@
 #include "EnemyFrog.h"
 #include <math.h>
-#include"../Scene/GameMain.h"
-#include"../Utility/ResourceManager.h"
+#include"../../Scene/GameMain.h"
+#include"../../Utility/ResourceManager.h"
 
 EnemyFrog::EnemyFrog():
 	timer(0),
@@ -354,7 +354,7 @@ void EnemyFrog::JumpFrogDraw(Vector2D location, float _angle)const
 		ResourceManager::DrawRotaBox(location.x + (erea.x / 2)+GetRand(2), location.y + (erea.y / 2) + GetRand(2), erea.x, erea.y / 2, location.x + (erea.x / 2), location.y + (erea.y / 2), _angle, draw_color, TRUE);
 		ResourceManager::DrawRotaBox(location.x + (erea.x / 2) + GetRand(2), location.y + (erea.y / 2) + GetRand(2), erea.x, erea.y / 2, location.x + (erea.x / 2), location.y + (erea.y / 2), _angle, 0x000000, FALSE);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA,jump_cooldown_timer*4);
-		DrawCircleAA(location.x + (erea.x / 2), location.y + (erea.y / 2), (JUMP_COOLDOWN - jump_cooldown_timer) * 4, 30, draw_color, FALSE);
+		DrawCircleAA(location.x + (erea.x / 2), location.y + (erea.y / 2), (float)((JUMP_COOLDOWN - jump_cooldown_timer) * 4), 30.0f, draw_color, FALSE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	}
 

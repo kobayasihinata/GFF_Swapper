@@ -1,5 +1,5 @@
 #pragma once
-#include "Object.h"
+#include "../Base/Object.h"
 
 #define JUMP_COOLDOWN 40	//蛙の次のジャンプまでの時間
 

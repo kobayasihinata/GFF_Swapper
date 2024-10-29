@@ -4,8 +4,8 @@
 #include "../Utility/common.h"
 #include "Title.h"
 #include "../Object/Player.h"
-#include "../Object/EnemyBat.h"
-#include "../Object/EnemyFrog.h"
+#include "../Object/Enemy/EnemyBat.h"
+#include "../Object/Enemy/EnemyFrog.h"
 
 
 class End :

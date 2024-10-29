@@ -1,7 +1,7 @@
 #pragma once
-#include "Object.h"
+#include "Base/Object.h"
 #include "Stage.h"
-#include "ColorData.h"
+#include "Base/ColorData.h"
 
 class Player :
 	public Object

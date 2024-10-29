@@ -1,7 +1,7 @@
 #include "Boss.h"
 #include <math.h>
-#include "../Utility/KeyInput.h"
-#include "../Scene/GameMain.h"
+#include "../../../Utility/KeyInput.h"
+#include "../../../Scene/GameMain.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>

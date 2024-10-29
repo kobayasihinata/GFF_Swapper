@@ -54,7 +54,7 @@
     <ClCompile Include="Utility\ResourceManager.cpp">
       <Filter>ソース ファイル\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Object\BoxCollider.cpp">
+    <ClCompile Include="Object\Base\BoxCollider.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
     <ClCompile Include="Object\Player.cpp">
@@ -66,19 +66,19 @@
     <ClCompile Include="Scene\EditScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Object\ColorData.cpp">
+    <ClCompile Include="Object\Base\ColorData.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
     <ClCompile Include="Utility\KeyInput.cpp">
       <Filter>ソース ファイル\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Object\EnemyDeer.cpp">
+    <ClCompile Include="Object\Enemy\EnemyDeer.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\EnemyBat.cpp">
+    <ClCompile Include="Object\Enemy\EnemyBat.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\EnemyFrog.cpp">
+    <ClCompile Include="Object\Enemy\EnemyFrog.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
     <ClCompile Include="Object\Weather.cpp">
@@ -90,16 +90,16 @@
     <ClCompile Include="Object\EffectSpawner.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Boss.cpp">
+    <ClCompile Include="Object\Enemy\Boss\Boss.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\BossAttackWood.cpp">
+    <ClCompile Include="Object\Enemy\Boss\BossAttackWood.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\BossAttackFire.cpp">
+    <ClCompile Include="Object\Enemy\Boss\BossAttackFire.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\BossAttackWater.cpp">
+    <ClCompile Include="Object\Enemy\Boss\BossAttackWater.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
     <ClCompile Include="Object\BackGround.cpp">
@@ -111,10 +111,10 @@
     <ClCompile Include="Scene\End.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Object\TutorialText.cpp">
+    <ClCompile Include="Object\Tutorial\TutorialText.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Tutorial.cpp">
+    <ClCompile Include="Object\Tutorial\Tutorial.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Utility\Vector2D.cpp">
@@ -149,10 +149,10 @@
     <ClInclude Include="Utility\ResourceManager.h">
       <Filter>ヘッダー ファイル\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Object\BoxCollider.h">
+    <ClInclude Include="Object\Base\BoxCollider.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Object.h">
+    <ClInclude Include="Object\Base\Object.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
     <ClInclude Include="Object\Player.h">
@@ -164,19 +164,19 @@
     <ClInclude Include="Scene\EditScene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Object\ColorData.h">
+    <ClInclude Include="Object\Base\ColorData.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
     <ClInclude Include="Utility\KeyInput.h">
       <Filter>ヘッダー ファイル\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Object\EnemyDeer.h">
+    <ClInclude Include="Object\Enemy\EnemyDeer.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\EnemyBat.h">
+    <ClInclude Include="Object\Enemy\EnemyBat.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\EnemyFrog.h">
+    <ClInclude Include="Object\Enemy\EnemyFrog.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
     <ClInclude Include="Object\Weather.h">
@@ -188,16 +188,16 @@
     <ClInclude Include="Object\EffectSpawner.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Boss.h">
+    <ClInclude Include="Object\Enemy\Boss\Boss.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\BossAttackWood.h">
+    <ClInclude Include="Object\Enemy\Boss\BossAttackWood.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\BossAttackFire.h">
+    <ClInclude Include="Object\Enemy\Boss\BossAttackFire.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\BossAttackWater.h">
+    <ClInclude Include="Object\Enemy\Boss\BossAttackWater.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
     <ClInclude Include="Object\BackGround.h">
@@ -209,10 +209,10 @@
     <ClInclude Include="Scene\End.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Object\TutorialText.h">
+    <ClInclude Include="Object\Tutorial\TutorialText.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Tutorial.h">
+    <ClInclude Include="Object\Tutorial\Tutorial.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Utility\UserTemplate.h">

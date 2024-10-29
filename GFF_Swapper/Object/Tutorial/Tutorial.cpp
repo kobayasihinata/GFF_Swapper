@@ -1,5 +1,5 @@
 #include "Tutorial.h"
-#include "../Scene/GameMain.h"
+#include "../../Scene/GameMain.h"
 
 Tutorial::Tutorial(): tutorial_num(0) , tutorial_time(0)
 {

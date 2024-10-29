@@ -1,8 +1,8 @@
 #pragma once
-#include "Object.h"
+#include "../Base/Object.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "../Utility/ResourceManager.h"
+#include "../../Utility/ResourceManager.h"
 
 class TutorialText
 {

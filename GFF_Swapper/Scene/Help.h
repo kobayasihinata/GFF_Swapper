@@ -1,7 +1,7 @@
 #pragma once
 #include "AbstractScene.h"
 #include "DxLib.h"
-#include "../Object/BoxCollider.h"
+#include "../Object/Base/BoxCollider.h"
 
 class Help :
     public AbstractScene

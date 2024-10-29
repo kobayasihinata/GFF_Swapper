@@ -1,5 +1,5 @@
 #pragma once
-#include "Object.h"
+#include "../../Base/Object.h"
 class BossAttackFire : public Object
 {
 private:

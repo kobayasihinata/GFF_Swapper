@@ -235,6 +235,7 @@ int GameMain::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, 
 			return i;
 		}
 	}
+	return -1;
 }
 
 void GameMain::DeleteObject(int i, Object* _object)

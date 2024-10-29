@@ -951,16 +951,16 @@ void EditScene::RangeSelection()
 		//Ctrl & 右クリックしたらその地点の座標を保存する
 		if (KeyInput::OnMouse(MOUSE_INPUT_RIGHT))
 		{
-			range_selection[0].x = KeyInput::GetMouseCursor().x;
-			range_selection[0].y = KeyInput::GetMouseCursor().y;
+			range_selection[0].x = (float)KeyInput::GetMouseCursor().x;
+			range_selection[0].y = (float)KeyInput::GetMouseCursor().y;
 			//範囲選択中に立てるフラグ
 			now_range_selection = true;
 		}
 		//Ctrl & 右クリックを押し続けたら２つ目の座標が随時更新されていく
 		if (KeyInput::OnPressedMouse(MOUSE_INPUT_RIGHT))
 		{
-			range_selection[1].x = KeyInput::GetMouseCursor().x;
-			range_selection[1].y = KeyInput::GetMouseCursor().y;
+			range_selection[1].x = (float)KeyInput::GetMouseCursor().x;
+			range_selection[1].y = (float)KeyInput::GetMouseCursor().y;
 		}
 		//Ctrl & 右クリックを離したら座標が確定されると同時にフラグが立つ
 		if (KeyInput::OnReleaseMouse(MOUSE_INPUT_RIGHT))
