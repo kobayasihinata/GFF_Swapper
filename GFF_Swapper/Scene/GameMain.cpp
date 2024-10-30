@@ -194,7 +194,7 @@ void GameMain::Draw() const
 	SetFontSize(12);
 	DrawBox(90, 90, 400, 200, 0x000000, true);
 	DrawFormatString(100, 100, 0xffffff, "Object数:%d", object_num);
-	DrawFormatString(100, 120, 0xffffff, "Updeteが呼ばれているObject数:%d", move_object_num);
+	DrawFormatString(100, 120, 0xffffff, "Updeteが呼ばれているObject数:%d", in_screen_object.size());
 
 	//DrawFormatString(100, 140, 0xffffff, "normal:%d", 255 - (int)(camera_location.x / 100));
 	//DrawFormatString(100, 160, 0xffffff, "noise:%d", (int)(camera_location.x / 100));
@@ -240,9 +240,7 @@ void GameMain::DeleteObject(int i, Object* _object)
 	{
 		int a;
 		a = 0;
-
-
-
+		
 		//プレイヤーが消されたなら
 		if (i == player_object)
 		{
@@ -751,36 +749,47 @@ void GameMain::UpdateGameMain()
 		tutorial_text.Update(camera_location, GetPlayerLocation(), stage_height);
 		for (int i = 0; object[i] != nullptr; i++)
 		{
+			//ローカル座標の更新
 			object[i]->SetScreenPosition(camera_location, impact_rand);
+		}
+		//スクリーン内オブジェクトの更新
+		InScreenUpdate();
+
+		for (const auto& in_screen_object : in_screen_object)
+		{
 			//プレイヤーとボス以外の画面内オブジェクトの更新
-			if (((i == boss_object && boss_blind_flg == false) || i != boss_object) && i != player_object && CheckInScreen(object[i]))
+			if (
+				(
+				 (
+					in_screen_object == object[boss_object] && boss_blind_flg == false) || 
+					in_screen_object != object[boss_object]) &&
+				in_screen_object != object[player_object]
+				)
 			{
-				object[i]->Update(this);
+				in_screen_object->Update(this);
 				move_object_num++;
-				for (int j = i + 1; object[j] != nullptr; j++)
+				for (const auto& in_screen_object2 : this->in_screen_object)
 				{
 					//各オブジェクトとの当たり判定
-					if (object[i] != nullptr && CheckInScreen(object[j])&& object[i]->HitBox(object[j]) && j != player_object)
+					if (in_screen_object->HitBox(in_screen_object2) &&
+						in_screen_object2 != object[player_object])
 					{
-						object[i]->Hit(object[j]);
-						//if (static_cast<Stage*>(object[i])->GetBlockType() != GRAY_BLOCK)
-						//{
-							object[j]->Hit(object[i]);
-						//}
+						in_screen_object->Hit(in_screen_object2);
 					}
 				}
 				//プレイヤーに選択されているオブジェクトなら、描画色を変える
-				if (object[i] != nullptr && object[i] == now_current_object && now_current_object != object[boss_object])
+				if (in_screen_object != nullptr &&
+					in_screen_object == now_current_object &&
+					now_current_object != object[boss_object])
 				{
-					object[i]->SetDrawColor(WHITE);
+					in_screen_object->SetDrawColor(WHITE);
 				}
-				else if (object[i] != nullptr)
+				else if (in_screen_object != nullptr)
 				{
-					object[i]->SetDrawColor(object[i]->GetColorData());
+					in_screen_object->SetDrawColor(in_screen_object->GetColorData());
 				}
 			}
 		}
-		//管理クラスの更新
 		weather->Update(this);
 	}
 
@@ -1484,4 +1493,33 @@ int GameMain::CheckAroundBlock(int _i, int _j, int _num)
 		return stage_data[_i + 1][_j + 1];
 	}
 	return -1;
+}
+
+void GameMain::InScreenUpdate()
+{
+	for (int i = 0; object[i] != nullptr; i++)
+	{
+		//既にスクリーン内に入っているオブジェクトなら、追加処理は省略する
+		auto result = std::find(in_screen_object.begin(), in_screen_object.end(), object[i]);
+		if (result == in_screen_object.end())
+		{
+			//スクリーン内に入っているオブジェクトを追加する
+			if (CheckInScreen(object[i]))
+			{
+				in_screen_object.push_back(object[i]);
+			}
+		}
+	}
+	//画面外に出たオブジェクトを配列から除外する
+	for (auto it =in_screen_object.begin();it != in_screen_object.end();)
+	{
+		if (!CheckInScreen(*it))
+		{
+			it = in_screen_object.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }

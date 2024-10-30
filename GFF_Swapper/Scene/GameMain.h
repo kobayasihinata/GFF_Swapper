@@ -18,6 +18,8 @@
 #include "../Object/Tutorial/TutorialText.h"
 #include "../Object/Tutorial/Tutorial.h"
 
+#include <vector>
+
 #define DEFAULT_PLAYER_COLOR GREEN
 
 class Player;
@@ -55,6 +57,7 @@ private:
     GameMainState gm_state;                     //現在のゲームメインの状態を格納
     AbstractScene* now_scene;                   //現在のシーン
     Object* object[OBJECT_NUM] = { nullptr };    //オブジェクト格納
+    std::vector<Object*> in_screen_object;      //画面内にあるオブジェクト格納
     Object* now_current_object;                       //現在交換対象になっているオブジェクト
     WeatherManager* weather;                        //天気管理オブジェクト
     EffectSpawner* effect_spawner;                  //エフェクト管理オブジェクト
@@ -262,5 +265,8 @@ public:
 
     //ステージデータの周辺８マスがどこか計算する i,j=確認したいstage_data配列の位置 _num確認したい場所
     int CheckAroundBlock(int _i, int _j, int _num);
+
+    //スクリーン内のオブジェクト一覧を更新する
+    void InScreenUpdate();
 };
 
