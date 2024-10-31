@@ -451,6 +451,7 @@ void EditScene::Draw()const
 	DrawStringF(tool_location.x, tool_location.y + 60, "左クリックで選択＆配置", 0xffffff);
 	DrawStringF(tool_location.x, tool_location.y + 80, "ctrl+zで一つ戻る", 0xffffff);
 	DrawStringF(tool_location.x + tool_size.x - 270, tool_location.y + 80, "Bキーで保存＆ゲームメインへ戻る", 0xffffff);
+	DrawStringF(tool_location.x + tool_size.x - 600, tool_location.y + 80, "ctrl+右クリックで範囲選択", 0xffffff);
 
 	//現在選択中のオブジェクトを分かりやすく	
 	for (int i = 0; i < UI_OBJECT_TYPE_NUM; i++)
