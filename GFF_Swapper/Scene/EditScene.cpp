@@ -102,17 +102,6 @@ AbstractScene* EditScene::Update()
 	switch (ChechSelectErea())
 	{
 	case STAGE_EDIT:
-		//編集ステージ変更ボタンの処理
-		for (int i = 0; i < STAGE_NUM; i++)
-		{
-			if (CheckInArea(editstage_button[i], STAGE_CHANGE_BUTTON_WIDTH, STAGE_CHANGE_BUTTON_HEIGHT))
-			{
-				if (KeyInput::OnMouse(MOUSE_INPUT_LEFT))
-				{
-					ChangeEditStage(i);
-				}
-			}
-		}
 		for (int i = 0; i < stage_height_num; i++)
 		{
 			for (int j = 0; j < stage_width_num; j++)
@@ -202,10 +191,10 @@ AbstractScene* EditScene::Update()
 						ui_current_type = i;
 					}
 					//プレイヤーをダブルクリックしたならプレイヤーリスポーンブロックまで移動(今UIの都合上動きません)
-					if (old_current_type == PLAYER_BLOCK && current_type == PLAYER_BLOCK)
-					{
-						camera_location = { player_spawn_location.x - (SCREEN_WIDTH / 2),player_spawn_location.y - (SCREEN_HEIGHT / 2) };
-					}
+					//if (old_current_type == PLAYER_BLOCK && current_type == PLAYER_BLOCK)
+					//{
+					//	camera_location = { player_spawn_location.x - (SCREEN_WIDTH / 2),player_spawn_location.y - (SCREEN_HEIGHT / 2) };
+					//}
 				}
 			}
 		}
@@ -346,7 +335,7 @@ AbstractScene* EditScene::Update()
 			camera_location.y = (cursor.y - minimap_location.y) * (BOX_HEIGHT / minimap_size) - (SCREEN_HEIGHT/2);
 		}
 		break;
-	default:
+	case STAGE_CHANGE:
 		//編集ステージ変更ボタンの処理
 		for (int i = 0; i < STAGE_NUM; i++)
 		{
@@ -358,6 +347,8 @@ AbstractScene* EditScene::Update()
 				}
 			}
 		}
+		break;
+	default:
 		break;
 	}
 	//つかんで動かす
@@ -615,7 +606,7 @@ void EditScene::Draw()const
 	}
 
 	//範囲選択の四角表示
-	DrawBoxAA(range_selection[0].x, range_selection[0].y, range_selection[1].x, range_selection[1].y, 0x0000ff, false);
+	DrawBoxAA(range_selection_local[0].x, range_selection_local[0].y, range_selection_local[1].x, range_selection_local[1].y, 0x0000ff, false);
 
 	DrawBoxAA(editstage_button[0].x - 1, editstage_button[0].y - 1, editstage_button[STAGE_NUM-1].x + STAGE_CHANGE_BUTTON_WIDTH+1, editstage_button[STAGE_NUM - 1].y + STAGE_CHANGE_BUTTON_HEIGHT + 1, 0xffffff, true);
 
@@ -835,19 +826,16 @@ int EditScene::ChechSelectErea()
 	{
 		return TOOL_BOX;
 	}
+	//ステージ変更ボタンにカーソルがあっているか判断
+	if (CheckInArea(editstage_button[0], Vector2D(STAGE_CHANGE_BUTTON_WIDTH * STAGE_NUM, STAGE_CHANGE_BUTTON_HEIGHT)))
+	{
+		return STAGE_CHANGE;
+	}
 	else
 	{
-		//ツールボックスもミニマップもつかんでいなければツールボックス外の処理
-		for (int i = 0; i < stage_height_num; i++)
-		{
-			for (int j = 0; j < stage_width_num; j++)
-			{
-				if (cursor.x > stage[i][j]->GetLocalLocation().x && cursor.x<stage[i][j]->GetLocalLocation().x + BOX_WIDTH && cursor.y>stage[i][j]->GetLocalLocation().y && cursor.y < stage[i][j]->GetLocalLocation().y + BOX_HEIGHT && tool_pickup_flg == false)
-				{
-					return STAGE_EDIT;
-				}
-			}
-		}
+		// ツールボックスもミニマップもつかんでいない＆
+		// ステージ変更ボタン内でもないならツールボックス外の処理
+		return STAGE_EDIT;
 	}
 	return -1;
 }
@@ -951,17 +939,21 @@ void EditScene::RangeSelection()
 		//Ctrl & 右クリックしたらその地点の座標を保存する
 		if (KeyInput::OnMouse(MOUSE_INPUT_RIGHT))
 		{
-			range_selection[0].x = (float)KeyInput::GetMouseCursor().x;
-			range_selection[0].y = (float)KeyInput::GetMouseCursor().y;
+			range_selection[0].x = (float)KeyInput::GetMouseCursor().x + camera_location.x;
+			range_selection[0].y = (float)KeyInput::GetMouseCursor().y + camera_location.y;
 			//範囲選択中に立てるフラグ
 			now_range_selection = true;
 		}
 		//Ctrl & 右クリックを押し続けたら２つ目の座標が随時更新されていく
 		if (KeyInput::OnPressedMouse(MOUSE_INPUT_RIGHT))
 		{
-			range_selection[1].x = (float)KeyInput::GetMouseCursor().x;
-			range_selection[1].y = (float)KeyInput::GetMouseCursor().y;
+			range_selection[1].x = (float)KeyInput::GetMouseCursor().x + camera_location.x;
+			range_selection[1].y = (float)KeyInput::GetMouseCursor().y + camera_location.y;
 		}
+		//ローカル座標を常に更新する
+		range_selection_local[0] = range_selection[0] - camera_location;
+		range_selection_local[1] = range_selection[1] - camera_location;
+
 		//Ctrl & 右クリックを離したら座標が確定されると同時にフラグが立つ
 		if (KeyInput::OnReleaseMouse(MOUSE_INPUT_RIGHT))
 		{
@@ -996,7 +988,7 @@ void EditScene::RangeSelection()
 			{
 				for (int j = 0; j < stage_width_num; j++)
 				{
-					if (range_selection_min.x < stage[i][j]->GetLocalLocation().x && range_selection_max.x > stage[i][j]->GetLocalLocation().x && range_selection_min.y < stage[i][j]->GetLocalLocation().y && range_selection_max.y > stage[i][j]->GetLocalLocation().y)
+					if (range_selection_min.x < stage[i][j]->GetLocation().x && range_selection_max.x > stage[i][j]->GetLocation().x && range_selection_min.y < stage[i][j]->GetLocation().y && range_selection_max.y > stage[i][j]->GetLocation().y)
 					{
 						select_data[i][j] = true;
 					}

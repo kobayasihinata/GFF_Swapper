@@ -23,6 +23,7 @@ enum SelectErea
     TOOL_BOX,
     SELECT_TYPE,
     MINIMAP,
+    STAGE_CHANGE
 };
 
 static char obj_string[UI_OBJECT_TYPE_NUM][256] =
@@ -155,7 +156,8 @@ private:
 
     bool range_selection_flg;                             //範囲選択後の操作待ちか判断
     bool now_range_selection;                             //範囲選択中か判断
-    Vector2D range_selection[2];                          //範囲選択時の座標 始点と終点
+    Vector2D range_selection[2];                          //範囲選択時のワールド座標 始点と終点
+    Vector2D range_selection_local[2];                    //範囲選択時のローカル座標 始点と終点
 
     Vector2D editstage_button[STAGE_NUM];                 //ステージ変更ボタン座標
 public:
