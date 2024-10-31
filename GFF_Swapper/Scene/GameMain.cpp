@@ -53,7 +53,10 @@ void GameMain::Initialize()
 
 	back_ground->Initialize({ (float)stage_width,(float)stage_height });
 
-	lock_pos = camera_location;
+	lock_pos[0].x = 0;
+	lock_pos[0].y = 0;
+	lock_pos[1].x = stage_width - SCREEN_WIDTH;
+	lock_pos[1].y = stage_height - SCREEN_HEIGHT;
 
 	SetWindowIconID(102);
 
@@ -281,89 +284,41 @@ void GameMain::DeleteObject(int i, Object* _object)
 
 void GameMain::UpdateCamera()
 {
-	//X座標が画面端以外なら
-	if (object[player_object]->GetCenterLocation().x > (SCREEN_WIDTH / 2) && object[player_object]->GetCenterLocation().x < stage_width - (SCREEN_WIDTH / 2))
+	//カメラ更新（ボスステージ）
+	if (now_stage == 2)
 	{
-		//X座標のロックをしない
-		camera_x_lock_flg = false;
-		//ロック時に一度だけ入る処理をリセットする
-		x_pos_set_once = false;
-	}
-	//X座標が画面端なら
-	else
-	{
-		//X座標のロックをする
-		camera_x_lock_flg = true;
-		//固定する位置を一度だけ設定する
-		if (x_pos_set_once == false)
-		{
-			if (object[player_object]->GetCenterLocation().x <= (SCREEN_WIDTH / 2))
-			{
-				lock_pos.x = (SCREEN_WIDTH / 2);
-			}
-			if (object[player_object]->GetCenterLocation().x >= stage_width - (SCREEN_WIDTH / 2))
-			{
-				lock_pos.x = (float)stage_width - (SCREEN_WIDTH / 2);
-			}
-			/*lock_pos.x = object[player_object]->GetCenterLocation().x;*/
-			x_pos_set_once = true;
-		}
-	}
-	//Y座標が画面端以外なら
-	if (object[player_object]->GetCenterLocation().y < stage_height - (SCREEN_HEIGHT / 2) - 10 && object[player_object]->GetCenterLocation().y>(SCREEN_HEIGHT / 2))
-	{
-		//Y座標のロックをしない
-		camera_y_lock_flg = false;
-		//ロック時に一度だけ入る処理をリセットする
-		y_pos_set_once = false;
-	}
-	//Y座標が画面端なら
-	else
-	{
-		//Y座標のロックをする
-		camera_y_lock_flg = true;
-		//固定する位置を一度だけ設定する
-		if (y_pos_set_once == false)
-		{
-			if (object[player_object]->GetCenterLocation().y >= stage_height - (SCREEN_HEIGHT / 2) - 10)
-			{
-				lock_pos.y = stage_height - ((float)SCREEN_HEIGHT / 2) - 10;
-			}
-			if (object[player_object]->GetCenterLocation().y <= (SCREEN_HEIGHT / 2))
-			{
-				lock_pos.y = (SCREEN_HEIGHT / 2);
-			}
-			//lock_pos.y = object[player_object]->GetCenterLocation().y;
-			y_pos_set_once = true;
-		}
+		camera_location = { 160,40 };
+		return;
 	}
 
-		//カメラ更新
-		if (camera_x_lock_flg == false && camera_y_lock_flg == false)
-		{
-			camera_location.x = object[player_object]->GetCenterLocation().x - (SCREEN_WIDTH / 2);
-			camera_location.y = object[player_object]->GetCenterLocation().y - (SCREEN_HEIGHT / 2);
-		}
-		else if (camera_x_lock_flg == false && camera_y_lock_flg == true)
-		{
-			camera_location.x = object[player_object]->GetCenterLocation().x - (SCREEN_WIDTH / 2);
-			camera_location.y = lock_pos.y - (SCREEN_HEIGHT / 2);
-		}
-		else if (camera_x_lock_flg == true && camera_y_lock_flg == false)
-		{
-			camera_location.x = lock_pos.x - (SCREEN_WIDTH / 2);
-			camera_location.y = object[player_object]->GetCenterLocation().y - (SCREEN_HEIGHT / 2);
-		}
-		else
-		{
-			camera_location.x = lock_pos.x - (SCREEN_WIDTH / 2);
-			camera_location.y = lock_pos.y - (SCREEN_HEIGHT / 2);
-		}
-		//カメラ更新（ボスステージ）
-		if (now_stage == 2)
-		{
-			camera_location = { 160,40};
-		}
+	//カメラ座標更新
+	camera_location.x = object[player_object]->GetCenterLocation().x - (SCREEN_WIDTH / 2);
+	camera_location.y = object[player_object]->GetCenterLocation().y - (SCREEN_HEIGHT / 2);
+
+	//X座標が画面左端以下なら
+	if (object[player_object]->GetCenterLocation().x < (SCREEN_WIDTH / 2))
+	{
+		//カメラのX座標を左端固定する
+		camera_location.x = lock_pos[0].x;
+	}
+	//X座標が画面右端以上なら
+	if (object[player_object]->GetCenterLocation().x > stage_width - (SCREEN_WIDTH / 2))
+	{
+		//カメラのX座標を右端固定する
+		camera_location.x = lock_pos[1].x;
+	}
+	//Y座標が画面上端以上なら
+	if (object[player_object]->GetCenterLocation().y < (SCREEN_HEIGHT / 2))
+	{
+		//カメラのX座標を上端固定する
+		camera_location.y = lock_pos[0].y;
+	}
+	//Y座標が画面下端以上なら
+	if (object[player_object]->GetCenterLocation().y > stage_height - (SCREEN_HEIGHT / 2) - 10)
+	{
+		//カメラのX座標を下端固定する
+		camera_location.y = lock_pos[1].y;
+	}
 
 	//カメラ振動処理
 	if (impact > 0)
