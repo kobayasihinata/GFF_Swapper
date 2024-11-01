@@ -158,7 +158,7 @@ public:
     bool GetSearchFlg();
 
     //プレイヤーのワールド座標を取得
-    Vector2D GetPlayerLocation();
+    Vector2D GetPlayerLocation()const;
 
     Vector2D GetPlayerErea();
 

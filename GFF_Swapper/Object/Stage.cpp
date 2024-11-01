@@ -85,7 +85,7 @@ void Stage::Update(GameMain* _g)
 	if (check_ignore_flg)return;
 
 	//自分がグレーのブロックなら処理終了
-	if (this->block_type == GRAY_BLOCK)return;
+	//if (this->block_type == GRAY_BLOCK)return;
 
 	__super::Update(_g);
 
@@ -401,7 +401,7 @@ void Stage::Hit(Object* _object)
 	if (check_ignore_flg)return;
 
 	//自分がグレーのブロックなら処理終了
-	if (this->block_type == GRAY_BLOCK)return;
+	//if (this->block_type == GRAY_BLOCK)return;
 
 	//相手がブロックなら処理終了
 	if (_object->GetObjectType() == BLOCK)return;

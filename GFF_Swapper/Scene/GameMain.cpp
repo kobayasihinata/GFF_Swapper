@@ -53,11 +53,6 @@ void GameMain::Initialize()
 
 	back_ground->Initialize({ (float)stage_width,(float)stage_height });
 
-	lock_pos[0].x = 0;
-	lock_pos[0].y = 0;
-	lock_pos[1].x = stage_width - SCREEN_WIDTH;
-	lock_pos[1].y = stage_height - SCREEN_HEIGHT;
-
 	SetWindowIconID(102);
 
 	test_image = LoadGraph("Resource/Images/sozai/grow.PNG");
@@ -196,8 +191,9 @@ void GameMain::Draw() const
 #ifdef _DEBUG
 	SetFontSize(12);
 	DrawBox(90, 90, 400, 200, 0x000000, true);
-	DrawFormatString(100, 100, 0xffffff, "Object数:%d", object_num);
-	DrawFormatString(100, 120, 0xffffff, "Updeteが呼ばれているObject数:%d", in_screen_object.size());
+	DrawFormatString(100, 100, 0xffffff, "プレイヤー座標:%f %f", GetPlayerLocation().x,GetPlayerLocation().y);
+	//DrawFormatString(100, 100, 0xffffff, "Object数:%d", object_num);
+	//DrawFormatString(100, 120, 0xffffff, "Updeteが呼ばれているObject数:%d", in_screen_object.size());
 
 	//DrawFormatString(100, 140, 0xffffff, "normal:%d", 255 - (int)(camera_location.x / 100));
 	//DrawFormatString(100, 160, 0xffffff, "noise:%d", (int)(camera_location.x / 100));
@@ -476,8 +472,16 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 
 	//壁生成フラグリセット
 	create_once = false;
+
+	//カメラ固定位置のリセット
+	lock_pos[0].x = 0;
+	lock_pos[0].y = 0;
+	lock_pos[1].x = stage_width - SCREEN_WIDTH;
+	lock_pos[1].y = stage_height - SCREEN_HEIGHT;
+
 	//カメラのリセット
 	ResetCamera();
+
 	//BGMの再生
 	if (now_stage == 0)
 	{
@@ -508,7 +512,7 @@ bool GameMain::GetSearchFlg()
 	return object[player_object]->GetSearchFlg();
 }
 
-Vector2D GameMain::GetPlayerLocation()
+Vector2D GameMain::GetPlayerLocation()const
 {
 	return object[player_object]->GetLocation();
 }

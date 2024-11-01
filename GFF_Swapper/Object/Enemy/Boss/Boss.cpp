@@ -404,10 +404,11 @@ void Boss::BossAtack(GameMain *_g)
 		oldF = f;
 		f = true;
 		if (cnt == 240) {
-			if (++attack > 2) {
-				attack = 0;
-			}
+			//if (++attack > 2) {
+			//	attack = 0;
+			//}
 			
+			attack = 0;
 			if (local_location.x < 640.f) {
 				side = true;
 			}
@@ -428,7 +429,7 @@ void Boss::BossAtack(GameMain *_g)
 			}
 			if (cnt % 30 == 0) {
 				Vector2D e = { 20.f,20.f };
-				_g->CreateObject(new BossAttackFire, GetCenterLocation(), e, RED);
+				_g->CreateObject(new BossAttackFire, this->GetCenterLocation(), e, RED);
 			}
 			if (cnt > 300) {
 				cnt = 0;
