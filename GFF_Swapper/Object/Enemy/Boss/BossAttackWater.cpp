@@ -6,6 +6,7 @@
 
 BossAttackWater::BossAttackWater()
 {
+	camera = Camera::Get();
 	type = WATER;
 	can_swap = FALSE;
 	can_hit = FALSE;
@@ -44,9 +45,9 @@ void BossAttackWater::Finalize()
 {
 }
 
-void BossAttackWater::Update(GameMain* _g)
+void BossAttackWater::Update(ObjectManager* _manager)
 {
-	__super::Update(_g);
+	__super::Update(_manager);
 
 	if (flg) {
 		if (moveFlg) {
@@ -67,15 +68,15 @@ void BossAttackWater::Update(GameMain* _g)
 
 		if (local_location.x < 0 || local_location.x > 1280 || local_location.y < 0 || local_location.y > 720) {
 			if (this != nullptr) {
-				_g->CameraImpact(15);
-				_g->SpawnEffect(location, erea, ExplosionEffect, 10, BLUE);
+				camera->SetImpact(15);
+				_manager->SpawnEffect(location, erea, ExplosionEffect, 10, BLUE);
 				ResourceManager::StartSound(end_se);
-				_g->DeleteObject(object_pos, this);
+				_manager->DeleteObject(this);
 			}
 		}
 	}
 	else {
-		//Location player = _g->GetPlayerLocation();
+		//Location player = _manager->GetPlayerLocation();
 		//if (player.x - location.x > 0) {
 		if(location.x < 640.f){
 			velocity.x = 3.f;
@@ -96,11 +97,11 @@ void BossAttackWater::Update(GameMain* _g)
 	f_location.x += 30 * cosf(5.0f * (frame / 5) + (float)M_PI) * cosf(rad);
 	f_location.y += 30 * cosf(5.0f * (frame / 5) + (float)M_PI) * sinf(rad);
 	if (hitFlg) {
-		_g->CameraImpact(15);
-		_g->SpawnEffect(location, erea, ExplosionEffect, 10, BLUE);
+		camera->SetImpact(15);
+		_manager->SpawnEffect(location, erea, ExplosionEffect, 10, BLUE);
 		ResourceManager::StartSound(end_se);
 		//ここで削除
-		_g->DeleteObject(object_pos,this);
+		_manager->DeleteObject(this);
 	}
 
 	

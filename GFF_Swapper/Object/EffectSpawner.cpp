@@ -36,6 +36,8 @@ EffectSpawner::~EffectSpawner()
 
 void EffectSpawner::Initialize()
 {
+	camera = Camera::Get();
+
 	for (int i = 0; i < EFFECT_NUM; i++)
 	{
 		ResetEffect(i);
@@ -48,7 +50,7 @@ void EffectSpawner::Initialize()
 	swap_move_se = ResourceManager::SetSound("Resource/Sounds/Effect/swap_move.wav");
 }
 
-void EffectSpawner::Update(GameMain* _g)
+void EffectSpawner::Update(ObjectManager* _manager)
 {
 	frame++;
 	for (int i = 0; i < EFFECT_NUM; i++)
@@ -56,7 +58,7 @@ void EffectSpawner::Update(GameMain* _g)
 		if (effect[i].spawn_flg == true)
 		{
 			//ローカル座標の更新
-			SetScreenPosition(_g->GetCameraLocation(), i);
+			SetScreenPosition(camera->GetCameraLocation(), i);
 			effect[i].timer++;
 			switch (effect[i].effect_type)
 			{
@@ -153,8 +155,8 @@ void EffectSpawner::Update(GameMain* _g)
 		for (int j = 0; j < SWAP_EFFECT_NUM; j++)
 		{
 			//ローカル座標の更新
-			swap_anim[i].local_location[j].x = swap_anim[i].location[j].x - _g->GetCameraLocation().x - (SWAP_EFFECT_SIZE / 2);
-			swap_anim[i].local_location[j].y = swap_anim[i].location[j].y - _g->GetCameraLocation().y - (SWAP_EFFECT_SIZE / 2);
+			swap_anim[i].local_location[j].x = swap_anim[i].location[j].x - camera->GetCameraLocation().x - (SWAP_EFFECT_SIZE / 2);
+			swap_anim[i].local_location[j].y = swap_anim[i].location[j].y - camera->GetCameraLocation().y - (SWAP_EFFECT_SIZE / 2);
 			//残像の更新
 			//if (swap_anim[i].timer % 3 == 0)
 			//{
@@ -198,7 +200,7 @@ void EffectSpawner::Update(GameMain* _g)
 		{
 			swap_anim[i].move_flg = false;
 			//色交換完了エフェクト
-			//_g->SpawnEffect(swap_anim[i].goal, swap_anim[i].erea, PlayerSpawnEffect, 30, swap_anim[i].color);
+			//_manager->SpawnEffect(swap_anim[i].goal, swap_anim[i].erea, PlayerSpawnEffect, 30, swap_anim[i].color);
 
 		}
 	}

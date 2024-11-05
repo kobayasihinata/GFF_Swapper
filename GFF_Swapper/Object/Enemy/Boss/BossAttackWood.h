@@ -3,6 +3,7 @@
 class BossAttackWood : public Object
 {
 private:
+	class Camera* camera;                                      //カメラ座標
 	Vector2D velocity;
 	float bambooHeight;  //高さ
 	Vector2D startLoc;
@@ -20,7 +21,7 @@ public:
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Finalize()override;
 
-	void Update(GameMain* _g)override;
+	void Update(ObjectManager* _manager)override;
 	void Draw()const override;
 
 	void Hit(Object* _object)override;

@@ -4,6 +4,7 @@
 
 BossAttackFire::BossAttackFire()
 {
+	camera = Camera::Get();
 	type = FIRE;
 	can_swap = FALSE;
 	can_hit = FALSE;
@@ -38,14 +39,14 @@ void BossAttackFire::Finalize()
 {
 }
 
-void BossAttackFire::Update(GameMain* _g)
+void BossAttackFire::Update(ObjectManager* _manager)
 {
-	__super::Update(_g);
+	__super::Update(_manager);
 
 	if (!flg) {
 		//プレイヤーとボスの座標からベクトルを計算
-		Vector2D player = _g->GetPlayerLocation();
-		Vector2D boss = { _g->GetBossLocation()};
+		Vector2D player = _manager->GetPlayerLocation();
+		Vector2D boss = { _manager->GetBossLocation()};
 		Vector2D v;
 		float len = sqrtf(powf(player.x - boss.x, 2) + powf(player.y - boss.y + (GetRand(6) - 3), 2));
 		v.x = (player.x - boss.x) / len;
@@ -82,11 +83,11 @@ void BossAttackFire::Update(GameMain* _g)
 	
 
 	if (hitFlg) {
-		_g->SpawnEffect(location, erea, ExplosionEffect, 10, RED);
-		_g->CameraImpact(15);
+		_manager->SpawnEffect(location, erea, ExplosionEffect, 10, RED);
+		camera->SetImpact(15);
 		ResourceManager::StartSound(end_se);
 		if (this != nullptr) {
-			_g->DeleteObject(object_pos,this);
+			_manager->DeleteObject(this);
 		}
 	}
 }

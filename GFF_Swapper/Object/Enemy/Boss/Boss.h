@@ -83,12 +83,12 @@ public:
 	~Boss();
 
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
-	void Update(GameMain* _g)override;
+	void Update(ObjectManager* _manager)override;
 	void Draw()const override;
 	void Finalize()override;
 
 	//ボスの移動処理
-	void Move(GameMain* _g);
+	void Move();
 
 	//ヒット時の処理
 	void Hit(Object* _object)override;
@@ -106,7 +106,7 @@ public:
 	void barrier();
 
 	//ボスの攻撃
-	void BossAtack(GameMain *_g);
+	void BossAtack(ObjectManager* _manager);
 
 	//六角形模様球体の描画
 	void DrawHexagonSphere() const;

@@ -94,7 +94,7 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 
 }
 
-void Boss::Update(GameMain* _g)
+void Boss::Update(ObjectManager* _manager)
 {
 	++wing_fps;
 	// ステージとの当たり判定フラグを初期化
@@ -116,7 +116,7 @@ void Boss::Update(GameMain* _g)
 	//UpdateWingPositions();
 
 	boss_anim = (float)sin(PI * 2.f / 60.f * wing_fps) * 5.f;
-	Vector2D player_pos = _g->GetPlayerLocation();
+	Vector2D player_pos = _manager->GetPlayerLocation();
 
 	if (player_pos.x > 140) {
 
@@ -124,14 +124,14 @@ void Boss::Update(GameMain* _g)
 		{
 		case BossState::MOVE:
 			// ボスの移動処理を呼び出し
-			Move(_g);
+			Move();
 			break;
 		case BossState::ATTACK:
-			BossAtack(_g);
+			BossAtack(_manager);
 			break;
 		case BossState::DEATH:
-			_g->DeleteObject(object_pos, this);
-			_g->UpdateState(GameMainState::GameClear);
+			_manager->DeleteObject(this);
+			_manager->UpdateState(GameMainState::GameClear);
 			break;
 		default:
 			break;
@@ -310,7 +310,7 @@ void Boss::Finalize()
 {
 }
 
-void Boss::Move(GameMain* _g)
+void Boss::Move()
 {
 	// 現在の時間をシードとして乱数生成器を初期化する
 	srand((unsigned)time(NULL));
@@ -398,7 +398,7 @@ void Boss::barrier()
 
 }
 
-void Boss::BossAtack(GameMain *_g)
+void Boss::BossAtack(ObjectManager *_manager)
 {
 	if ((local_location.x > 0 && local_location.x < 1280 && local_location.y > 0 && local_location.y < 720) && ++cnt >= 240) {
 		oldF = f;
@@ -428,7 +428,7 @@ void Boss::BossAtack(GameMain *_g)
 			}
 			if (cnt % 30 == 0) {
 				Vector2D e = { 20.f,20.f };
-				_g->CreateObject(new BossAttackFire, this->GetCenterLocation(), e, RED);
+				_manager->CreateObject(new BossAttackFire, this->GetCenterLocation(), e, RED);
 			}
 			if (cnt > 300) {
 				cnt = 0;
@@ -454,7 +454,7 @@ void Boss::BossAtack(GameMain *_g)
 					l.x = 1200.f;
 					l.y = attack_num * 150.f + 150.f;
 				}
-				_g->CreateObject(new BossAttackWater, l, e, BLUE);
+				_manager->CreateObject(new BossAttackWater, l, e, BLUE);
 				attack_num++;
 			}
 			if (cnt > 300) {
@@ -495,7 +495,7 @@ void Boss::BossAtack(GameMain *_g)
 					l.x = x;
 					l.y = 930.f;
 					attackWood[woodNum++] = l.x;
-					_g->CreateObject(new BossAttackWood, l, e, GREEN);
+					_manager->CreateObject(new BossAttackWood, l, e, GREEN);
 				}
 				
 

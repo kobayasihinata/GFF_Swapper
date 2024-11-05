@@ -3,6 +3,7 @@
 class BossAttackFire : public Object
 {
 private:
+	class Camera* camera;                                      //カメラ座標
 	Vector2D velocity;
 	bool flg;
 	bool hitFlg;
@@ -18,7 +19,7 @@ public:
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
 	void Finalize()override;
 
-	void Update(GameMain* _g)override;
+	void Update(ObjectManager* _manager)override;
 	void Draw()const override;
 
 	void Hit(Object* _object)override;

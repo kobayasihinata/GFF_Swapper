@@ -8,6 +8,7 @@
 
 Player::Player()
 {
+	camera = Camera::Get();
 	frame = 0;
 	type = PLAYER;
 	can_swap = TRUE;	//プレイヤーのcan_swapは真でも偽でも大丈夫
@@ -105,12 +106,11 @@ void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int
 	damageFlg = false;
 }
 
-void Player::Update(GameMain* _g)
+void Player::Update(ObjectManager* _manager)
 {
 	
 	if (!is_tutorial) {
-		__super::Update(_g);
-
+		__super::Update(_manager);
 
 		//意図しない変更を防止
 		SavePlayerSound();
@@ -127,13 +127,13 @@ void Player::Update(GameMain* _g)
 		//移動エフェクト
 		if (vector.x != 0 || vector.y != 0)
 		{
-			_g->SpawnEffect(location, erea, ShineEffect, 20, color);
+			_manager->SpawnEffect(location, erea, ShineEffect, 20, color);
 		}
 		//ステージ遷移時に座標だけ移動させる用（体力や色情報などはそのまま）
-		if (_g->GetPlayerRespawnFlg())
+		if (_manager->player_respawn_flg)
 		{
-			location = _g->GetPlayerRespawnLocation();
-			_g->SetPlayerRespawnFlg(false);
+			location = _manager->player_respawn;
+			_manager->player_respawn_flg = false;
 		}
 		if (stageHitFlg[1][bottom] != true) { //重力
 			switch (state)
@@ -172,7 +172,7 @@ void Player::Update(GameMain* _g)
 			//一回だけエフェクトを出す
 			if (effect_once == false)
 			{
-				_g->SpawnEffect(location, erea, LandingEffect, 15, color);
+				_manager->SpawnEffect(location, erea, LandingEffect, 15, color);
 				ResourceManager::StartSound(landing_se);
 				effect_once = true;
 			}
@@ -188,13 +188,13 @@ void Player::Update(GameMain* _g)
 
 		oldSearchFlg = searchFlg;
 		//Bボタンで色の交換ができるモードと切り替え
-		if (PadInput::OnPressed(XINPUT_BUTTON_B) && !_g->GetPauseAfter() && swapTimer < 0) {
+		if (PadInput::OnPressed(XINPUT_BUTTON_B) && /*!_manager->GetPauseAfter() &&*/ swapTimer < 0) {
 			SelectObject();
 			searchFlg = true;
 		}
 		else if (PadInput::OnRelease(XINPUT_BUTTON_B) && searchFlg && searchedObj != nullptr && swapTimer < 0) {
 			//交換エフェクトにかかる時間を受け取る
-			swapTimer = _g->Swap(this, searchedObj);
+			swapTimer = _manager->Swap(this, searchedObj);
 			objSelectNumTmp = 0;
 
 			//描画する色を白に
@@ -259,11 +259,11 @@ void Player::Update(GameMain* _g)
 		if (swapTimer > SWAP_EFFECT_STOP_TIME)
 		{
 			//選択中のオブジェクトを更新
-			_g->SetNowCurrentObject(searchedObj);
+			_manager->SetNowCurrentObject(searchedObj);
 		}
 		else
 		{
-			_g->SetNowCurrentObject(nullptr);
+			_manager->SetNowCurrentObject(nullptr);
 		}
 		//音声の周波数設定
 		if (searchFlg == TRUE)
@@ -288,8 +288,8 @@ void Player::Update(GameMain* _g)
 		if (damageEffectFlg) {
 			if (damageEffectTime == 90) {
 
-				_g->CameraImpact(10);
-				_g->SpawnEffect(location, erea, DamageEffect, 20, color);
+				camera->SetImpact(10);
+				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
 			}
 			damageEffectTime--;
 			if (damageEffectTime <= 0) {
@@ -334,7 +334,7 @@ void Player::Update(GameMain* _g)
 			deathTimer++;
 			if (deathTimer > 90)
 			{
-				_g->UpdateState(GameMainState::GameOver);
+				_manager->UpdateState(GameMainState::GameOver);
 			}
 		}
 	}
@@ -418,6 +418,11 @@ void Player::Draw()const
 	}
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+#ifdef _DEBUG
+	DrawFormatString(100, 100, 0xffffff, "x:%f y:%f", location.x, location.y);
+#endif // _DEBUG
+
 }
 
 void Player::Finalize()

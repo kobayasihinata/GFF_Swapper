@@ -23,7 +23,7 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	//is_tutorial = false;
 }
 
-void Tutorial::Update(GameMain* _g)
+void Tutorial::Update(ObjectManager* _manager)
 {
 }
 

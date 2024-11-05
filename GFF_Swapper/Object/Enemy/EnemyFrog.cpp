@@ -40,13 +40,13 @@ void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
 }
 
-void EnemyFrog::Update(GameMain* _g)
+void EnemyFrog::Update(ObjectManager* _manager)
 {
-	__super::Update(_g);
+	__super::Update(_manager);
 
 	//if (vector.x != 0 || vector.y != 0)
 	//{
-	//	_g->SpawnEffect(location, erea, 1, 20, color);
+	//	_manager->SpawnEffect(location, erea, 1, 20, color);
 	//}
 	if (stageHitFlg[1][bottom] != true) { //重力
 		vector.y += 1.f;
@@ -59,12 +59,12 @@ void EnemyFrog::Update(GameMain* _g)
 		//一回だけエフェクトを出す
 		if (effect_once == false)
 		{
-			_g->SpawnEffect(location, erea, LandingEffect, 15, color);
+			_manager->SpawnEffect(location, erea, LandingEffect, 15, color);
 			effect_once = true;
 		}
 		vector.y = 0.f;
 	}
-	UpdataState(_g);
+	UpdataState(_manager);
 	//カエルの状態に応じて更新
 	switch (frog_state)
 	{
@@ -107,11 +107,11 @@ void EnemyFrog::Update(GameMain* _g)
 		jump_timer++;
 		break;
 	case FrogState::DEATH:
-		_g->SpawnEffect(location, erea, DeathEffect, 15, color);
+		_manager->SpawnEffect(location, erea, DeathEffect, 15, color);
 		if (++death_timer > 60)
 		{
 			if (this != nullptr) {
-				_g->DeleteObject(object_pos, this);
+				_manager->DeleteObject(this);
 			}
 		}
 		break;
@@ -119,7 +119,7 @@ void EnemyFrog::Update(GameMain* _g)
 		break;
 	}
 
-	Move(_g);
+	Move(_manager);
 
 	for (int i = 0; i < 4; i++) {
 		stageHitFlg[0][i] = false;
@@ -448,7 +448,7 @@ void EnemyFrog::IdolFrogDraw(Vector2D location, bool _direction)const
 	}
 }
 
-void EnemyFrog::Move(GameMain* _g)
+void EnemyFrog::Move(ObjectManager* _manager)
 {
 	//顔の向き更新
 	if (vector.x == 0 && vector.y == 0)
@@ -479,7 +479,7 @@ void EnemyFrog::Move(GameMain* _g)
 	location.y += vector.y;
 }
 
-void EnemyFrog::UpdataState(GameMain* _g)
+void EnemyFrog::UpdataState(ObjectManager* _manager)
 {
 	//死んでいたら更新を止める
 	if (frog_state == FrogState::DEATH)return;
@@ -487,7 +487,7 @@ void EnemyFrog::UpdataState(GameMain* _g)
 	if (stageHitFlg[1][bottom])
 	{
 		//カエルとプレイヤーの座標を比較して、カエルがプレイヤーに向かって行くように
-		if (location.x > _g->GetPlayerLocation().x)
+		if (location.x > _manager->GetPlayerLocation().x)
 		{
 			//ジャンプ後にX座標が変わらなければ、反対方向に飛ぶ
 			frog_state = old_location.x == location.x ?  FrogState::RIGHT_IDOL: FrogState::LEFT_IDOL;

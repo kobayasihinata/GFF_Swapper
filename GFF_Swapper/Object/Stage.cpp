@@ -1,6 +1,6 @@
 #include "Stage.h"
 #include"../Utility/ResourceManager.h"
-#include"../Scene/GameMain.h"
+#include"../Object/Base/ObjectManager.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -76,7 +76,7 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 	ResourceManager::SetSoundVolume(change_water,100);
 }
 
-void Stage::Update(GameMain* _g)
+void Stage::Update(ObjectManager* _manager)
 {
 	//処理を省略して良いオブジェクトなのか判断
 	CheckIgnoreObject();
@@ -87,15 +87,15 @@ void Stage::Update(GameMain* _g)
 	//自分がグレーのブロックなら処理終了
 	//if (this->block_type == GRAY_BLOCK)return;
 
-	__super::Update(_g);
+	__super::Update(_manager);
 
 	//EditもUpdateを呼べるようにこの書き方
 	Update();
 
 	//中間地点ブロックを輝かせる
-	if (block_type == PLAYER_RESPAWN_BLOCK && location.x == _g->GetPlayerRespawnLocation().x && location.y == _g->GetPlayerRespawnLocation().y +PLAYER_HEIGHT)
+	if (block_type == PLAYER_RESPAWN_BLOCK && location.x == _manager->player_respawn.x && location.y == _manager->player_respawn.y +PLAYER_HEIGHT)
 	{
-		_g->SpawnEffect(location, erea, ShineEffect, 14, WHITE);
+		_manager->SpawnEffect(location, erea, ShineEffect, 14, WHITE);
 	}
 	else
 	{
@@ -106,39 +106,33 @@ void Stage::Update(GameMain* _g)
 	//色交換可能ブロックを輝かせる
 	if ((block_type == RED_BLOCK || block_type == GREEN_BLOCK || block_type == BLUE_BLOCK) && frame % 10 == GetRand(5)+7)
 	{
-		_g->SpawnEffect(location, erea, DeathEffect, 15, WHITE);
-	}
-	//天気の更新があったらする
-	if (change_weather_flg == true && weather != _g->GetNowWeather())
-	{
-		_g->SetNowWeather(weather);
-		change_weather_flg = false;
+		_manager->SpawnEffect(location, erea, DeathEffect, 15, WHITE);
 	}
 
 	//このステージブロックがゲーム中で火に変更されたブロックなら、一定時間経過で消す
 	if (default_object == FALSE && type == FIRE && can_swap == FALSE && ++delete_fire > 180)
 	{
 		if (this != nullptr) {
-			_g->DeleteObject(object_pos, this);
+			_manager->DeleteObject(this);
 		}
 	}
 
 	Vector2D player_respawn = { location.x,location.y - PLAYER_HEIGHT };
 
 	//フラグが立っているなら
-	if (set_respawn_flg && (player_respawn.x != _g->GetPlayerRespawnLocation().x || player_respawn.y != _g->GetPlayerRespawnLocation().y))
+	if (set_respawn_flg && (player_respawn.x != _manager->player_respawn.x || player_respawn.y != _manager->player_respawn.y))
 	{
 		respawn_color = WHITE;
 		//プレイヤーリスポーン位置を更新する
-		_g->SetPlayerRespawnLocation(player_respawn);
+		_manager->player_respawn = 
 		//フラグをfalseにする
 		set_respawn_flg = false;
 		//SEを再生する
 		ResourceManager::StartSound(checkpoint_se);
 	}
-	if(player_respawn.x == _g->GetPlayerRespawnLocation().x && player_respawn.y == _g->GetPlayerRespawnLocation().y)
+	if(player_respawn.x == _manager->player_respawn.x && player_respawn.y == _manager->player_respawn.y)
 	{
-		respawn_color = _g->GetPlayerColor();
+		respawn_color = _manager->GetPlayerColor();
 	}
 	else
 	{
@@ -149,7 +143,7 @@ void Stage::Update(GameMain* _g)
 	if (old_color != color)
 	{
 		//エフェクトを出す
-		_g->SpawnEffect(location, erea, PlayerSpawnEffect, 10, color);
+		_manager->SpawnEffect(location, erea, PlayerSpawnEffect, 10, color);
 		//更新
 		old_color = color;
 	}
@@ -157,7 +151,7 @@ void Stage::Update(GameMain* _g)
 	//ステージ遷移ブロックに触れたら遷移
 	if (hit_flg == true && (block_type == TUTOSTAGE_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION))
 	{
-		_g->SetStage(next_stage, false);
+		//_manager->SetStage(next_stage, false);
 	}
 
 	//リセット

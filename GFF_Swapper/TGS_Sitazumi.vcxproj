@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object\Base\ObjectManager.cpp" />
     <ClCompile Include="Object\BackGround.cpp" />
@@ -35,8 +36,6 @@
     <ClCompile Include="Object\Player.cpp" />
     <ClCompile Include="Object\Stage.cpp" />
     <ClCompile Include="Object\Tutorial\TutorialText.cpp" />
-    <ClCompile Include="Object\Weather.cpp" />
-    <ClCompile Include="Object\WeatherManager.cpp" />
     <ClCompile Include="Scene\EditScene.cpp" />
     <ClCompile Include="Scene\End.cpp" />
     <ClCompile Include="Scene\GameMain.cpp" />
@@ -51,6 +50,7 @@
     <ClCompile Include="Utility\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Object\Base\ObjectManager.h" />
     <ClInclude Include="Object\BackGround.h" />
     <ClInclude Include="Object\Enemy\Boss\Boss.h" />
@@ -67,11 +67,10 @@
     <ClInclude Include="Object\Player.h" />
     <ClInclude Include="Object\Stage.h" />
     <ClInclude Include="Object\Tutorial\TutorialText.h" />
-    <ClInclude Include="Object\Weather.h" />
-    <ClInclude Include="Object\WeatherManager.h" />
     <ClInclude Include="Scene\AbstractScene.h" />
     <ClInclude Include="Scene\EditScene.h" />
     <ClInclude Include="Scene\End.h" />
+    <ClInclude Include="Scene\eNum\GameMainState.h" />
     <ClInclude Include="Scene\GameMain.h" />
     <ClInclude Include="Scene\Help.h" />
     <ClInclude Include="Scene\SceneManager.h" />

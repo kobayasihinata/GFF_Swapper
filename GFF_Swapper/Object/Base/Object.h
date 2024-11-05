@@ -12,7 +12,7 @@
 #define TUTORIAL 7	//Objectの種類用
 
 //仮想クラス
-class GameMain;
+class ObjectManager;
 
 class Object : public BoxCollider, public ColorData
 {
@@ -29,7 +29,7 @@ public:
 	//_location _erea=スポーン座標、大きさ ,_color_data=色情報, object_pos=Object配列内の自分自身の位置
 	virtual void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos) = 0;
 
-	virtual void Update(GameMain* _g)
+	virtual void Update(ObjectManager* _manager)
 	{
 		if (++frame > 6000)
 		{

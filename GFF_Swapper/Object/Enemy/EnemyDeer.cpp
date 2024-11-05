@@ -75,10 +75,10 @@ void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
 }
 
-void EnemyDeer::Update(GameMain* _g)
+void EnemyDeer::Update(ObjectManager* _manager)
 {
 	++anim_fps;
-	__super::Update(_g);
+	__super::Update(_manager);
 	
 	if (frame % 30 == 0)
 	{
@@ -116,7 +116,7 @@ void EnemyDeer::Update(GameMain* _g)
 		if (++deer_death_timer > 60)
 		{
 			if (this != nullptr) {
-				_g->DeleteObject(object_pos, this);
+				_manager->DeleteObject(this);
 			}
 		}
 	}

@@ -44,12 +44,12 @@ public:
 	EnemyBat();
 	~EnemyBat();
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
-	void Update(GameMain* _g)override;
+	void Update(ObjectManager* _manager)override;
 	void Draw()const override;
 	void Finalize()override;
 
 public:
-	void Move(GameMain* _g);
+	void Move(ObjectManager* _manager);
 
 	void Hit(Object* _object)override;
 	bool SearchColor(Object* ob) {

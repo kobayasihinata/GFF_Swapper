@@ -45,7 +45,7 @@ public:
 	EnemyFrog();
 	~EnemyFrog();
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
-	void Update(GameMain* _g)override;
+	void Update(ObjectManager* _manager)override;
 	void Draw()const override;
 	void Finalize()override;
 	void Hit(Object* _object)override;
@@ -55,8 +55,8 @@ public:
 
 	void JumpFrogDraw(Vector2D location,float _angle)const;		//ジャンプ中カエルの描画
 	void IdolFrogDraw(Vector2D location,bool _direction)const;		//通常カエルの描画
-	void Move(GameMain* _g);		//移動系処理
-	void UpdataState(GameMain* _g);	//カエルの状態更新
+	void Move(ObjectManager* _manager);		//移動系処理
+	void UpdataState(ObjectManager* _manager);	//カエルの状態更新
 	bool CheckCollision(Vector2D l, Vector2D e); //ステージとの当たり判定
 };
 

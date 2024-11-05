@@ -35,13 +35,13 @@ void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 
 	wing_se = ResourceManager::SetSound("Resource/Sounds/Enemy/flapping_wings.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
-	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
+	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_managerrass.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
 }
 
-void EnemyBat::Update(GameMain* _g)
+void EnemyBat::Update(ObjectManager* _manager)
 {
-	__super::Update(_g);
+	__super::Update(_manager);
 
 	up += 1;
 	// 羽の角度を変化させる
@@ -62,8 +62,8 @@ void EnemyBat::Update(GameMain* _g)
 		se_once = false;
 	}
 
-	Vector2D player_pos = _g->GetPlayerLocation();
-	Vector2D player_erea = _g->GetPlayerErea();
+	Vector2D player_pos = _manager->GetPlayerLocation();
+	Vector2D player_erea = _manager->GetPlayerErea();
 	// プレイヤーとの距離を計算
 	vector = { ENEMY_SPEED };
 	// プレイヤーの中心座標を計算
@@ -80,7 +80,7 @@ void EnemyBat::Update(GameMain* _g)
 	float length = sqrtf(dx * dx + dy * dy);
 
 	////プレイヤーが色変えるときコウモリもスローに
-	//if (_g->GetSearchFlg()) {
+	//if (_manager->GetSearchFlg()) {
 	//	location.x += vector.x * 0.1f;
 	//	location.y += vector.y * 0.1f;
 	//}
@@ -97,7 +97,7 @@ void EnemyBat::Update(GameMain* _g)
 	else
 	{
 		//移動
-		Move(_g);
+		Move(_manager);
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -176,7 +176,7 @@ void EnemyBat::Finalize()
 
 }
 
-void EnemyBat::Move(GameMain* _g)
+void EnemyBat::Move(ObjectManager* _manager)
 {
 	//左移動
 	if (bat_state == BatState::LEFT) {
@@ -195,13 +195,13 @@ void EnemyBat::Move(GameMain* _g)
 
 		if (++death_timer > 60) {
 			if (this != nullptr) {
-				_g->DeleteObject(object_pos, this);
+				_manager->DeleteObject(this);
 			}
 		}
 		
 		/*else {
 			if (this != nullptr) {
-				_g->DeleteObject(object_pos, this);
+				_manager->DeleteObject(this);
 			}
 		}*/
 	}

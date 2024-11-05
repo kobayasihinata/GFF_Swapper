@@ -33,5 +33,5 @@ public:
 	void SetLocation(Vector2D _location);
 
 	//オブジェクトのワールド座標をスクリーン座標に変換する
-	void SetScreenPosition(Vector2D _world_to_screen, int _impact);
+	void SetScreenPosition(Vector2D _world_to_screen);
 };

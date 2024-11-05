@@ -1,5 +1,7 @@
 #pragma once
 #include "Base/Object.h"
+#include "../Scene/Camera.h"
+
 #define EFFECT_NUM	200		//エフェクトの最大数
 #define SWAP_EFFECT_NUM 10		//一回のエフェクト時に発生するパーティクルの数
 #define AFTERIMAGE_NUM 10		//交換エフェクトの残像の数
@@ -53,6 +55,7 @@ struct SwapAnim
 class EffectSpawner
 {
 private:
+	class Camera* camera;				//カメラ取得
 	SwapAnim swap_anim[2];  //交換エフェクト用
 	int swap_anim_timer;    //交換エフェクト時間用
 	bool change_effect_flg;		//色が変わるエフェクト用
@@ -67,7 +70,7 @@ public:
 	EffectSpawner();
 	~EffectSpawner();
 	void Initialize();
-	void Update(GameMain* _g);
+	void Update(ObjectManager* _manager);
 	void Draw()const;
 	void Finalize();
 

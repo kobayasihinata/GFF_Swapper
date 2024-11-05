@@ -88,7 +88,7 @@ AbstractScene* EditScene::Update()
 	{
 		for (int j = 0; j < stage_width_num; j++)
 		{
-			stage[i][j]->SetScreenPosition(camera_location, 0);
+			stage[i][j]->SetScreenPosition(camera_location);
 			if (CheckInScreen(stage[i][j])==true)
 			{
 				stage[i][j]->Update();

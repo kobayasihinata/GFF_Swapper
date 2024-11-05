@@ -4,6 +4,7 @@
 
 BossAttackWood::BossAttackWood()
 {
+	camera = Camera::Get();
 	count = 0;
 	w_type = 0;
 	camera_impact_once = false;
@@ -47,13 +48,13 @@ void BossAttackWood::Finalize()
 {
 }
 
-void BossAttackWood::Update(GameMain* _g)
+void BossAttackWood::Update(ObjectManager* _manager)
 {
-	__super::Update(_g);
+	__super::Update(_manager);
 
 	if (camera_impact_once == false)
 	{
-		_g->CameraImpact(15);
+		camera->SetImpact(15);
 		ResourceManager::StartSound(start_se);
 		camera_impact_once = true;
 	}
@@ -63,7 +64,7 @@ void BossAttackWood::Update(GameMain* _g)
 	if (velocity.y == 0.f) {
 		if (count++ > 180) {
 			if (this != nullptr) {
-				_g->DeleteObject(object_pos, this);
+				_manager->DeleteObject(this);
 			}
 		}
 	}

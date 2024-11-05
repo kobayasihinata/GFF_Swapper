@@ -2,6 +2,7 @@
 #include "Base/Object.h"
 #include "Stage.h"
 #include "Base/ColorData.h"
+#include "../Scene/Camera.h"
 
 class Player :
 	public Object
@@ -22,6 +23,7 @@ public:
 		jump
 	};
 private:
+	class Camera* camera;
 	Vector2D vector; //プレイヤーのベクトル
 	bool stageHitFlg[2][4]; //プレイヤーとステージの当たり判定
 	//0の行はステージのブロック一つ一つに対しての判定
@@ -88,7 +90,7 @@ public:
 	Player();
 	~Player();
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
-	void Update(GameMain* _g)override;
+	void Update(ObjectManager* _manager)override;
 	void Draw()const override;
 	void Finalize()override;
 
