@@ -404,11 +404,10 @@ void Boss::BossAtack(GameMain *_g)
 		oldF = f;
 		f = true;
 		if (cnt == 240) {
-			//if (++attack > 2) {
-			//	attack = 0;
-			//}
+			if (++attack > 2) {
+				attack = 0;
+			}
 			
-			attack = 0;
 			if (local_location.x < 640.f) {
 				side = true;
 			}

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object\Base\ObjectManager.cpp" />
     <ClCompile Include="Object\BackGround.cpp" />
     <ClCompile Include="Object\Enemy\Boss\Boss.cpp" />
     <ClCompile Include="Object\Enemy\Boss\BossAttackFire.cpp" />
@@ -50,6 +51,7 @@
     <ClCompile Include="Utility\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Object\Base\ObjectManager.h" />
     <ClInclude Include="Object\BackGround.h" />
     <ClInclude Include="Object\Enemy\Boss\Boss.h" />
     <ClInclude Include="Object\Enemy\Boss\BossAttackFire.h" />

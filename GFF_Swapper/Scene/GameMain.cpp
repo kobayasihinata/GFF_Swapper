@@ -54,9 +54,6 @@ void GameMain::Initialize()
 	back_ground->Initialize({ (float)stage_width,(float)stage_height });
 
 	SetWindowIconID(102);
-
-	test_image = LoadGraph("Resource/Images/sozai/grow.PNG");
-	test_image2 = LoadGraph("Resource/Images/sozai/ground.PNG");
 	
 	blackout = 255;
 }
