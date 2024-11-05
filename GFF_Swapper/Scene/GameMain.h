@@ -75,7 +75,7 @@ private:
     bool camera_y_lock_flg;   //カメラが動けるか判断(強制戦闘時以外)
     bool x_pos_set_once;     //カメラのロック位置設定用
     bool y_pos_set_once;     //カメラのロック位置設定用
-    Vector2D lock_pos;       //カメラが動けない時に画面揺れが発生した時、カメラの位置が戻る場所
+    Vector2D lock_pos[2];       //カメラが動けない時に画面揺れが発生した時、カメラの位置が戻る場所
     int fps = 0;
     int now_weather;            //現在の天気(0=通常　1=雨　2=火　3=木)
     int weather_timer;      //天気オブジェクトを生成するスパン
