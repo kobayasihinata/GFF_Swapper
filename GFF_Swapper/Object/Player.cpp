@@ -5,6 +5,7 @@
 #include "../Scene/GameMain.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "../Utility/DebugInfomation.h"
 
 Player::Player()
 {
@@ -427,7 +428,9 @@ void Player::Draw()const
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
 #ifdef _DEBUG
-	//DrawFormatString(100, 100, 0xffffff, "x:%f y:%f", location.x, location.y);
+	DebugInfomation::Add("x", location.x);
+	DebugInfomation::Add("swap_timer", swapTimer);
+	DebugInfomation::Add("y", location.y);
 #endif // _DEBUG
 
 }

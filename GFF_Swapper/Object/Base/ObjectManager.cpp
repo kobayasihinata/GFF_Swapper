@@ -148,6 +148,9 @@ void ObjectManager::Draw()const
 
 	//エフェクトの描画
 	effect_spawner->Draw();
+#ifdef _DEBUG
+#endif // _DEBUG
+
 }
 
 void ObjectManager::Finalize()

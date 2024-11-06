@@ -21,6 +21,7 @@ BossAttackWater::BossAttackWater()
 
 BossAttackWater::~BossAttackWater()
 {
+
 }
 
 void BossAttackWater::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
@@ -43,6 +44,7 @@ void BossAttackWater::Initialize(Vector2D _location, Vector2D _erea, int _color_
 
 void BossAttackWater::Finalize()
 {
+
 }
 
 void BossAttackWater::Update(ObjectManager* _manager)
@@ -118,7 +120,6 @@ void BossAttackWater::Draw() const
 	}
 	DrawCircleAA(f_location.x, f_location.y, f_erea.x, 32, GetColor(100, 100, 255), TRUE);
 	DrawCircleAA(f_location.x, f_location.y, f_erea.x-2, 32, GetColor(120, 120, 255), TRUE);
-
 }
 
 void BossAttackWater::Hit(Object* _object)

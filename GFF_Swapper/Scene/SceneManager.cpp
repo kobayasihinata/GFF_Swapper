@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "../Utility/DebugInfomation.h"
 
 void SceneManager::Initialize()
 {
@@ -11,6 +12,9 @@ void SceneManager::Finalize()
 }
 
 AbstractScene* SceneManager::Update() {
+
+	DebugInfomation::Update();
+
 	AbstractScene* p = mScene->Update();
 
 	if (p != mScene && p != nullptr) {
@@ -24,5 +28,8 @@ AbstractScene* SceneManager::Update() {
 };
 
 void SceneManager::Draw() const {
+
 	mScene->Draw();
+	//デバッグ表示の更新
+	DebugInfomation::Draw();
 };
