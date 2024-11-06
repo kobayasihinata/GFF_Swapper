@@ -59,7 +59,7 @@ public:
 	bool CheckInScreen(Object* _object)const;			//そのオブジェクトが画面内に居るか判断
 
 	void PlayerUpdate(GameMain* _g);					//プレイヤーの更新
-	void BossUpdate(ObjectManager* _manager);			//ボス＆ボス攻撃の更新
+	void BossUpdate();			//ボス＆ボス攻撃の更新
 	void SetNowCurrentObject(Object* _object);			//現在交換対象になっているオブジェクトを設定する
 
 	bool GetSearchFlg()const;							//交換中か取得

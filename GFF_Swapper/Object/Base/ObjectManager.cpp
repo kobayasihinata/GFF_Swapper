@@ -78,6 +78,9 @@ void ObjectManager::Update(GameMain* _g)
 
 		//当たり判定処理(いずれ上の当たり判定処理を引っ越す)
 		HitCheck();
+
+		//ボスの更新
+		if(boss_object != nullptr)BossUpdate();
 	}
 
 	//プレイヤー更新
@@ -109,25 +112,25 @@ void ObjectManager::Draw()const
 	//オブジェクトの描画
 	for (const auto& in_screen_object : in_screen_object)
 	{
-			if (boss_blind_flg == true)
+		if (boss_blind_flg == true)
+		{
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)(255 - sqrtf(powf(fabsf(player_object->GetLocation().x - in_screen_object->GetLocation().x), 2) + powf(fabsf(player_object->GetLocation().y - in_screen_object->GetLocation().y), 2))));
+			in_screen_object->Draw();
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		}
+		else
+		{
+			//敵以外なら描画、敵なら配列に格納してまとめて描画
+			if (in_screen_object->GetObjectType() != ENEMY)
 			{
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)(255 - sqrtf(powf(fabsf(player_object->GetLocation().x - in_screen_object->GetLocation().x), 2) + powf(fabsf(player_object->GetLocation().y - in_screen_object->GetLocation().y), 2))));
 				in_screen_object->Draw();
-				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 			}
 			else
 			{
-				//敵以外なら描画、敵なら配列に格納してまとめて描画
-				if (in_screen_object->GetObjectType() != ENEMY)
-				{
-					in_screen_object->Draw();
-				}
-				else
-				{
-					enemy.push_back(in_screen_object);
-				}
-
+				enemy.push_back(in_screen_object);
 			}
+
+		}
 	}
 	//敵描画
 	for (const auto& enemy : enemy)
@@ -135,6 +138,11 @@ void ObjectManager::Draw()const
 		enemy->Draw();
 	}
 
+	//ボスを描画
+	if (!boss_blind_flg)
+	{
+		if (boss_object != nullptr)boss_object->Draw();
+	}
 	//プレイヤーを最後に描画
 	player_object->Draw();
 
@@ -178,6 +186,12 @@ void ObjectManager::DeleteAllObject(bool _player_delete)
 	in_screen_object.clear();
 	delete_object.clear();
 	object_list.clear();
+
+	if (boss_object != nullptr)
+	{
+		boss_object = nullptr;
+	}
+
 	if (_player_delete)
 	{
 		player_object = nullptr;
@@ -289,36 +303,26 @@ void ObjectManager::PlayerUpdate(GameMain* _g)
 	}
 }
 
-void ObjectManager::BossUpdate(ObjectManager* _manager)
+void ObjectManager::BossUpdate()
 {
-	//ボスをスローモーションにしないならコメント解除
-	//if (object[boss_object] != nullptr)
-	//{
-	//	object[boss_object]->SetScreenPosition(camera_location,(GetRand(impact) - (impact / 2)));
-	//	object[boss_object]->Update(this);
-	//	move_object_num++;
-	//	for (int i = 0; object[i] != nullptr; i++)
-	//	{
-	//		if (object[i]->GetCanSwap() == TRUE && object[i]->GetObjectType() != PLAYER) {
-	//			object[player_object]->SearchColor(object[i]);
-	//		}
-	//		//各オブジェクトとの当たり判定
-	//		if (object[i]->HitBox(object[boss_object]))
-	//		{
-	//			object[i]->Hit(object[boss_object]);
-	//			object[boss_object]->Hit(object[i]);
-	//		}
-	//	}
-	//}
-
-	//for (int i = 0; i < attack_num; i++)
-	//{
-	//	if (object[boss_attack[i]] != nullptr)
-	//	{
-	//		object[boss_attack[i]]->Update(this);
-	//		move_object_num++;
-	//	}
-	//}
+	if (boss_object != nullptr)
+	{
+		boss_object->SetScreenPosition(camera->GetCameraLocation());
+		boss_object->Update(this);
+		move_object_num++;
+		if (boss_object->GetCanSwap() == TRUE && boss_object->GetObjectType() != PLAYER && boss_blind_flg == false) {
+			player_object->SearchColor(boss_object);
+		}
+		for (const auto& in_screen_object : in_screen_object)
+		{
+			//各オブジェクトとの当たり判定
+			if (in_screen_object->HitBox(boss_object))
+			{
+				in_screen_object->Hit(boss_object);
+				boss_object->Hit(in_screen_object);
+			}
+		}
+	}
 }
 
 void ObjectManager::SetNowCurrentObject(Object* _object)
