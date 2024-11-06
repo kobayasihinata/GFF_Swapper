@@ -388,7 +388,7 @@ void GameMain::UpdateGameMain()
 
 
 	//各オブジェクトの更新
-	if (object_manager->GetSearchFlg() == FALSE || object_manager->GetSearchFlg() == TRUE && frame % 10 == 0)
+	if (object_manager->GetSearchFlg() == FALSE || (object_manager->GetSearchFlg() == TRUE && frame % 10 == 0))
 	{
 		tutorial_text.Update(camera->GetCameraLocation(), object_manager->GetPlayerLocation(), stage_height);
 
