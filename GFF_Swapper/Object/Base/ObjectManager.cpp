@@ -292,6 +292,13 @@ void ObjectManager::PlayerUpdate(GameMain* _g)
 			}
 		}
 
+		//ボスを色交換対象にする
+		if (boss_object != nullptr)
+		{
+			if (boss_object->GetCanSwap() == TRUE && boss_object->GetObjectType() != PLAYER && boss_blind_flg == false) {
+				player_object->SearchColor(boss_object);
+			}
+		}
 		//プレイヤーが落下したときに死亡判定とする
 		if (player_object->GetLocation().y > camera->GetStageSize().y + 100)
 		{
@@ -310,9 +317,6 @@ void ObjectManager::BossUpdate()
 		boss_object->SetScreenPosition(camera->GetCameraLocation());
 		boss_object->Update(this);
 		move_object_num++;
-		if (boss_object->GetCanSwap() == TRUE && boss_object->GetObjectType() != PLAYER && boss_blind_flg == false) {
-			player_object->SearchColor(boss_object);
-		}
 		for (const auto& in_screen_object : in_screen_object)
 		{
 			//各オブジェクトとの当たり判定
