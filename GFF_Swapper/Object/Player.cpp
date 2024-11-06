@@ -134,7 +134,9 @@ void Player::Update(ObjectManager* _manager)
 		{
 			location = _manager->player_respawn;
 			_manager->player_respawn_flg = false;
+			vector = 0;
 		}
+
 		if (stageHitFlg[1][bottom] != true) { //重力
 			switch (state)
 			{
@@ -420,7 +422,7 @@ void Player::Draw()const
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
 #ifdef _DEBUG
-	DrawFormatString(100, 100, 0xffffff, "x:%f y:%f", location.x, location.y);
+	//DrawFormatString(100, 100, 0xffffff, "x:%f y:%f", location.x, location.y);
 #endif // _DEBUG
 
 }

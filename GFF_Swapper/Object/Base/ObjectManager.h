@@ -23,6 +23,7 @@ struct SpawnData
 class ObjectManager
 {
 private:
+	int frame;									//フレーム計測
 	class Camera* camera;						//カメラ取得
 	std::vector<Object*> object_list;			//プレイヤーとボス以外のすべてのオブジェクト格納
 	Object* player_object;						//プレイヤーオブジェクト格納
@@ -38,8 +39,9 @@ private:
 	GameMainState change_state;					//次に変えるゲームメインのステート
 
 public:
-	bool player_respawn_flg;		//プレイヤーをリスポーンさせるか判断
-	Vector2D player_respawn;		//プレイヤーが生成された地点を保存しておく
+	bool player_respawn_flg;					//プレイヤーをリスポーンさせるか判断
+	Vector2D player_respawn;					//プレイヤーが生成された地点を保存しておく
+	int change_stage;							//次に変えるゲームメインのステージ
 
 public:
 	void Initialize();				//初期化処理

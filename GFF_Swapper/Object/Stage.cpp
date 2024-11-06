@@ -151,7 +151,7 @@ void Stage::Update(ObjectManager* _manager)
 	//ステージ遷移ブロックに触れたら遷移
 	if (hit_flg == true && (block_type == TUTOSTAGE_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION))
 	{
-		//_manager->SetStage(next_stage, false);
+		_manager->change_stage = next_stage;
 	}
 
 	//リセット

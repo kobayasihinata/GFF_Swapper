@@ -3,22 +3,26 @@
 
 void ObjectManager::Initialize()
 {
+	frame = 0;
 	camera = Camera::Get();
 
 	effect_spawner = new EffectSpawner();
 	effect_spawner->Initialize();
 
 	change_state = GameMainState::Null;
+	change_stage = -1;
 }
 
 void ObjectManager::Update(GameMain* _g)
 {
+	frame++;
 	//オブジェクト配列に追加する処理
 	for (const auto& create_object : create_object)
 	{
 		create_object.object->Initialize(create_object.location, create_object.size, create_object.color,0);
 		object_list.push_back(create_object.object);
 	}
+
 	//追加したオブジェクトは消去
 	create_object.clear();
 
@@ -45,33 +49,39 @@ void ObjectManager::Update(GameMain* _g)
 	//更新処理
 	InScreenUpdate();
 
-	for (const auto& in_screen_object : in_screen_object)
+	//画面内のオブジェクトを更新する処理
+	if (!GetSearchFlg() || (GetSearchFlg()&& frame % 10 == 0))
 	{
-		in_screen_object->Update(this);
-		move_object_num++;
-		for (const auto& in_screen_object2 : this->in_screen_object)
+		for (const auto& in_screen_object : in_screen_object)
 		{
-			//各オブジェクトとの当たり判定
-			if (in_screen_object->HitBox(in_screen_object2) &&
-				in_screen_object2 != player_object)
+			in_screen_object->Update(this);
+			move_object_num++;
+			for (const auto& in_screen_object2 : this->in_screen_object)
 			{
-				in_screen_object->Hit(in_screen_object2);
+				//各オブジェクトとの当たり判定
+				if (in_screen_object->HitBox(in_screen_object2) &&
+					in_screen_object2 != player_object)
+				{
+					in_screen_object->Hit(in_screen_object2);
+				}
+			}
+			//プレイヤーに選択されているオブジェクトなら、描画色を変える
+			if (in_screen_object == now_current_object)
+			{
+				in_screen_object->SetDrawColor(WHITE);
+			}
+			else
+			{
+				in_screen_object->SetDrawColor(in_screen_object->GetColorData());
 			}
 		}
-		//プレイヤーに選択されているオブジェクトなら、描画色を変える
-		if (in_screen_object != nullptr &&
-			in_screen_object == now_current_object)
-		{
-			in_screen_object->SetDrawColor(WHITE);
-		}
-		else if (in_screen_object != nullptr)
-		{
-			in_screen_object->SetDrawColor(in_screen_object->GetColorData());
-		}
+
+		//当たり判定処理(いずれ上の当たり判定処理を引っ越す)
+		HitCheck();
 	}
 
-	//当たり判定処理(いずれ上の当たり判定処理を引っ越す)
-	HitCheck();
+	//プレイヤー更新
+	PlayerUpdate(_g);
 
 	//管理クラスの更新
 	effect_spawner->Update(this);
@@ -84,6 +94,12 @@ void ObjectManager::Update(GameMain* _g)
 	{
 		_g->UpdateState(change_state);
 		change_state = GameMainState::Null;
+	}
+	//ステージの変更があるなら変更
+	if (change_stage != -1)
+	{
+		_g->SetStage(change_stage, false);
+		change_stage = -1;
 	}
 }
 

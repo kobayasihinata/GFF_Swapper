@@ -44,7 +44,7 @@ void GameMain::Initialize()
 
 	back_ground = new BackGround();
 
-	SetStage(now_stage, false);
+	SetStage(now_stage, true);
 
 	back_ground->Initialize({ (float)stage_width,(float)stage_height });
 
@@ -233,7 +233,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 	object_manager->DeleteAllObject(_delete_player);
 
 	//プレイヤーを消したか判断
-	if (_delete_player)player_flg = true;
+	if (!_delete_player)player_flg = true;
 
 	now_stage = _stage;
 
@@ -279,8 +279,6 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 			case PLAYER_BLOCK:
 				//プレイヤーリスポーン地点の設定
 				object_manager->player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
-				//エフェクトの生成
-				object_manager->SpawnEffect({ object_manager->player_respawn.x + PLAYER_WIDTH / 2 ,object_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, DEFAULT_PLAYER_COLOR);
 				break;
 			case ENEMY_DEER_RED:
 			case ENEMY_DEER_GREEN:
@@ -325,6 +323,9 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 		//プレイヤーの生成
 		object_manager->CreatePlayer(new Player, object_manager->player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, DEFAULT_PLAYER_COLOR);
 	}
+
+	//プレイヤースポーンエフェクトの生成
+	object_manager->SpawnEffect({ object_manager->player_respawn.x + PLAYER_WIDTH / 2 ,object_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, object_manager->GetPlayerColor());
 
 	//周辺ステージデータの格納
 	SetStageBlockAround();
@@ -387,16 +388,11 @@ void GameMain::UpdateGameMain()
 	ResourceManager::SetSoundVolume(bgm_noise, (int)(camera->GetCameraLocation().x / 100));
 
 
+	tutorial_text.Update(camera->GetCameraLocation(), object_manager->GetPlayerLocation(), stage_height);
+
 	//各オブジェクトの更新
-	if (object_manager->GetSearchFlg() == FALSE || (object_manager->GetSearchFlg() == TRUE && frame % 10 == 0))
-	{
-		tutorial_text.Update(camera->GetCameraLocation(), object_manager->GetPlayerLocation(), stage_height);
+	object_manager->Update(this);
 
-		//各オブジェクトの更新
-		object_manager->Update(this);
-	}
-
-	object_manager->PlayerUpdate(this);
 	//背景の更新
 	back_ground->Update();
 
