@@ -130,6 +130,7 @@ public:
     //引数:もとになる座標、回転させたい座標、回転させたい角度
     Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
 
+    //一時停止を解除した直後か取得
     bool GetPauseAfter()const { return pause_after_flg; };
 
     //ゲームメイン更新

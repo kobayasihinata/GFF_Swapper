@@ -124,7 +124,7 @@ void Stage::Update(ObjectManager* _manager)
 	{
 		respawn_color = WHITE;
 		//プレイヤーリスポーン位置を更新する
-		_manager->player_respawn = 
+		_manager->player_respawn = player_respawn;
 		//フラグをfalseにする
 		set_respawn_flg = false;
 		//SEを再生する

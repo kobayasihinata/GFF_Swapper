@@ -70,7 +70,7 @@ private:
 	int damage_se[3];	//被ダメージSE格納
 	int cursor_se;		//色交換カーソルSE格納
 
-	int old_landing_se;			//旧着地SE
+	int old_landing_se;		//旧着地SE
 	int old_walk_se[4];		//旧歩行SE格納
 	int old_jump_se;		//旧ジャンプSE格納
 	int old_damage_se[3];	//旧被ダメージSE格納

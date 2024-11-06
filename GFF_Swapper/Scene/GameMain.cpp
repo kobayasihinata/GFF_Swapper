@@ -228,6 +228,7 @@ void GameMain::LoadStageData(int _stage)
 void GameMain::SetStage(int _stage, bool _delete_player)
 {
 	boss_blind_flg = false;
+	player_flg = false;
 
 	//すべてのオブジェクトを削除
 	object_manager->DeleteAllObject(_delete_player);
@@ -332,9 +333,6 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 
 	//壁生成フラグリセット
 	create_once = false;
-
-	//カメラのリセット
-	//camera-ResetCamera();
 
 	//BGMの再生
 	if (now_stage == 0)
@@ -781,7 +779,7 @@ void GameMain::UpdateGameOver()
 		case 0:
 			ResourceManager::StartSound(decision_se);
 			set_sound_once = false;
-			SetStage(now_stage, true);
+			object_manager->CreatePlayer(new Player, object_manager->player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, DEFAULT_PLAYER_COLOR);
 			gm_state = GameMainState::S_GameMain;
 			pause_after_flg = true;
 			ResourceManager::StopSound(bgm_title);
