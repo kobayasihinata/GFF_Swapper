@@ -194,17 +194,22 @@ void Player::Update(GameMain* _g)
 		}
 		else if (PadInput::OnRelease(XINPUT_BUTTON_B) && searchFlg && searchedObj != nullptr && swapTimer < 0) {
 			//交換エフェクトにかかる時間を受け取る
-			swapTimer = _g->Swap(this, searchedObj);
-			objSelectNumTmp = 0;
+			if (searchedObj != this)
+			{
+				swapTimer = _g->Swap(this, searchedObj);
+				objSelectNumTmp = 0;
 
-			//描画する色を白に
-			draw_color = WHITE;
+				//描画する色を白に
+				draw_color = WHITE;
+			}
+			else
+			{
+				swapTimer = 0;
+			}
 		}
 		else if (PadInput::OnRelease(XINPUT_BUTTON_B) && swapTimer < 0) {//交換できるオブジェクトが画面内になかった時
 			searchFlg = false;
 		}
-
-
 
 		//交換後エフェクト用の硬直
 		if (swapTimer >= 0)
@@ -724,8 +729,18 @@ void Player::MoveActor()
 
 bool Player::SearchColor(Object* ob)
 {
-	if (ob != nullptr && ob->GetColorData() > 0 && ob != this){
-		if(ob->GetLocalLocation().x >= 0 && ob->GetLocalLocation().x <= 1280 && ob->GetLocalLocation().y >= 0 && ob->GetLocalLocation().y <= 720) {
+	if (ob != nullptr && ob->GetColorData() > 0 /*&& ob != this*/){
+		// 最初にプレイヤーを追加
+		if (objNum == 0) 
+		{  
+			searchedObjAll[objNum] = this;
+			int x = (int)this->GetLocalLocation().x / 40;
+			int y = (int)this->GetLocalLocation().y / 40;
+			posRelation[y][x] = objNum;
+			objNum++;
+		}
+		else if(ob->GetLocalLocation().x >= 0 && ob->GetLocalLocation().x <= 1280 && ob->GetLocalLocation().y >= 0 && ob->GetLocalLocation().y <= 720) 
+		{
 			searchedObjAll[objNum] = ob;
 			int x = (int)ob->GetLocalLocation().x / 40;
 			int y = (int)ob->GetLocalLocation().y / 40;
@@ -733,6 +748,8 @@ bool Player::SearchColor(Object* ob)
 			objNum++;
 		}
 	}
+
+	// プレイヤーを最初に選択対象として追加
 	return false;
 }
 
@@ -772,6 +789,7 @@ void Player::SelectObject()
 			int current_color = searchedObj->GetColorData();// 現在の選択オブジェクトの色を取得
 			int current_type = searchedObj->GetObjectType();
 
+
 			// 全オブジェクトを探索
 			for (int i = 0;  i < objNum; i++)
 			{
@@ -792,7 +810,7 @@ void Player::SelectObject()
 
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
 							int next_type = searchedObjAll[posRelation[y][j]]->GetObjectType();
-							if (next_type == ENEMY) {
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								snum[0] = posRelation[y][j];
 								break;
@@ -807,7 +825,6 @@ void Player::SelectObject()
 								snum[0] = posRelation[y][j];
 								break;
 							}
-					
 						}
 					}
 
@@ -829,7 +846,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y - h][j];
 										break;
@@ -857,7 +874,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y + h][j];
 										break;
@@ -926,7 +943,7 @@ void Player::SelectObject()
 								break;
 							}*/
 							int next_type = searchedObjAll[posRelation[y][j]]->GetObjectType();
-							if (next_type == ENEMY) {
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								snum[0] = posRelation[y][j];
 								break;
@@ -960,7 +977,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y - h][j];
 										break;
@@ -987,7 +1004,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y + h][j];
 										break;
@@ -1066,7 +1083,7 @@ void Player::SelectObject()
 								break;
 							}*/
 							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
-							if (next_type == ENEMY) {
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								tutirial_num = posRelation[j][x];
 								break;
@@ -1099,7 +1116,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x - w];
 										break;
@@ -1125,7 +1142,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x + w];
 										break;
@@ -1188,7 +1205,7 @@ void Player::SelectObject()
 								break;
 							}*/
 							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
-							if (next_type == ENEMY) {
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								tutirial_num = posRelation[j][x];
 								break;
@@ -1222,7 +1239,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x - w];
 										break;
@@ -1248,7 +1265,7 @@ void Player::SelectObject()
 										break;
 									}*/
 									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
-									if (next_type == ENEMY) {
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x + w];
 										break;
@@ -1318,6 +1335,7 @@ void Player::SelectObject()
 	else {
 		searchedObj = nullptr;
 	}
+
 }
 
 float Player::GetLength(Vector2D l1, Vector2D l2) 
