@@ -198,7 +198,7 @@ void Player::Update(ObjectManager* _manager)
 			//交換エフェクトにかかる時間を受け取る
 			if (searchedObj != this)
 			{
-				swapTimer = _g->Swap(this, searchedObj);
+				swapTimer = _manager->Swap(this, searchedObj);
 				objSelectNumTmp = 0;
 
 				//描画する色を白に
