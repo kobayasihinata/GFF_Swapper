@@ -19,6 +19,13 @@ void ObjectManager::Update(GameMain* _g)
 	//オブジェクト配列に追加する処理
 	for (const auto& create_object : create_object)
 	{
+		if (create_object.stage_around_data != nullptr)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				create_object.object->SetAroundBlock(i, create_object.stage_around_data[i]);
+			}
+		}
 		create_object.object->Initialize(create_object.location, create_object.size, create_object.color,0);
 		object_list.push_back(create_object.object);
 	}
@@ -33,7 +40,21 @@ void ObjectManager::Update(GameMain* _g)
 		{
 			if (*it == delete_object)
 			{
+				delete_object->Finalize();
 				it = object_list.erase(it);
+				for (auto it2 = in_screen_object.begin(); it2 != in_screen_object.end();)
+				{
+					if (*it2 == delete_object)
+					{
+						delete_object->Finalize();
+						it2 = in_screen_object.erase(it2);
+						break;
+					}
+					else
+					{
+						++it2;
+					}
+				}
 				break;
 			}
 			else
@@ -159,10 +180,15 @@ void ObjectManager::Finalize()
 	delete effect_spawner;
 }
 
-void ObjectManager::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
+void ObjectManager::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data, int* stage_around_data)
 {
-	SpawnData data = { _object,_location,_erea,_color_data };
+	SpawnData data = { _object,_location,_erea,_color_data};
 	create_object.push_back(data);
+}
+
+void ObjectManager::CreateObject(SpawnData _data)
+{
+	create_object.push_back(_data);
 }
 
 void ObjectManager::CreatePlayer(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)

@@ -18,6 +18,7 @@ struct SpawnData
 	Vector2D location;
 	Vector2D size;
 	int color;
+	int stage_around_data[8];
 };
 
 class ObjectManager
@@ -49,7 +50,8 @@ public:
 	void Draw()const;				//描画処理
 	void Finalize();				//終了時処理
 
-	void CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);	//オブジェクトの生成
+	void CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data ,int* stage_around_data ={ 0 });	//オブジェクトの生成
+	void CreateObject(SpawnData _data);	//オブジェクトの生成
 	void CreatePlayer(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);	//プレイヤーの生成
 	void CreateBoss(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);		//ボスの生成
 	void DeleteObject(Object* _object);					//オブジェクトの削除

@@ -81,7 +81,6 @@ void BossAttackFire::Update(ObjectManager* _manager)
 		hitFlg = true;
 	}
 	
-
 	if (hitFlg) {
 		_manager->SpawnEffect(location, erea, ExplosionEffect, 10, RED);
 		camera->SetImpact(15);

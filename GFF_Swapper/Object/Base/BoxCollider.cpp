@@ -103,6 +103,6 @@ void BoxCollider::SetLocation(Vector2D _location)
 
 void BoxCollider::SetScreenPosition(Vector2D _world_to_screen)
 {
-	local_location.x = location.x - _world_to_screen.x;
+ 	local_location.x = location.x - _world_to_screen.x;
 	local_location.y = location.y - _world_to_screen.y;
 }

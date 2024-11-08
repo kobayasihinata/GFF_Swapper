@@ -247,6 +247,8 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 	//デフォルトのプレイヤーリスポーン地点の設定
 	object_manager->player_respawn = { (float)100,(float)stage_height - 200 };
 
+	SpawnData _d;
+
 	for (int i = stage_height_num - 1; i >= 0; i--)
 	{
 		for (int j = 0; j < stage_width_num; j++)
@@ -268,8 +270,18 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 			case WEATHER_RAIN:
 			case WEATHER_FIRE:
 			case WEATHER_SEED:
+				for (int k = 0; k < 8; k++)
+				{
+					_d.stage_around_data[k] = CheckAroundBlock(i, j, k);
+				}
+				_d.object = new Stage(stage_data[i][j], stage_height);
+				_d.location = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
+				_d.size = { BOX_WIDTH ,BOX_HEIGHT };
+				_d.color = stage_data[i][j];
+				//_d.stage_around_data = block_around_data;
 				//ステージ内ブロックを生成
-				object_manager->CreateObject(new Stage(stage_data[i][j],stage_height), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
+				//object_manager->CreateObject(new Stage(stage_data[i][j],stage_height), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j], block_around_data);
+				object_manager->CreateObject(_d);
 				break;
 			case TUTOSTAGE_TRANSITION:
 			case FIRSTSTAGE_TRANSITION:
@@ -780,6 +792,7 @@ void GameMain::UpdateGameOver()
 			ResourceManager::StartSound(decision_se);
 			set_sound_once = false;
 			object_manager->CreatePlayer(new Player, object_manager->player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, DEFAULT_PLAYER_COLOR);
+			if (now_stage == 2)SetStage(now_stage, false);
 			gm_state = GameMainState::S_GameMain;
 			pause_after_flg = true;
 			ResourceManager::StopSound(bgm_title);
@@ -993,7 +1006,7 @@ int GameMain::CheckAroundBlock(int _i, int _j, int _num)
 		return -1;
 	}
 	//引数_jが0（左端）で、更に左のデータを参照しようとした場合、-1を返す
-	if (_i == 0 && (_num == 0 || _num == 3 || _num == 5))
+	if (_j == 0 && (_num == 0 || _num == 3 || _num == 5))
 	{
 		return -1;
 	}
