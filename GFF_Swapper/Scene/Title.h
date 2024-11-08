@@ -47,6 +47,7 @@ static char logo_string[7][2]
     "e",
     "r",
 };
+
 struct BackGroundImage {
     bool flg;
     Vector2D location;

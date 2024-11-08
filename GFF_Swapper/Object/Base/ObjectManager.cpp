@@ -40,13 +40,11 @@ void ObjectManager::Update(GameMain* _g)
 		{
 			if (*it == delete_object)
 			{
-				delete_object->Finalize();
 				it = object_list.erase(it);
 				for (auto it2 = in_screen_object.begin(); it2 != in_screen_object.end();)
 				{
 					if (*it2 == delete_object)
-					{
-						delete_object->Finalize();
+					{;
 						it2 = in_screen_object.erase(it2);
 						break;
 					}
@@ -81,7 +79,7 @@ void ObjectManager::Update(GameMain* _g)
 			{
 				//各オブジェクトとの当たり判定
 				if (in_screen_object->HitBox(in_screen_object2) &&
-					in_screen_object2 != player_object)
+					in_screen_object != in_screen_object2)
 				{
 					in_screen_object->Hit(in_screen_object2);
 				}
@@ -182,7 +180,7 @@ void ObjectManager::Finalize()
 
 void ObjectManager::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
 {
-	SpawnData data = { _object,_location,_erea,_color_data};
+	SpawnData data = { _object,_location,_erea,_color_data };
 	create_object.push_back(data);
 }
 
