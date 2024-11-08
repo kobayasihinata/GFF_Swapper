@@ -747,6 +747,15 @@ bool Player::SearchColor(Object* ob)
 			posRelation[y][x] = objNum;
 			objNum++;
 		}
+		//ボスも交換対象に追加
+		if (ob->GetObjectType() == BOSS)
+		{
+			searchedObjAll[objNum] = ob;
+			int x = (int)ob->GetLocalLocation().x / 40;
+			int y = (int)ob->GetLocalLocation().y / 40;
+			posRelation[y][x] = objNum;
+			objNum++;
+		}
 		else if(ob->GetLocalLocation().x >= 0 && ob->GetLocalLocation().x <= 1280 && ob->GetLocalLocation().y >= 0 && ob->GetLocalLocation().y <= 720) 
 		{
 			searchedObjAll[objNum] = ob;
