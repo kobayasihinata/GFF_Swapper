@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), air_above(false)
 {
 	block_type = _type;
 	next_stage = _next_stage - 25;
@@ -23,6 +23,12 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 	else if (_type == BLUE_BLOCK || _type == WATER_BLOCK)
 	{
 		type = WATER;
+	}
+	//地面
+	else if (_type == GRAY_BLOCK)
+	{
+		ground_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/ground.PNG");
+		ground_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/grow.PNG");
 	}
 	//それ以外
 	else
@@ -66,6 +72,15 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 	old_color = color;
 	draw_color = color;
 	object_pos = _object_pos;
+
+	if (stage_around_data[1] == NULL_BLOCK)
+	{
+		air_above = true;
+	}
+	else
+	{
+		air_above = false;
+	}
 
 	change_fire = ResourceManager::SetSound("Resource/Sounds/Effect/change_fire.wav");
 	change_wood = ResourceManager::SetSound("Resource/Sounds/Effect/change_grass.wav");
@@ -241,7 +256,11 @@ void Stage::Draw()const
 			break;
 			//地面（灰）
 		case GRAY_BLOCK:
-			ResourceManager::StageBlockDraw(local_location, 2);
+			//ResourceManager::StageBlockDraw(local_location, 2);
+			if (debug_flg == false)
+			{
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(ground_image[air_above]), true);
+			}
 			break;
 			//地面(赤、緑、青)
 		case RED_BLOCK:
@@ -302,11 +321,10 @@ void Stage::Draw()const
 		case FIRSTSTAGE_TRANSITION:
 		case BOSSSTAGE_TRANSITION:
 			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(GetRand(255), GetRand(255), GetRand(255)), true);
-#ifdef _DEBUG
+
 			//デバッグ時はどこに飛ぶか分かりやすいように
 			if (debug_flg == false)DrawFormatStringF(local_location.x, local_location.y, 0x000000, "%d", next_stage);
 
-#endif // DEBUG
 			break;
 			//その他（無）
 		default:
@@ -379,6 +397,15 @@ void Stage::Draw()const
 	{
 		DrawStringF(local_location.x, local_location.y,  "省", text_color[block_type]);
 	}
+	//SetFontSize(12);
+	//DrawFormatStringF(local_location.x, local_location.y, 0xffffff, "%d", stage_around_data[0]);
+	//DrawFormatStringF(local_location.x+13, local_location.y, 0xffffff, "%d", stage_around_data[1]);
+	//DrawFormatStringF(local_location.x+26, local_location.y, 0xffffff, "%d", stage_around_data[2]);
+	//DrawFormatStringF(local_location.x, local_location.y+12, 0xffffff, "%d", stage_around_data[3]);
+	//DrawFormatStringF(local_location.x+26, local_location.y+12, 0xffffff, "%d", stage_around_data[4]);
+	//DrawFormatStringF(local_location.x, local_location.y+24, 0xffffff, "%d", stage_around_data[5]);
+	//DrawFormatStringF(local_location.x+13, local_location.y+24, 0xffffff, "%d", stage_around_data[6]);
+	//DrawFormatStringF(local_location.x+26, local_location.y+24, 0xffffff, "%d", stage_around_data[7]);
 
 #endif // DEBUG
 
@@ -393,9 +420,6 @@ void Stage::Hit(Object* _object)
 {
 	//処理を省略して良いオブジェクトなら処理終了
 	if (check_ignore_flg)return;
-
-	//自分がグレーのブロックなら処理終了
-	//if (this->block_type == GRAY_BLOCK)return;
 
 	//相手がブロックなら処理終了
 	if (_object->GetObjectType() == BLOCK)return;
@@ -523,14 +547,6 @@ void Stage::DrawSolidBody(int _color)const
 	DrawLine(local_location.x + erea.x, local_location.y + erea.y, local_location.x + erea.x + 20, local_location.y - 20 + erea.y, _color, TRUE);*/
 }
 
-void Stage::SetAroundBlock(int _num, int _block_type)
-{
-	//想定している範囲外のポインタが指定されたら処理終了
-	if (_num < 0 || _num >= 8)return;
-
-	stage_around_data[_num] = _block_type;
-}
-
 void Stage::CheckIgnoreObject()
 {
 	////周辺に空気が無いブロック(内側)なら、省略可能オブジェクト
@@ -540,16 +556,4 @@ void Stage::CheckIgnoreObject()
 	//{
 	//	check_ignore_flg = true;
 	//}
-}
-
-bool Stage::CheckNullAround()const
-{
-	for (int i = 0; i < 8; i++)
-	{
-		if (stage_around_data[i] == NULL_BLOCK)
-		{
-			return true;
-		}
-	}
-	return false;
 }

@@ -120,13 +120,14 @@ private:
 	bool default_object;				//ステージに始めから設置されているオブジェクトか判断
 	bool se_play_once;					//SEを一回だけ再生する
 	int next_stage;						//遷移先のステージ(ステージ遷移ブロック専用)
+	bool air_above;						//上が空気かそれ以外か
+	int ground_image[2];				//地面の画像ハンドル位置
 
 	int change_fire;					//色更新時のSE
 	int change_wood;					//色更新時のSE
 	int change_water;					//色更新時のSE
 	int checkpoint_se;					//中間地点に触れた時のSE
 
-	int stage_around_data[8];				//自身の周辺８マスのブロック種類　左上から右に順番
 public:
 	Stage(int _type, int _stage_height = 0, int _next_stage = 0);
 	~Stage();
@@ -151,13 +152,6 @@ public:
 	//立体感用描画
 	void DrawSolidBody(int color)const;
 
-	//周辺８マスのブロック情報を格納する
-	void SetAroundBlock(int _num, int _block_type);
-
 	//描画以外の処理を全て省略して良いオブジェクトか判断
 	void CheckIgnoreObject();
-
-	//周辺に無のエリアがあるか判断
-	bool CheckNullAround()const;
 };
-

@@ -26,6 +26,8 @@ public:
 	int object_pos = 0;	//ゲームメインで生成された時、オブジェクト配列のどこに格納されたか
 	bool is_boss_attack = false;	//ボスが生成した攻撃オブジェクトかどうか
 
+	int stage_around_data[8];				//自身の周辺８マスのブロック種類　左上から右に順番
+
 	//_location _erea=スポーン座標、大きさ ,_color_data=色情報, object_pos=Object配列内の自分自身の位置
 	virtual void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos) = 0;
 
@@ -49,6 +51,22 @@ public:
 	}
 
 	virtual bool SearchColor(Object* ob) = 0;
+
+	//周辺８マスのブロック情報を格納する
+	void SetAroundBlock(int _num, int _block_type)
+	{
+		//想定している範囲外のポインタが指定されたら処理終了
+		if (_num < 0 || _num >= 8)return;
+
+		stage_around_data[_num] = _block_type;
+	}
+	void SetAroundBlock(int* around_data)
+	{
+		for (int i = 0; i < sizeof(around_data); i++)
+		{
+			stage_around_data[i] = around_data[i];
+		}
+	}
 
 	//各変数の取得
 	int GetObjectType()const { return type; }

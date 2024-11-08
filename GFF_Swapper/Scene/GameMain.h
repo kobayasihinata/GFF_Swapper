@@ -15,6 +15,7 @@
 #include "../Object/Tutorial/TutorialText.h"
 #include "../Object/Tutorial/Tutorial.h"
 #include "../Object/Base/ObjectManager.h"
+#include "../Utility/DebugInfomation.h"
 #include "Camera.h"
 
 #include"eNum/GameMainState.h"
@@ -94,6 +95,7 @@ private:
     int decision_se;    //決定SE
 
     int blackout;   //暗転用
+    int block_around_data[8];  //ブロックの周辺のデータ仮格納
 
 public:
 

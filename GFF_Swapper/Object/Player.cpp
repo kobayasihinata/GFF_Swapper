@@ -136,6 +136,10 @@ void Player::Update(ObjectManager* _manager)
 			location = _manager->player_respawn;
 			_manager->player_respawn_flg = false;
 			vector = 0;
+			swapTimer = -1;
+			searchFlg = false;
+			_manager->SetNowCurrentObject(nullptr);
+			draw_color = color;
 		}
 
 		if (stageHitFlg[1][bottom] != true) { //重力
@@ -584,7 +588,7 @@ void Player::Hit(Object* _object)
 	}
 
 	//ダメージ
-	if (!damageEffectFlg && CheckCollision(_object->GetLocation(), _object->GetErea()) && _object->GetCanHit()) {
+	if (!damageEffectFlg && CheckCollision(_object->GetLocation(), _object->GetErea()) && (_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
 		//色ごとの判定
 		switch (color)
 		{

@@ -120,6 +120,7 @@ void BossAttackWater::Draw() const
 	}
 	DrawCircleAA(f_location.x, f_location.y, f_erea.x, 32, GetColor(100, 100, 255), TRUE);
 	DrawCircleAA(f_location.x, f_location.y, f_erea.x-2, 32, GetColor(120, 120, 255), TRUE);
+	DebugInfomation::Add("hit_flg", hitFlg);
 }
 
 void BossAttackWater::Hit(Object* _object)
