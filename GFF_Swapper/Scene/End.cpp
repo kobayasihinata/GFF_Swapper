@@ -76,7 +76,7 @@ void End::Initialize()
 	}
 
 	player_location = { 1300.f, 480.f };
-	player_erea = { PLAYER_HEIGHT,PLAYER_WIDTH };
+	player_erea = { PLAYER_WIDTH,PLAYER_HEIGHT };
 
 	bat_loction = { 100.f, 200.f };
 
