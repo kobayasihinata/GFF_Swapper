@@ -9,6 +9,7 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 {
 	block_type = _type;
 	next_stage = _next_stage - 25;
+
 	//炎
 	if (_type == RED_BLOCK || _type == FIRE_BLOCK)
 	{
@@ -23,12 +24,6 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 	else if (_type == BLUE_BLOCK || _type == WATER_BLOCK)
 	{
 		type = WATER;
-	}
-	//地面
-	else if (_type == GRAY_BLOCK)
-	{
-		ground_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/ground.PNG");
-		ground_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/grow.PNG");
 	}
 	//それ以外
 	else
@@ -81,6 +76,9 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 	{
 		air_above = false;
 	}
+
+	//画像読み込み
+	StageLoadGraph();
 
 	change_fire = ResourceManager::SetSound("Resource/Sounds/Effect/change_fire.wav");
 	change_wood = ResourceManager::SetSound("Resource/Sounds/Effect/change_grass.wav");
@@ -256,10 +254,13 @@ void Stage::Draw()const
 			break;
 			//地面（灰）
 		case GRAY_BLOCK:
-			//ResourceManager::StageBlockDraw(local_location, 2);
 			if (debug_flg == false)
 			{
 				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(ground_image[air_above]), true);
+			}
+			else
+			{
+				ResourceManager::StageBlockDraw(local_location, 2);
 			}
 			break;
 			//地面(赤、緑、青)
@@ -268,10 +269,17 @@ void Stage::Draw()const
 			ResourceManager::StageBlockDraw(local_location, 0);
 			break;
 		case GREEN_BLOCK:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
-			DrawBoxAA(local_location.x + 10, local_location.y + 20, local_location.x + 15, local_location.y + 25, 0x00ee00, true);
-			DrawBoxAA(local_location.x + 30, local_location.y + 15, local_location.x + 35, local_location.y + 20, 0x00ee00, true);
-			DrawBoxAA(local_location.x + 25, local_location.y + 35, local_location.x + 30, local_location.y + 40, 0x00ee00, true);
+			if (debug_flg == false)
+			{
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(wood_image), true);
+			}
+			else
+			{
+				DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
+				DrawBoxAA(local_location.x + 10, local_location.y + 20, local_location.x + 15, local_location.y + 25, 0x00ee00, true);
+				DrawBoxAA(local_location.x + 30, local_location.y + 15, local_location.x + 35, local_location.y + 20, 0x00ee00, true);
+				DrawBoxAA(local_location.x + 25, local_location.y + 35, local_location.x + 30, local_location.y + 40, 0x00ee00, true);
+			}
 			break;
 		case BLUE_BLOCK:
 			//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
@@ -285,10 +293,13 @@ void Stage::Draw()const
 			{
 				ResourceManager::StageAnimDraw(local_location, type);
 			}
+			break;
 		case WOOD_BLOCK:
 			if (debug_flg == false)
 			{
-				if (draw_wood_flg == true)
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(wood_image), true);
+			
+				/*if (draw_wood_flg == true)
 				{
 					DrawBoxAA(local_location.x+3, local_location.y, local_location.x + erea.x-3, local_location.y + erea.y, 0x00cc00, true);
 					DrawBoxAA(local_location.x +2, local_location.y, local_location.x + erea.x-2, local_location.y + 2, 0x00ff00, true);
@@ -298,7 +309,7 @@ void Stage::Draw()const
 				else
 				{
 					ResourceManager::StageAnimDraw(local_location, type);
-				}
+				}*/
 			}
 			break;
 		case PLAYER_RESPAWN_BLOCK:
@@ -556,4 +567,19 @@ void Stage::CheckIgnoreObject()
 	//{
 	//	check_ignore_flg = true;
 	//}
+}
+
+void Stage::StageLoadGraph()
+{
+	//当たり判定があるオブジェクトの画像を読み込む
+	if (can_hit)
+	{
+		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/moss.PNG");
+		ground_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/ground.PNG");
+		ground_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/grow.PNG");
+	}
+	if(block_type == WOOD_BLOCK)
+	{
+		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/lvy.PNG");
+	}
 }

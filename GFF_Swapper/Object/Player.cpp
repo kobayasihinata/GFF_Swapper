@@ -334,7 +334,7 @@ void Player::Update(ObjectManager* _manager)
 		damageFlg = false;
 
 		stateFlg = false;
-
+		state = 0;
 		now_riding = 0;
 
 		if (circleAng++ >= 360.f) {
@@ -634,12 +634,6 @@ void Player::Hit(Object* _object)
 		(_object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE && this->color == RED && !stateFlg) ||
 		(_object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE && this->color == GREEN && !stateFlg)) && !_object->GetIsBossAttack()){
 		state = 1;
-		stateFlg = true;
-	}
-	else {
-		if (!stateFlg) {
-			state = 0;
-		}
 	}
 
 	//自分が乗っている(触れている)ブロックに応じてSEを変える

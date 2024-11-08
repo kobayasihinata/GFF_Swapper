@@ -180,7 +180,7 @@ void ObjectManager::Finalize()
 	delete effect_spawner;
 }
 
-void ObjectManager::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data, int* stage_around_data)
+void ObjectManager::CreateObject(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
 {
 	SpawnData data = { _object,_location,_erea,_color_data};
 	create_object.push_back(data);
