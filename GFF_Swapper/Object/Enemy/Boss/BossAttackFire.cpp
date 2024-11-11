@@ -12,7 +12,7 @@ BossAttackFire::BossAttackFire()
 
 	flg = false;
 	hitFlg = false;
-
+	player_hit = false;
 	boundCnt = 3;
 }
 
@@ -94,10 +94,10 @@ void BossAttackFire::Update(ObjectManager* _manager)
 void BossAttackFire::Draw() const
 {
 	ResourceManager::StageAnimDraw({ local_location.x - 20,local_location.y - 20 }, FIRE);
-	DrawCircleAA(local_location.x, local_location.y, erea.x,100, 0xff0000, TRUE);
-	ResourceManager::DrawRotaBox(local_location.x, local_location.y, erea.x, erea.y, local_location.x, local_location.y, 45, 0xff0000, TRUE);
+	DrawCircleAA(local_location.x, local_location.y, erea.x,100, color, TRUE);
+	ResourceManager::DrawRotaBox(local_location.x, local_location.y, erea.x, erea.y, local_location.x, local_location.y, 45, color, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 120 + (frame%75));
-	DrawCircleAA(local_location.x, local_location.y, erea.x,100, 0x000000, TRUE);
+	DrawCircleAA(local_location.x, local_location.y, erea.x,100, color, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 }
 
@@ -107,6 +107,16 @@ void BossAttackFire::Hit(Object* _object)
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);
 	}
+#if BOSS_MODE
+	//青色のプレイヤーに当たった時の処理
+	if (!player_hit && _object->GetObjectType() == PLAYER && _object->GetColorData() == BLUE)
+	{
+		//色が変わって反射出来るようにする
+		this->velocity = { velocity.x * -1,velocity.y * -1 };
+		this->SetColorData(BLUE);
+		player_hit = true;
+	}
+#endif // 
 }
 
 bool BossAttackFire::SearchColor(Object* ob)

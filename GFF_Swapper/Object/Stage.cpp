@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(0)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4)
 {
 	block_type = _type;
 	next_stage = _next_stage - 25;

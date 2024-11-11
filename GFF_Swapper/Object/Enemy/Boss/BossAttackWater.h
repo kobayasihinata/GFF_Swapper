@@ -1,5 +1,6 @@
 #pragma once
 #include "../../Base/Object.h"
+#include "../../../Utility/common.h"
 class BossAttackWater : public Object
 {
 private:
@@ -15,6 +16,7 @@ private:
 	Vector2D f_location;
 	Vector2D f_erea;
 	float rad;
+	bool player_hit;	//プレイヤーに当たったか
 
 	int start_se;	//攻撃開始SE
 	int end_se;		//攻撃終了SE

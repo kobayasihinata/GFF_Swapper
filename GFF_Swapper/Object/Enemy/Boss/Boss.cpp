@@ -22,7 +22,14 @@
 Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), damage_flg(false), state_change_time(0), speed(0.0f),wing_fps(0),damage_se(0)
 {
 	type = BOSS;
+#if BOSS_MODE
+	//攻撃跳ね返すモードの処理
+	can_swap = FALSE;
+#else
+	//ボスの色変えるモードの処理
 	can_swap = TRUE;
+#endif // BOSS_MODE
+
 	can_hit = TRUE;
 	for (int i = 0; i < 4; i++) {
 		move[i] = 0;
@@ -329,9 +336,9 @@ void Boss::Hit(Object* _object)
 {
 	//弱点色に触れた時の処理
 	if (
-		(_object->GetObjectType() == FIRE && this->color == GREEN) ||
-		(_object->GetObjectType() == WATER && this->color == RED) ||
-		(_object->GetObjectType() == WOOD && this->color == BLUE)
+		(_object->GetColorData() == RED && this->color == GREEN) ||
+		(_object->GetColorData() == BLUE && this->color == RED) ||
+		(_object->GetColorData() == GREEN && this->color == BLUE)
 		)
 	{
 		//バリア減るごとにクールタイムを設ける
@@ -407,7 +414,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 			if (++attack > 2) {
 				attack = 0;
 			}
-			
+
 			if (local_location.x < 640.f) {
 				side = true;
 			}
@@ -423,7 +430,8 @@ void Boss::BossAtack(ObjectManager *_manager)
 		{
 		case 0://火
 			color = RED;
-			if (++t > 60) {
+			if (++t > 60 && !BOSS_MODE) {
+				
 				can_swap = true;
 			}
 			if (cnt % 30 == 0) {
@@ -440,7 +448,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 
 		case 1://水
 			color = BLUE;
-			if (++t > 60) {
+			if (++t > 60 && !BOSS_MODE) {
 				can_swap = true;
 			}
 			if (cnt % 30 == 0) {
@@ -468,7 +476,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 
 		default://木
 			color = GREEN;
-			if (++t > 20) {
+			if (++t > 20 && !BOSS_MODE) {
 				can_swap = true;
 			}
 			if (cnt % 30 == 0) {

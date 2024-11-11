@@ -26,4 +26,6 @@
 
 #define STAGE_NUM 3					//ステージ数
 
+#define BOSS_MODE TRUE				//ボス戦の仕様を切り替える FALSE = ボスと色を交換するモード TRUE = ボスの攻撃を跳ね返すモード
+
 

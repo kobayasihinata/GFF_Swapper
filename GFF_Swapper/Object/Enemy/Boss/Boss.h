@@ -5,6 +5,7 @@
 #include <ctime>
 #include <mutex> 
 #include "../EnemyBat.h"
+#include "../../../Utility/common.h"
 #include "BossAttackFire.h"
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"

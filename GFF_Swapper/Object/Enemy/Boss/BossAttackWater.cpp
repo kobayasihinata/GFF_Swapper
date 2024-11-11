@@ -16,6 +16,7 @@ BossAttackWater::BossAttackWater()
 	count = 0;
 	moveFlg = false;
 	hitFlg = false;
+	player_hit = false;
 	rad = 0.0f;
 }
 
@@ -112,15 +113,21 @@ void BossAttackWater::Update(ObjectManager* _manager)
 void BossAttackWater::Draw() const
 {
 	if (flg) {
-		for (int i = 0; i < 5; i++)
+		if (!player_hit)
 		{
-			DrawCircleAA(local_location.x + (i * 6), local_location.y - (i * 6), erea.x - (i * 8), 32, GetColor(i * 25, i * 25, 255), TRUE);
+			for (int i = 0; i < 5; i++)
+			{
+				DrawCircleAA(local_location.x + (i * 6), local_location.y - (i * 6), erea.x - (i * 8), 32, GetColor(i * 25, i * 25, 255), TRUE);
+			}
+			DrawCircleAA(f_location.x, f_location.y, f_erea.x, 32, GetColor(100, 100, 255), TRUE);
+			DrawCircleAA(f_location.x, f_location.y, f_erea.x - 2, 32, GetColor(120, 120, 255), TRUE);
 		}
-		//DrawCircleAA(local_location.x + 9, local_location.y - 12, erea.x - 10, 32, GetColor(255, 255, 255), TRUE);
+		else
+		{
+			DrawCircleAA(local_location.x, local_location.y, 40, 32, 0x00ff00, TRUE);
+
+		}
 	}
-	DrawCircleAA(f_location.x, f_location.y, f_erea.x, 32, GetColor(100, 100, 255), TRUE);
-	DrawCircleAA(f_location.x, f_location.y, f_erea.x-2, 32, GetColor(120, 120, 255), TRUE);
-	DebugInfomation::Add("hit_flg", hitFlg);
 }
 
 void BossAttackWater::Hit(Object* _object)
@@ -130,6 +137,15 @@ void BossAttackWater::Hit(Object* _object)
 		_object->SetColorData(color);
 		hitFlg = true;
 	}
+#if BOSS_MODE
+	//緑色のプレイヤーに当たった時の処理
+	if (!player_hit && _object->GetObjectType() == PLAYER && _object->GetColorData() == GREEN)
+	{
+		//色が変わる
+		this->SetColorData(GREEN);
+		player_hit = true;
+	}
+#endif // 
 }
 
 bool BossAttackWater::SearchColor(Object* ob)

@@ -26,7 +26,7 @@ public:
 	int object_pos = 0;	//ゲームメインで生成された時、オブジェクト配列のどこに格納されたか
 	bool is_boss_attack = false;	//ボスが生成した攻撃オブジェクトかどうか
 
-	int stage_around_data[8];				//自身の周辺８マスのブロック種類　左上から右に順番
+	int stage_around_data[8] = { -1 };				//自身の周辺８マスのブロック種類　左上から右に順番
 
 	//_location _erea=スポーン座標、大きさ ,_color_data=色情報, object_pos=Object配列内の自分自身の位置
 	virtual void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos) = 0;

@@ -79,6 +79,8 @@ void BossAttackWood::Draw() const
 		DrawBoxAA(local_location.x + 2, local_location.y + (i * BOX_HEIGHT), local_location.x + erea.x - 2, local_location.y + 2 + (i * BOX_HEIGHT), 0x00ff00, true);
 		DrawBoxAA(local_location.x + 2, local_location.y + erea.y + (i * BOX_HEIGHT), local_location.x + erea.x - 2, local_location.y + erea.y - 2 + (i * BOX_HEIGHT), 0x00ff00, true);
 		DrawBoxAA(local_location.x + 10, local_location.y + 2 + (i * BOX_HEIGHT), local_location.x + 13, local_location.y + erea.y - 2 + (i * BOX_HEIGHT), 0x00ee00, true);
+		if(player_hit)ResourceManager::StageAnimDraw({ local_location.x,local_location.y + (i * BOX_HEIGHT), } , FIRE);
+		if(player_hit)ResourceManager::StageAnimDraw({ local_location.x,local_location.y + (i * BOX_HEIGHT), } , FIRE);
 
 	}
 
@@ -91,6 +93,15 @@ void BossAttackWood::Hit(Object* _object)
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);
 	}
+#if BOSS_MODE	
+	//攻撃跳ね返すモードの処理
+	//赤色のプレイヤーに当たった時の処理
+	if (!player_hit && _object->GetObjectType() == PLAYER && _object->GetColorData() == RED)
+	{
+		player_hit = true;
+		this->SetColorData(RED);
+	}
+#endif
 }
 
 bool BossAttackWood::SearchColor(Object* ob)
