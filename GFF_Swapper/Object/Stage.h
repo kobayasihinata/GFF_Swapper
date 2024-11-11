@@ -2,6 +2,14 @@
 #include "../Utility/common.h"
 #include "Base/Object.h"
 
+//アニメーション画像枚数とアニメーション回転速度
+static int anim_image_num[3][2]
+{
+	{6,10},
+	{1,0},
+	{8,5}
+};
+
 //StageとEditで使う識別用
 enum BlockList	{
 	NULL_BLOCK = 0,
@@ -121,8 +129,12 @@ private:
 	bool se_play_once;					//SEを一回だけ再生する
 	int next_stage;						//遷移先のステージ(ステージ遷移ブロック専用)
 	int ground_mapchip		;			//マップチップ位置
+	int anim_num;						//アニメーション回転用
+
 	int ground_image;					//地面の画像ハンドル位置
 	int wood_image;						//草の画像ハンドル位置
+	int fire_image;						//火の画像ハンドル位置
+	int water_image;					//水の画像ハンドル位置
 
 	int change_fire;					//色更新時のSE
 	int change_wood;					//色更新時のSE
@@ -161,4 +173,7 @@ public:
 
 	//マップチップを設定する
 	void SetMapChip();
+
+	//アニメーション更新
+	void AnimationUpdate();
 };
