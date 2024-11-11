@@ -72,17 +72,6 @@ Player::Player()
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_water.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 
-	for (int i = 0; i < 4; i++)
-	{
-		old_walk_se[i] = walk_se[i];
-	}
-	old_jump_se = jump_se;
-	for (int i = 0; i < 3; i++)
-	{
-		old_damage_se[i] = damage_se[i];
-	}
-	old_cursor_se = cursor_se;
-
 	now_riding = 0;
 	draw_color = 0;
 
@@ -113,9 +102,6 @@ void Player::Update(ObjectManager* _manager)
 	if (!is_tutorial) {
 		__super::Update(_manager);
 
-		//意図しない変更を防止
-		SavePlayerSound();
-
 		if (searchFlg) {
 			if (fps++ > 6000) {
 				fps = 0;
@@ -130,6 +116,7 @@ void Player::Update(ObjectManager* _manager)
 		{
 			_manager->SpawnEffect(location, erea, ShineEffect, 20, color);
 		}
+
 		//ステージ遷移時に座標だけ移動させる用（体力や色情報などはそのまま）
 		if (_manager->player_respawn_flg)
 		{
@@ -1919,30 +1906,3 @@ Vector2D Player::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const
 
 	return ret;
 }
-
-void Player::SavePlayerSound()
-{
-	for (int i = 0; i < 4; i++)
-	{
-		if (old_walk_se[i] != walk_se[i])
-		{
-			walk_se[i] = old_walk_se[i];
-		}
-	}
-	if (old_jump_se != jump_se)
-	{
-		jump_se = old_jump_se;
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		if (old_damage_se[i] != damage_se[i])
-		{
-			damage_se[i] = old_damage_se[i];
-		}
-	}
-	if (old_cursor_se != cursor_se)
-	{
-		cursor_se = old_cursor_se;
-	}
-}
-

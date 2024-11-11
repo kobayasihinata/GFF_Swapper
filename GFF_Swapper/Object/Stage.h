@@ -120,9 +120,9 @@ private:
 	bool default_object;				//ステージに始めから設置されているオブジェクトか判断
 	bool se_play_once;					//SEを一回だけ再生する
 	int next_stage;						//遷移先のステージ(ステージ遷移ブロック専用)
-	bool air_above;						//上が空気かそれ以外か
-	int ground_image[2];				//地面の画像ハンドル位置
-	int wood_image;					//草の画像ハンドル位置
+	int ground_mapchip		;			//マップチップ位置
+	int ground_image;					//地面の画像ハンドル位置
+	int wood_image;						//草の画像ハンドル位置
 
 	int change_fire;					//色更新時のSE
 	int change_wood;					//色更新時のSE
@@ -158,4 +158,7 @@ public:
 
 	//自分が使用する可能性のある画像を全て読み込む
 	void StageLoadGraph();
+
+	//マップチップを設定する
+	void SetMapChip();
 };

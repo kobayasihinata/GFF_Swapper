@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), air_above(false)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(0)
 {
 	block_type = _type;
 	next_stage = _next_stage - 25;
@@ -68,17 +68,13 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 	draw_color = color;
 	object_pos = _object_pos;
 
-	if (stage_around_data[1] == NULL_BLOCK)
-	{
-		air_above = true;
-	}
-	else
-	{
-		air_above = false;
-	}
+	
 
 	//画像読み込み
 	StageLoadGraph();
+
+	//マップチップ設定
+	SetMapChip();
 
 	change_fire = ResourceManager::SetSound("Resource/Sounds/Effect/change_fire.wav");
 	change_wood = ResourceManager::SetSound("Resource/Sounds/Effect/change_grass.wav");
@@ -256,8 +252,7 @@ void Stage::Draw()const
 		case GRAY_BLOCK:
 			if (debug_flg == false)
 			{
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(ground_image[air_above]), true);
-			}
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(ground_image, ground_mapchip), true);			}
 			else
 			{
 				ResourceManager::StageBlockDraw(local_location, 2);
@@ -413,6 +408,7 @@ void Stage::Draw()const
 	//DrawFormatStringF(local_location.x+13, local_location.y, 0xffffff, "%d", stage_around_data[1]);
 	//DrawFormatStringF(local_location.x+26, local_location.y, 0xffffff, "%d", stage_around_data[2]);
 	//DrawFormatStringF(local_location.x, local_location.y+12, 0xffffff, "%d", stage_around_data[3]);
+	//DrawFormatString(local_location.x + 13, local_location.y + 13, 0xff0000, "%d", ground_mapchip);
 	//DrawFormatStringF(local_location.x+26, local_location.y+12, 0xffffff, "%d", stage_around_data[4]);
 	//DrawFormatStringF(local_location.x, local_location.y+24, 0xffffff, "%d", stage_around_data[5]);
 	//DrawFormatStringF(local_location.x+13, local_location.y+24, 0xffffff, "%d", stage_around_data[6]);
@@ -575,11 +571,100 @@ void Stage::StageLoadGraph()
 	if (can_hit)
 	{
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/moss.PNG");
-		ground_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/ground.PNG");
-		ground_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/grow.PNG");
+		ground_image = ResourceManager::SetDivGraph("Resource/Images/sozai/ground.PNG", 9, 3, 3, 40, 40);
 	}
-	if(block_type == WOOD_BLOCK)
+	if (block_type == WOOD_BLOCK || block_type == FIRE_BLOCK || block_type == WATER_BLOCK)
 	{
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/lvy.PNG");
+	}
+}
+
+void Stage::SetMapChip()
+{
+	//無色地面なら
+	if (block_type == 2)
+	{
+		//上に何もない？
+		if (stage_around_data[1] == NULL_BLOCK)
+		{
+			//上に何もなくて、左に何もないなら
+			if (stage_around_data[3] == NULL_BLOCK)
+			{
+				//左上に設定
+				ground_mapchip = 0;
+			}
+			//上に何もなくて、左に何かあるなら
+			else
+			{
+				//上に何もなくて、左に何かあって、右に何もないなら
+				if (stage_around_data[4] == NULL_BLOCK)
+				{
+					//右上に設定
+					ground_mapchip = 2;
+				}
+				//上に何もなくて、左に何かあって、右に何かあるなら
+				else
+				{
+					//上真ん中に設定
+					ground_mapchip = 1;
+				}
+			}
+		}
+		//上に何かある
+		else
+		{
+			//左に何もない？
+			if (stage_around_data[3] == NULL_BLOCK)
+			{
+				//上に何かあって、左に何もなくて、下に何もないなら
+				if (stage_around_data[6] == NULL_BLOCK)
+				{
+					//左下に設定
+					ground_mapchip = 6;
+				}
+				//上に何かあって、左に何もなくて、下に何かあるなら
+				else
+				{
+					//左真ん中に設定
+					ground_mapchip = 3;
+				}
+			}
+			//左に何かある
+			else
+			{
+				//下に何もない？
+				if (stage_around_data[6] == NULL_BLOCK)
+				{
+					//上に何かあって、左に何かあって、下に何もなくて、右に何もないなら
+					if (stage_around_data[4] == NULL_BLOCK)
+					{
+						//右下に設定
+						ground_mapchip = 8;
+					}
+					//上に何かあって、左に何かあって、下に何もなくて、右に何かあるなら
+					else
+					{
+						//下真ん中に設定
+						ground_mapchip = 7;
+					}
+				}
+				//下に何かある
+				else
+				{
+					//上に何かあって、左に何かあって、下に何かあって、右に何もないなら
+					if (stage_around_data[4] == NULL_BLOCK)
+					{
+						//右真ん中に設定
+						ground_mapchip = 5;
+					}
+					//上に何かあって、左に何かあって、下に何かあって、右に何かあるなら
+					else
+					{
+						//真ん中に設定
+						ground_mapchip = 4;
+					}
+				}
+			}
+		}
 	}
 }

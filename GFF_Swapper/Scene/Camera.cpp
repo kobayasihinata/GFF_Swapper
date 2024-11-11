@@ -17,6 +17,9 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 		return;
 	}
 
+	//プレイヤー座標更新
+	player_location = _player_location;
+
 	//カメラ座標更新
 	camera_location.x = _player_location.x - (SCREEN_WIDTH / 2);
 	camera_location.y = _player_location.y - (SCREEN_HEIGHT / 2);
@@ -84,4 +87,9 @@ void Camera::SetStageSize(Vector2D _size)
 void Camera::SetImpact(int _num)
 {
 	impact = _num;
+}
+
+Vector2D Camera::GetPlayerLocation()const
+{
+	return player_location;
 }

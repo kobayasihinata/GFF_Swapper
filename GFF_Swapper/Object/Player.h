@@ -70,12 +70,6 @@ private:
 	int damage_se[3];	//被ダメージSE格納
 	int cursor_se;		//色交換カーソルSE格納
 
-	int old_landing_se;		//旧着地SE
-	int old_walk_se[4];		//旧歩行SE格納
-	int old_jump_se;		//旧ジャンプSE格納
-	int old_damage_se[3];	//旧被ダメージSE格納
-	int old_cursor_se;		//旧色交換カーソルSE格納
-
 	int now_riding;		//今乗っているブロックに応じて再生するSEを変える
 
 	int deathTimer = 0;
@@ -116,9 +110,5 @@ public:
 
 	//引数:もとになる座標、回転させたい座標、回転させたい角度
 	Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
-
-	//音源の破損防止
-	void SavePlayerSound();
-
 };
 

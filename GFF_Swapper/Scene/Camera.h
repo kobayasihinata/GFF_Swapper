@@ -6,11 +6,13 @@
 class Camera
 {
 private:
-	Vector2D camera_location;	//カメラ座標
-	Vector2D lock_pos[2];       //カメラの固定位置（四隅）
-	Vector2D stage_size;       //カメラの固定位置（四隅）
-	int impact;                 //画面の振動用(ずらす範囲)
-	int impact_rand;            //画面の振動用(実際にずらす数値)
+	Vector2D camera_location;		//カメラ座標
+	Vector2D lock_pos[2];			//カメラの固定位置（四隅）
+	Vector2D stage_size;			//カメラの固定位置（四隅）
+	Vector2D player_location;	    //プレイヤー座標格納用
+	float camera_size;				//カメラの大きさ
+	int impact;						//画面の振動用(ずらす範囲)
+	int impact_rand;				//画面の振動用(実際にずらす数値)
 
 private:
 	//コンストラクタをprivateにすることで、
@@ -40,5 +42,8 @@ public:
 
 	//カメラに振動を与える
 	void SetImpact(int _num);
+
+	//プレイヤー座標取得
+	Vector2D GetPlayerLocation()const;
 };
 
