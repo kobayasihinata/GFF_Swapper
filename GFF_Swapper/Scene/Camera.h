@@ -53,4 +53,3 @@ public:
 	//プレイヤー座標取得
 	Vector2D GetPlayerLocation()const;
 };
-
