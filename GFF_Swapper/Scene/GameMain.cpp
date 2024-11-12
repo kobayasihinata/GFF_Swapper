@@ -398,7 +398,7 @@ void GameMain::UpdateGameMain()
 	ResourceManager::SetSoundVolume(bgm_noise, (int)(camera->GetCameraLocation().x / 100));
 
 
-	tutorial_text.Update(camera->GetCameraLocation(), object_manager->GetPlayerLocation(), stage_height);
+	tutorial_text.Update(object_manager->GetPlayerLocation(), stage_height);
 
 	//各オブジェクトの更新
 	object_manager->Update(this);
@@ -466,7 +466,7 @@ void GameMain::UpdatePause()
 	ResourceManager::SetSoundVolume(bgm_abnormal, 100);
 	cursorOld = cursor;
 
-	if (PadInput::TipLeftLStick(STICKL_X) < -0.5f && move_cursor_once == false)
+	if (PadInput::TipLStick(STICKL_X) < -0.5f && move_cursor_once == false)
 	{
 		if (--cursor < 0)
 		{
@@ -475,7 +475,7 @@ void GameMain::UpdatePause()
 		ResourceManager::StartSound(cursor_se);
 		move_cursor_once = true;
 	}
-	else if (PadInput::TipLeftLStick(STICKL_X) > 0.5f && move_cursor_once == false)
+	else if (PadInput::TipLStick(STICKL_X) > 0.5f && move_cursor_once == false)
 	{
 		if (++cursor > 2)
 		{
@@ -484,7 +484,7 @@ void GameMain::UpdatePause()
 		ResourceManager::StartSound(cursor_se);
 		move_cursor_once = true;
 	}
-	else if(PadInput::TipLeftLStick(STICKL_X) < 0.2f && PadInput::TipLeftLStick(STICKL_X) > -0.2f)
+	else if(PadInput::TipLStick(STICKL_X) < 0.2f && PadInput::TipLStick(STICKL_X) > -0.2f)
 	{
 		move_cursor_once = false;
 	}
@@ -770,14 +770,14 @@ void GameMain::UpdateGameOver()
 		set_sound_once = true;
 	}
 
-	if (PadInput::TipLeftLStick(STICKL_X) < -0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT))
+	if (PadInput::TipLStick(STICKL_X) < -0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT))
 	{
 		cursor = 0;
 		if (cursorOld == 1) {
 			ResourceManager::StartSound(cursor_se);
 		}
 	}
-	else if (PadInput::TipLeftLStick(STICKL_X) > 0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_RIGHT))
+	else if (PadInput::TipLStick(STICKL_X) > 0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_RIGHT))
 	{
 		cursor = 1;
 		if (cursorOld == 0) {
@@ -882,14 +882,14 @@ void GameMain::UpdateCheck()
 
 	cursorOld = cursor;
 
-	if (PadInput::TipLeftLStick(STICKL_X) < -0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT))
+	if (PadInput::TipLStick(STICKL_X) < -0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT))
 	{
 		cursor = 0;
 		if (cursorOld == 1) {
 			ResourceManager::StartSound(cursor_se);
 		}
 	}
-	else if (PadInput::TipLeftLStick(STICKL_X) > 0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_RIGHT))
+	else if (PadInput::TipLStick(STICKL_X) > 0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_RIGHT))
 	{
 		cursor = 1;
 		if (cursorOld == 0) {

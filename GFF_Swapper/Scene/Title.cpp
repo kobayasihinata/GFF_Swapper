@@ -111,8 +111,8 @@ AbstractScene* Title::Update()
 			ResourceManager::StartSound(cursor_se);
 		}
 		//カーソル更新
-		cursor_location.x = player_location.x + (PLAYER_WIDTH / 2) + PadInput::TipLeftLStick(STICKL_X) * 100;
-		cursor_location.y = player_location.y + (PLAYER_HEIGHT / 2) - PadInput::TipLeftLStick(STICKL_Y) * 100;
+		cursor_location.x = player_location.x + (PLAYER_WIDTH / 2) + PadInput::TipLStick(STICKL_X) * 100;
+		cursor_location.y = player_location.y + (PLAYER_HEIGHT / 2) - PadInput::TipLStick(STICKL_Y) * 100;
 
 		//選択メニュー更新（十字キー）
 		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT))

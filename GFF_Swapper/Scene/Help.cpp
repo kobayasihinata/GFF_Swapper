@@ -141,7 +141,7 @@ AbstractScene* Help::Update()
 	}
 		
 	// 下がる
-	if (PadInput::TipLeftLStick(STICKL_Y) < -0.8f && wt >= 15 || PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN))
+	if (PadInput::TipLStick(STICKL_Y) < -0.8f && wt >= 15 || PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN))
 	{
 		ResourceManager::StartSound(cursor_se);
 		if (++MenuNumber < 6) {}
@@ -150,7 +150,7 @@ AbstractScene* Help::Update()
 		wt = 0;
 	}
 	// 上がる
-	else if (PadInput::TipLeftLStick(STICKL_Y) > 0.8f && wt >= 15 || PadInput::OnButton(XINPUT_BUTTON_DPAD_UP))
+	else if (PadInput::TipLStick(STICKL_Y) > 0.8f && wt >= 15 || PadInput::OnButton(XINPUT_BUTTON_DPAD_UP))
 	{
 		ResourceManager::StartSound(cursor_se);
 		if (--MenuNumber > 5){}

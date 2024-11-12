@@ -36,6 +36,9 @@ public:
 	//ボタンを離した瞬間
 	static bool OnRelease(int button);
 
-	//スティックの傾き割合
-	static float TipLeftLStick(short StickL);
+	//スティックの傾き割合（左）
+	static float TipLStick(short StickL);
+
+	//スティックの傾き割合（右）
+	static float TipRStick(short StickR);
 };

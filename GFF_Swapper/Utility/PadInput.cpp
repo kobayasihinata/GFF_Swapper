@@ -1,4 +1,5 @@
 #include "PadInput.h"
+#include "DebugInfomation.h"
 
 char PadInput::NowKey[BUTTONS];
 char PadInput::OldKey[BUTTONS];
@@ -39,7 +40,7 @@ bool PadInput::OnRelease(int button)
 	return ret;
 }
 
-float PadInput::TipLeftLStick(short StickL)
+float PadInput::TipLStick(short StickL)
 {
 	if (StickL == STICKL_X)
 	{
@@ -54,6 +55,24 @@ float PadInput::TipLeftLStick(short StickL)
 
 		//左スティックの縦軸値の最大値を１とした割合
 		return ratioL_Y;
+	}
+
+	return 0;
+}
+
+float PadInput::TipRStick(short StickR)
+{
+	if (StickR == STICKL_X)
+	{
+		float ratioR_X = Input.ThumbRX / MAXL_X;
+		//右スティックの横軸を最大値を１とした割合
+		return ratioR_X;
+	}
+	else if (StickR == STICKL_Y)
+	{
+		float ratioR_Y = Input.ThumbRY / MAXL_Y;
+		//右スティックの縦軸値の最大値を１とした割合
+		return ratioR_Y;
 	}
 
 	return 0;

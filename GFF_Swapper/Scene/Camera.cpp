@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "../Utility/PadInput.h"
 
 Camera* Camera::Get()
 {
@@ -17,33 +18,53 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 		return;
 	}
 
+	//カメラのずらし方更新
+	if (PadInput::TipRStick(STICKL_X) > 0.1f || 
+		PadInput::TipRStick(STICKL_X) < -0.1f || 
+		PadInput::TipRStick(STICKL_Y) > 0.1f || 
+		PadInput::TipRStick(STICKL_Y) < -0.1f)
+	{
+		camera_shift.x += (PadInput::TipRStick(STICKL_X) * 10);
+		camera_shift.y -= (PadInput::TipRStick(STICKL_Y) * 10);
+	}
+	else
+	{
+		camera_shift.x -= (camera_shift.x / 10);
+		camera_shift.y -= (camera_shift.y / 10);
+	}
+
+	if (camera_shift.x > X_SHITF_LIMIT)camera_shift.x = X_SHITF_LIMIT;
+	if (camera_shift.x < -X_SHITF_LIMIT)camera_shift.x = -X_SHITF_LIMIT;
+	if (camera_shift.y > Y_SHITF_LIMIT)camera_shift.y = Y_SHITF_LIMIT;
+	if (camera_shift.y < -Y_SHITF_LIMIT)camera_shift.y = -Y_SHITF_LIMIT;
+
 	//プレイヤー座標更新
 	player_location = _player_location;
 
 	//カメラ座標更新
-	camera_location.x = _player_location.x - (SCREEN_WIDTH / 2);
-	camera_location.y = _player_location.y - (SCREEN_HEIGHT / 2);
+	camera_location.x = _player_location.x - (SCREEN_WIDTH / 2)+ camera_shift.x;
+	camera_location.y = _player_location.y - (SCREEN_HEIGHT / 2)+ camera_shift.y;
 
-	//X座標が画面左端以下なら
-	if (_player_location.x < (SCREEN_WIDTH / 2))
+	//カメラX座標が画面左端以下なら
+	if (camera_location.x <= lock_pos[0].x)
 	{
 		//カメラのX座標を左端固定する
 		camera_location.x = lock_pos[0].x;
 	}
-	//X座標が画面右端以上なら
-	if (_player_location.x > stage_size.x - (SCREEN_WIDTH / 2))
+	//カメラX座標が画面右端以上なら
+	if (camera_location.x >= lock_pos[1].x)
 	{
 		//カメラのX座標を右端固定する
 		camera_location.x = lock_pos[1].x;
 	}
-	//Y座標が画面上端以上なら
-	if (_player_location.y < (SCREEN_HEIGHT / 2))
+	//カメラY座標が画面上端以上なら
+	if (camera_location.y <= lock_pos[0].y)
 	{
 		//カメラのX座標を上端固定する
 		camera_location.y = lock_pos[0].y;
 	}
-	//Y座標が画面下端以上なら
-	if (_player_location.y > stage_size.y - (SCREEN_HEIGHT / 2) - 10)
+	//カメラY座標が画面下端以上なら
+	if (camera_location.y >= lock_pos[1].y)
 	{
 		//カメラのX座標を下端固定する
 		camera_location.y = lock_pos[1].y;

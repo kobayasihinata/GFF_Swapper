@@ -3,13 +3,14 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "../../Utility/ResourceManager.h"
+#include "../../Scene/Camera.h"
 
 class TutorialText
 {
 
 private:
 
-	Vector2D in_camera;
+	class Camera* in_camera;
 
 	Vector2D Gdraw_stick_shift;   //描画するスティックをずらす座標
 	float Gstick_angle;          //スティックのアングルを保存
@@ -40,7 +41,7 @@ public:
 	TutorialText();														 
 	~TutorialText();													 
 																		 
-	void Update(Vector2D camera, Vector2D _p, int y);				 
+	void Update(Vector2D _p, int y);				 
 	void Draw()const;
 	void GDrawPlayer(int xNum, int yNum, int add_x, int add_y, int _c)const;
 	void GDrawFrag()const;
