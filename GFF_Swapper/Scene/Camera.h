@@ -35,6 +35,9 @@ public:
 	//カメラ更新
 	void Update(int _now_stage, Vector2D _player_location);
 	
+	//カメラのずらす値更新
+	void CameraShiftUpdate();
+
 	//カメラ座標取得
 	Vector2D GetCameraLocation()const;
 

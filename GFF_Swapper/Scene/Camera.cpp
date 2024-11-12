@@ -19,24 +19,7 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 	}
 
 	//カメラのずらし方更新
-	if (PadInput::TipRStick(STICKL_X) > 0.1f || 
-		PadInput::TipRStick(STICKL_X) < -0.1f || 
-		PadInput::TipRStick(STICKL_Y) > 0.1f || 
-		PadInput::TipRStick(STICKL_Y) < -0.1f)
-	{
-		camera_shift.x += (PadInput::TipRStick(STICKL_X) * 10);
-		camera_shift.y -= (PadInput::TipRStick(STICKL_Y) * 10);
-	}
-	else
-	{
-		camera_shift.x -= (camera_shift.x / 10);
-		camera_shift.y -= (camera_shift.y / 10);
-	}
-
-	if (camera_shift.x > X_SHITF_LIMIT)camera_shift.x = X_SHITF_LIMIT;
-	if (camera_shift.x < -X_SHITF_LIMIT)camera_shift.x = -X_SHITF_LIMIT;
-	if (camera_shift.y > Y_SHITF_LIMIT)camera_shift.y = Y_SHITF_LIMIT;
-	if (camera_shift.y < -Y_SHITF_LIMIT)camera_shift.y = -Y_SHITF_LIMIT;
+	CameraShiftUpdate();
 
 	//プレイヤー座標更新
 	player_location = _player_location;
@@ -83,6 +66,33 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 	}
 	camera_location.x += impact_rand;
 	camera_location.y += impact_rand;
+}
+
+void Camera::CameraShiftUpdate()
+{
+	//右スティックが真ん中以外か判断
+	if (PadInput::TipRStick(STICKL_X) > 0.1f ||
+		PadInput::TipRStick(STICKL_X) < -0.1f ||
+		PadInput::TipRStick(STICKL_Y) > 0.1f ||
+		PadInput::TipRStick(STICKL_Y) < -0.1f)
+	{
+		//スティックの傾き分カメラ移動の値に加算
+		camera_shift.x += (PadInput::TipRStick(STICKL_X) * 10);
+		camera_shift.y -= (PadInput::TipRStick(STICKL_Y) * 10);
+	}
+	//スティックが中心に近いなら
+	else
+	{
+		//加算した値を緩やかに0まで戻す
+		camera_shift.x -= (camera_shift.x / 10);
+		camera_shift.y -= (camera_shift.y / 10);
+	}
+
+	//カメラ移動の上限値
+	if (camera_shift.x > X_SHITF_LIMIT)camera_shift.x = X_SHITF_LIMIT;
+	if (camera_shift.x < -X_SHITF_LIMIT)camera_shift.x = -X_SHITF_LIMIT;
+	if (camera_shift.y > Y_SHITF_LIMIT)camera_shift.y = Y_SHITF_LIMIT;
+	if (camera_shift.y < -Y_SHITF_LIMIT)camera_shift.y = -Y_SHITF_LIMIT;
 }
 
 Vector2D Camera::GetCameraLocation()const

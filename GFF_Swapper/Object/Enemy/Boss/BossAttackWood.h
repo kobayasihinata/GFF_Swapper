@@ -9,7 +9,8 @@ private:
 	float bambooHeight;  //高さ
 	Vector2D startLoc;
 
-	int count;	//生え始めるまでのカウント
+	int spawn_count;	//生え始めるまでの時間
+	int delete_count;	//生え終わってからの経過時間
 	int w_type;	//もとから生えてるのか地面から生えてくるのか
 	int knot;   //竹の節の数
 	bool camera_impact_once;	//カメラ振動

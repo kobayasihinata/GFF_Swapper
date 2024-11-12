@@ -5,7 +5,8 @@
 BossAttackWood::BossAttackWood()
 {
 	camera = Camera::Get();
-	count = 0;
+	spawn_count = 0;
+	delete_count = 0;
 	w_type = 0;
 	camera_impact_once = false;
 	
@@ -59,19 +60,26 @@ void BossAttackWood::Update(ObjectManager* _manager)
 		camera_impact_once = true;
 	}
 	
-
-	MoveBamboo();
+	if (++spawn_count > B_WOOD_SPAWN_TIME)
+	{
+		MoveBamboo();
+	}
 	if (velocity.y == 0.f) {
-		if (count++ > 180) {
-			if (this != nullptr) {
-				_manager->DeleteObject(this);
-			}
+		if (++delete_count > B_WOOD_DELETE_TIME) {
+			_manager->DeleteObject(this);
 		}
 	}
 }
 
 void BossAttackWood::Draw() const
 {
+	if (spawn_count < B_WOOD_SPAWN_TIME && spawn_count % 4 != 0)
+	{
+		DrawBoxAA(local_location.x, SCREEN_HEIGHT - 40, local_location.x + erea.x, SCREEN_HEIGHT, 0x00ff00, true);
+		DrawBoxAA(local_location.x+17, SCREEN_HEIGHT - 37, local_location.x + erea.x-17, SCREEN_HEIGHT-17, 0x000000, true);
+		DrawBoxAA(local_location.x+17, SCREEN_HEIGHT - 15, local_location.x + erea.x-17, SCREEN_HEIGHT-5, 0x000000, true);
+
+	}
 	for (int i = 0; i < (erea.y / BOX_HEIGHT); i++)
 	{
 		//ResourceManager::StageAnimDraw({ local_location.x, local_location.y + (i * BOX_HEIGHT) }, WOOD);
