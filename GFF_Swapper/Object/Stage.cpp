@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4), anim_num(0)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4)
 {
 	block_type = _type;
 	next_stage = _next_stage - 25;
@@ -68,8 +68,6 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 	draw_color = color;
 	object_pos = _object_pos;
 
-	
-
 	//画像読み込み
 	StageLoadGraph();
 
@@ -92,9 +90,6 @@ void Stage::Update(ObjectManager* _manager)
 
 	//処理を省略して良いオブジェクトなら処理終了
 	if (check_ignore_flg)return;
-
-	//アニメーション更新
-	AnimationUpdate();
 
 	__super::Update(_manager);
 
@@ -260,8 +255,7 @@ void Stage::Draw()const
 			break;
 			//地面(赤、緑、青)
 		case RED_BLOCK:
-			//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
-			ResourceManager::StageBlockDraw(local_location, 0);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, true);
 			break;
 		case GREEN_BLOCK:
 			if (debug_flg == false)
@@ -277,34 +271,28 @@ void Stage::Draw()const
 			}
 			break;
 		case BLUE_BLOCK:
-			//ResourceManager::StageBlockDraw(local_location, 1);
 			if (debug_flg == false)
 			{
-				//ResourceManager::StageAnimDraw(local_location, type);
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(water_image, anim_num), true);
+					ResourceManager::DrawAnimGraph(local_location, water_image);
 			}
 			break;
 			//ダメージゾーンの描画
 		case FIRE_BLOCK:
-			//if (debug_flg == false)
-			//{
-			//	//ResourceManager::StageAnimDraw(local_location, type);
-			//	DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(fire_image, anim_num), true);
-			//}
-			ResourceManager::StageAnimDraw(local_location, type);
+			if (debug_flg == false)
+			{
+				DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff5555, true);
+			}
 			break;
 		case WATER_BLOCK:
 			if (debug_flg == false)
 			{
-				//ResourceManager::StageAnimDraw(local_location, type);
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(water_image, anim_num), true);
+				ResourceManager::DrawAnimGraph(local_location, water_image);
 			}
 			break;
 		case WOOD_BLOCK:
 			if (debug_flg == false)
 			{
 				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(wood_image), true);
-			
 				/*if (draw_wood_flg == true)
 				{
 					DrawBoxAA(local_location.x+3, local_location.y, local_location.x + erea.x-3, local_location.y + erea.y, 0x00cc00, true);
@@ -354,6 +342,11 @@ void Stage::Draw()const
 		//敵文字表示用
 		switch (block_type)
 		{
+		case GRAY_BLOCK:
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xaaaaaa, true);
+			//ブロックなら数字を表示
+			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%d", block_type);
+			break;
 		case FIRE_BLOCK:
 		case WOOD_BLOCK:
 		case WATER_BLOCK:
@@ -582,14 +575,15 @@ void Stage::StageLoadGraph()
 	if (can_hit)
 	{
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/moss.PNG");
-		ground_image = ResourceManager::SetDivGraph("Resource/Images/sozai/ground.PNG", 9, 3, 3, 40, 40);
-		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/puddle.PNG", 8, 4, 2, 40, 40);
-
+		ground_image = ResourceManager::SetDivGraph("Resource/Images/sozai/ground.PNG", 9, 3, 3, 40, 40,0);
+		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/puddle.PNG", 8, 4, 2, 40, 40,8);
+		//fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/");
 	}
+	//ダメージゾーンの画像を読み込む
 	if (block_type == WOOD_BLOCK || block_type == FIRE_BLOCK || block_type == WATER_BLOCK)
 	{
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/lvy.PNG");
-		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/waterfall.PNG", 8, 4, 2, 40, 40);
+		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/waterfall.PNG", 8, 4, 2, 40, 40,8);
 		//fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/");
 	}
 }
@@ -679,23 +673,6 @@ void Stage::SetMapChip()
 						ground_mapchip = 4;
 					}
 				}
-			}
-		}
-	}
-}
-
-void Stage::AnimationUpdate()
-{
-	if (block_type >= RED_BLOCK && block_type <= WATER_BLOCK)
-	{
-		//アニメーションがないか判断
-		if (anim_image_num[block_type % 3][1] == 0)return;
-		//アニメーション更新
-		if (frame % anim_image_num[block_type % 3][1] == 0)
-		{
-			if (++anim_num >= anim_image_num[block_type % 3][0])
-			{
-				anim_num = 0;
 			}
 		}
 	}

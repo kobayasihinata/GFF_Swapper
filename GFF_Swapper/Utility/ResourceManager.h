@@ -36,30 +36,36 @@ struct WaterAnim
 	float shift;		//表示位置ずれ用
 };
 
+//画像アニメーション用
+struct AnimData {
+	char* div_image_filepath;	//分割画像パス格納用
+	int div_image_handle[DIV_IMAGE_MAX];		//分割画像格納用
+	int div_image_num;			//分割画像要素数格納用
+	int now_image = 0;			//分割画像要素数格納用
+	int anim_speed;				//画像切り替え速度
+};
 class ResourceManager
 {
 private:
-	static char* image_filepath[IMAGE_NUM];					//画像パス格納用
-	static char* div_image_filepath[DIV_IMAGE_NUM];			//分割画像パス格納用
-	static char* sound_filepath[SOUND_NUM];					//音源パス格納用
+	static char* image_filepath[IMAGE_NUM];						//画像パス格納用
+	static AnimData div_image_data[DIV_IMAGE_NUM];				//分割画像パス格納用
+	static char* sound_filepath[SOUND_NUM];						//音源パス格納用
 	static int image_data[IMAGE_NUM];							//画像格納用
-	static int div_image_data[DIV_IMAGE_NUM][DIV_IMAGE_MAX];	//分割画像格納用
 	static int sound_data[SOUND_NUM];							//音源格納用
 	static int sound_freq;										//音声の再生速度
 
 	//ステージアニメーション用
-	static int anim;							//アニメーション測定
-	static FireAnim fire_anim[ANIM_BLOCK_NUM];	//炎アニメーション用ブロック情報格納
-	static WoodAnim wood_anim[ANIM_BLOCK_NUM];	//木アニメーション用ブロック情報格納
-	static WaterAnim water_anim[ANIM_BLOCK_NUM];//水アニメーション用ブロック情報格納
-	static int screen;							//画像保存範囲指定
-	static int anim_handle[3];				    //画像保存用
-	static int stage_block_handle[3];		    //画像保存用
+	static int anim;											//アニメーション測定
+	static FireAnim fire_anim[ANIM_BLOCK_NUM];					//炎アニメーション用ブロック情報格納
+	static WoodAnim wood_anim[ANIM_BLOCK_NUM];					//木アニメーション用ブロック情報格納
+	static WaterAnim water_anim[ANIM_BLOCK_NUM];				//水アニメーション用ブロック情報格納
+	static int screen;											//画像保存範囲指定
+	static int anim_handle[3];									//画像保存用
+	static int stage_block_handle[3];							//画像保存用
 
 public:
 	//各データ削除（mainで一回呼ぶ）
 	static void DeleteResource();
-
 
 	//ステージアニメーション初期化処理
 	static void StageAnimInitialize();
@@ -80,7 +86,7 @@ public:
 	static int SetGraph(const char* p);
 
 	//分割画像格納
-	static int SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize);
+	static int SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize, int AnimSpeed);
 
 	//音源格納
 	static int SetSound(const char* p);
@@ -88,8 +94,11 @@ public:
 	//画像呼び出し
 	static int GetGraph(int _num);
 
-	//分割画像呼び出し
+	//分割画像の呼び出し（指定した分割画像の指定した位置にある画像を呼び出す）
 	static int GetDivGraph(int _num1, int _num2);
+
+	//アニメーションの描画（指定した分割画像がアニメーション処理された状態の物を呼び出す）
+	static void DrawAnimGraph(Vector2D location , int _handle);
 
 	//音源再生開始
 	static void StartSound(int _num, bool roop_flg = false);

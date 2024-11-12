@@ -4,10 +4,9 @@
 #include <math.h>
 
 char* ResourceManager::image_filepath[IMAGE_NUM];
-char* ResourceManager::div_image_filepath[DIV_IMAGE_NUM];
+AnimData ResourceManager::div_image_data[DIV_IMAGE_NUM];
 char* ResourceManager::sound_filepath[SOUND_NUM];
 int ResourceManager::image_data[IMAGE_NUM];
-int ResourceManager::div_image_data[DIV_IMAGE_NUM][DIV_IMAGE_MAX];
 int ResourceManager::sound_data[SOUND_NUM];
 int ResourceManager::sound_freq = 50000;
 
@@ -26,11 +25,11 @@ void ResourceManager::DeleteResource()
 		DeleteGraph(image_data[i]);
 	}
 
-	for (int i = 0; div_image_data[i][0] != NULL; i++)
+	for (int i = 0; div_image_data[i].div_image_handle[0] != NULL; i++)
 	{
-		for (int j = 0; j < 12; j++)
+		for (int j = 0; div_image_data[i].div_image_handle[j] != NULL; j++)
 		{
-			DeleteGraph(div_image_data[i][j]);
+			DeleteGraph(div_image_data[i].div_image_handle[j]);
 		}
 	}
 
@@ -74,72 +73,89 @@ void ResourceManager::StageAnimInitialize()
 
 void ResourceManager::StageAnimUpdate()
 {
-
 	//アニメーション用変数
-	if (++anim > 60)
+	if (++anim > 300)
 	{
 		anim = 0;
 	}
 
-	//炎エフェクト用
-	for (int i = 0; i < ANIM_BLOCK_NUM; i++)
+	//分割画像のアニメーション更新
+	for (int i = 0; div_image_data[i].div_image_handle[0] != NULL; i++)
 	{
-		if (fire_anim[i].time < 0)
+		//アニメーションがない分割画像なら(マップチップ等)アニメーション処理を飛ばす
+		if (div_image_data[i].anim_speed <= 0)continue;
+		//画像ごとの周期に達したら次の画像に切り替え
+		if (anim % div_image_data[i].anim_speed == 0)
 		{
-			fire_anim[i].shift.x = 0;
-			fire_anim[i].shift.y = BOX_HEIGHT;
-			fire_anim[i].erea.x = 4;
-			fire_anim[i].erea.y = 4;
-			fire_anim[i].shift.x += 4 * GetRand(10);
-			fire_anim[i].time = 30 + GetRand(30);
-			fire_anim[i].angle = (float)(GetRand(30) / 10);
-		}
-		else
-		{
-			fire_anim[i].shift.x += 0.05f + (fire_anim[i].angle - 1) / 2;
-			fire_anim[i].shift.y -= 1;
-			fire_anim[i].time--;
-			fire_anim[i].erea.x -= 0.05f;
-			fire_anim[i].erea.y -= 0.05f;
+			//画像の枚数をオーバーしたら最初の画像へ
+			if (++div_image_data[i].now_image >= div_image_data[i].div_image_num)
+			{
+				div_image_data[i].now_image = 0;
+			}
 		}
 	}
 
-	//木エフェクト用
-	for (int i = 0; i < ANIM_BLOCK_NUM; i++)
-	{
-		if (anim < 30)
-		{
-			wood_anim[i].shift2.x += (wood_anim[i].shift / 50);
-		}
-		else
-		{
-			wood_anim[i].shift2.x -= (wood_anim[i].shift / 50);
-		}
-		if (anim >= 60)
-		{
-			wood_anim[i].shift2.x = wood_anim[i].initial_position.x;
-		}
-	}
+	//画像を使わない時のアニメーション更新
 
-	//水エフェクト更新
-	for (int i = 0; i < ANIM_BLOCK_NUM; i++)
-	{
-		if (anim <= 30)
-		{
-			water_anim[i].shift1.y += water_anim[i].shift;
-		}
-		else
-		{
-			water_anim[i].shift1.y -= water_anim[i].shift;
-		}
-		if (anim >= 60)
-		{
-			water_anim[i].shift1.y = water_anim[i].initial_position.y;
-		}
-	}
+	////炎エフェクト用
+	//for (int i = 0; i < ANIM_BLOCK_NUM; i++)
+	//{
+	//	if (fire_anim[i].time < 0)
+	//	{
+	//		fire_anim[i].shift.x = 0;
+	//		fire_anim[i].shift.y = BOX_HEIGHT;
+	//		fire_anim[i].erea.x = 4;
+	//		fire_anim[i].erea.y = 4;
+	//		fire_anim[i].shift.x += 4 * GetRand(10);
+	//		fire_anim[i].time = 30 + GetRand(30);
+	//		fire_anim[i].angle = (float)(GetRand(30) / 10);
+	//	}
+	//	else
+	//	{
+	//		fire_anim[i].shift.x += 0.05f + (fire_anim[i].angle - 1) / 2;
+	//		fire_anim[i].shift.y -= 1;
+	//		fire_anim[i].time--;
+	//		fire_anim[i].erea.x -= 0.05f;
+	//		fire_anim[i].erea.y -= 0.05f;
+	//	}
+	//}
 
-	//アニメーションをハンドルに保存する
-	SaveAnimHandle();
+	////木エフェクト用
+	//for (int i = 0; i < ANIM_BLOCK_NUM; i++)
+	//{
+	//	if (anim < 30)
+	//	{
+	//		wood_anim[i].shift2.x += (wood_anim[i].shift / 50);
+	//	}
+	//	else
+	//	{
+	//		wood_anim[i].shift2.x -= (wood_anim[i].shift / 50);
+	//	}
+	//	if (anim >= 60)
+	//	{
+	//		wood_anim[i].shift2.x = wood_anim[i].initial_position.x;
+	//	}
+	//}
+
+	////水エフェクト更新
+	//for (int i = 0; i < ANIM_BLOCK_NUM; i++)
+	//{
+	//	if (anim <= 30)
+	//	{
+	//		water_anim[i].shift1.y += water_anim[i].shift;
+	//	}
+	//	else
+	//	{
+	//		water_anim[i].shift1.y -= water_anim[i].shift;
+	//	}
+	//	if (anim >= 60)
+	//	{
+	//		water_anim[i].shift1.y = water_anim[i].initial_position.y;
+	//	}
+	//}
+
+	////アニメーションをハンドルに保存する
+	//SaveAnimHandle();
 }
 
 void ResourceManager::SaveAnimHandle()
@@ -302,19 +318,21 @@ int ResourceManager::SetGraph(const char* p)
 	return -1;	//画像をどこにも格納できなかった場合
 }
 
-int ResourceManager::SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize)
+int ResourceManager::SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize,int AnimSpeed)
 {
 	for (int i = 0; i < DIV_IMAGE_NUM; i++)
 	{
 		//空の配列に分割画像を格納する
-		if (div_image_data[i][0] == NULL)
+		if (div_image_data[i].div_image_handle[0] == NULL)
 		{
-			LoadDivGraph(p, AllNum, XNum, YNum, XSize, YSize, div_image_data[i]);
-			div_image_filepath[i] = const_cast<char*>(p);
+			LoadDivGraph(p, AllNum, XNum, YNum, XSize, YSize, div_image_data[i].div_image_handle);
+			div_image_data[i].div_image_filepath = const_cast<char*>(p);
+			div_image_data[i].div_image_num = AllNum;
+			div_image_data[i].anim_speed = AnimSpeed;
 			return i;
 		}
 		//同じ画像が既にあるならその格納場所を返す
-		else if (div_image_filepath[i] == p)
+		else if (div_image_data[i].div_image_filepath == p)
 		{
 			return i;
 		}
@@ -350,7 +368,13 @@ int ResourceManager::GetGraph(int _num)
 
 int ResourceManager::GetDivGraph(int _num1, int _num2)
 {
-	return div_image_data[_num1][_num2];
+	if (_num2 < 0 || div_image_data[_num1].div_image_num <= _num2)return -1;
+	return div_image_data[_num1].div_image_handle[_num2];
+}
+
+void ResourceManager::DrawAnimGraph(Vector2D location, int _handle)
+{
+	DrawGraphF(location.x, location.y, div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image], TRUE);
 }
 
 void ResourceManager::StartSound(int _num, bool roop_flg)
