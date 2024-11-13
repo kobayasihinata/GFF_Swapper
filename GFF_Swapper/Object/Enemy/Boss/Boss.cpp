@@ -411,10 +411,10 @@ void Boss::BossAtack(ObjectManager *_manager)
 		oldF = f;
 		f = true;
 		if (cnt == 240) {
-			if (++attack > 2) {
-				attack = 0;
-			}
-
+			//if (++attack > 2) {
+			//	attack = 0;
+			//}
+			attack = 2;
 			if (local_location.x < 640.f) {
 				side = true;
 			}
@@ -479,34 +479,11 @@ void Boss::BossAtack(ObjectManager *_manager)
 			if (++t > 20 && !BOSS_MODE) {
 				can_swap = true;
 			}
-			if (cnt % 30 == 0) {
-				Vector2D e = { (float)(GetRand(400) + 400),40.f };
-				Vector2D l;
-				float x;
-				int i = 0;
-				bool flg;
-				for (int i = 0; i < 2; i++)
-				{
-					do
-					{
-						x = (float)(GetRand(29)) * 40 + 200;
-						flg = false;
-						for (int j = 0; j < 3; j++)
-						{
-							if (x == attackWood[j])
-							{
-								flg = true;
-							}
-						}
-					} while (flg);
-
-					l.x = x;
-					l.y = 930.f;
-					attackWood[woodNum++] = l.x;
-					_manager->CreateObject(new BossAttackWood, l, e, GREEN);
-				}
+			if (cnt % 2 == 0) {
+				Vector2D e = { 1000.0f,40.f };
+				Vector2D l = { (float)(cnt * 20 - 4620) ,930.f };
+				_manager->CreateObject(new BossAttackWood, l, e, GREEN);
 				
-
 				f = false;
 			}
 			if (cnt > 300) {
