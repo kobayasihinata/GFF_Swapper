@@ -17,26 +17,35 @@ public:
 
 	void SetColorData(int c)
 	{
-		if (this != nullptr && c != 0x000000)
-		{
-			color = c;
-		}
+		color = c;
 	}
 
 	int GetColorData()const
 	{
-		if (this != nullptr)
-		{
-			return color;
-		}
-		return -1;
+		return color;
+
 	}
 
 	void SetDrawColor(int c)
 	{
-		if (this != nullptr)
+		draw_color = c;
+	}
+
+	//色情報を0~3で受け取る
+	int GetColorNum(int c)const
+	{
+		switch (c)
 		{
-			draw_color = c;
+		case RED:
+			return 0;
+		case GREEN:
+			return 1;
+		case BLUE:
+			return 2;
+		case WHITE:
+			return 3;
+		default:
+			return -1;
 		}
 	}
 };

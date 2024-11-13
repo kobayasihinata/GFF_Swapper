@@ -1,6 +1,7 @@
 #pragma once
 #include "../../Base/Object.h"
 #include "../../../Utility/common.h"
+
 class BossAttackWood : public Object
 {
 private:

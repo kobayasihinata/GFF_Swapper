@@ -28,7 +28,7 @@
 
 //ボスの詳細設定
 
-#define BOSS_MODE TRUE				//ボス戦の仕様を切り替える FALSE = ボスと色を交換するモード TRUE = ボスの攻撃を跳ね返すモード
+#define BOSS_MODE FALSE				//ボス戦の仕様を切り替える FALSE = ボスと色を交換するモード TRUE = ボスの攻撃を跳ね返すモード
 
 #define B_WOOD_SPAWN_TIME 120		//ボス攻撃竹が生え始める時間(警告を表示する時間)
 #define B_WOOD_DELETE_TIME 180		//ボス攻撃竹が生え終えてから消えるまでの時間

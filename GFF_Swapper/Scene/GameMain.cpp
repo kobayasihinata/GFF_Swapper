@@ -309,7 +309,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 			case ENEMY_FROG_GREEN:
 			case ENEMY_FROG_BLUE:
 				//カエルの生成
-				object_manager->CreateObject(new EnemyFrog, {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {50,50}, ColorList[stage_data[i][j] - 17]);
+				object_manager->CreateObject(new EnemyFrog, {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {91,67}, ColorList[stage_data[i][j] - 17]);
 				break;
 			case ENEMY_BOSS:
 				//ボスの生成

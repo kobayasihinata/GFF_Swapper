@@ -23,23 +23,24 @@ public:
 		right
 	};
 private:
-	int timer;				//時間測定
-	FrogState frog_state;	//カエルの状態
+	int timer;				 //時間測定
+	FrogState frog_state;	 //カエルの状態
 
-	bool death_flg;		//生きているか
-	Vector2D vector; //カエルのベクトル
-	bool stageHitFlg[2][4]; //カエルとステージの当たり判定
-	float move[4];			//各方向加速度格納用
-	Vector2D old_location;	//ジャンプ前の座標格納
+	bool death_flg;			 //生きているか
+	Vector2D vector;		 //カエルのベクトル
+	bool stageHitFlg[2][4];  //カエルとステージの当たり判定
+	float move[4];			 //各方向加速度格納用
+	Vector2D old_location;	 //ジャンプ前の座標格納
 
 	int jump_cooldown_timer; //次のジャンプまでの時間測定
 	int jump_timer;			 //ジャンプしている間の時間測定
-	float face_angle;		//顔の向き
-	int death_timer;	//死亡演出
-	bool effect_once;	//エフェクトを一回だけ出す用
+	float face_angle;		 //顔の向き
+	int death_timer;		 //死亡演出
+	bool effect_once;		 //エフェクトを一回だけ出す用
 
-	int jump_se;		//ジャンプSE
-	int damage_se[3];	//被ダメージSE格納
+	int frog_image[4];		 //カエル画像格納
+	int jump_se;			 //ジャンプSE
+	int damage_se[3];		 //被ダメージSE格納
 
 public:
 	EnemyFrog();
