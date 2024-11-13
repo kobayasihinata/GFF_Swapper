@@ -39,7 +39,11 @@ public:
 		}
 	}
 
-	virtual void Draw()const = 0;
+	virtual void Draw()const
+	{
+		//当たり判定描画
+		DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);
+	}
 
 	virtual void Finalize() = 0;
 

@@ -34,6 +34,11 @@ void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	object_pos = _object_pos;
 
 	stageHitFlg[1][bottom] = true;
+
+	frog_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/red_frog.PNG");
+	frog_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/green_frog.PNG");
+	frog_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/blue_frog.PNG");
+
 	jump_se = ResourceManager::SetSound("Resource/Sounds/Enemy/frog_jump.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
@@ -129,6 +134,8 @@ void EnemyFrog::Update(ObjectManager* _manager)
 
 void EnemyFrog::Draw()const
 {
+	__super::Draw();
+
 	////残像描画
 	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 - (death_timer * 4)) - 500);
 	//JumpFrogDraw({ local_location.x - (vector.x * 2),local_location.y - (vector.y * 2) },face_angle);
@@ -147,12 +154,20 @@ void EnemyFrog::Draw()const
 	switch (frog_state)
 	{
 	case FrogState::RIGHT_IDOL:
+		//IdolFrogDraw(local_location, (int)frog_state);
+		DrawTurnGraphF(local_location.x, local_location.y, ResourceManager::GetGraph(frog_image[GetColorNum(color)]), TRUE);		break;
+		break;
 	case FrogState::LEFT_IDOL:
-		IdolFrogDraw(local_location, (int)frog_state);
+		//IdolFrogDraw(local_location, (int)frog_state);
+		DrawGraphF(local_location.x, local_location.y, ResourceManager::GetGraph(frog_image[GetColorNum(color)]), TRUE);
 		break;
 	case FrogState::LEFT_JUMP:
+		DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle, TRUE, FALSE);
+		break;
 	case FrogState::RIGHT_JUMP:
-		JumpFrogDraw(local_location, face_angle);
+		//JumpFrogDraw(local_location, face_angle);
+		DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle, TRUE, TRUE);
+
 		break;
 	case FrogState::DEATH:
 		break;
