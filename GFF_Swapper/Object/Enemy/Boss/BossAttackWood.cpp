@@ -109,15 +109,6 @@ void BossAttackWood::Hit(Object* _object)
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);
 	}
-#if BOSS_MODE	
-	//攻撃跳ね返すモードの処理
-	//赤色のプレイヤーに当たった時の処理
-	if (!player_hit && _object->GetObjectType() == PLAYER && _object->GetColorData() == RED)
-	{
-		player_hit = true;
-		this->SetColorData(RED);
-	}
-#endif
 }
 
 bool BossAttackWood::SearchColor(Object* ob)

@@ -22,13 +22,7 @@
 Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), damage_flg(false), state_change_time(0), speed(0.0f),wing_fps(0),damage_se(0)
 {
 	type = BOSS;
-#if BOSS_MODE
-	//攻撃跳ね返すモードの処理
-	can_swap = FALSE;
-#else
-	//ボスの色変えるモードの処理
 	can_swap = TRUE;
-#endif // BOSS_MODE
 
 	can_hit = TRUE;
 	for (int i = 0; i < 4; i++) {
@@ -430,7 +424,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 		{
 		case 0://火
 			color = RED;
-			if (++t > 60 && !BOSS_MODE) {
+			if (++t > 60) {
 				
 				can_swap = true;
 			}
@@ -448,7 +442,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 
 		case 1://水
 			color = BLUE;
-			if (++t > 60 && !BOSS_MODE) {
+			if (++t > 60) {
 				can_swap = true;
 			}
 			if (cnt % 30 == 0) {
@@ -476,7 +470,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 
 		default://木
 			color = GREEN;
-			if (++t > 20 && !BOSS_MODE) {
+			if (++t > 20) {
 				can_swap = true;
 			}
 			if (cnt % 2 == 0) {

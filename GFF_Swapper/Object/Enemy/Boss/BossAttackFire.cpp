@@ -107,16 +107,6 @@ void BossAttackFire::Hit(Object* _object)
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);
 	}
-#if BOSS_MODE
-	//青色のプレイヤーに当たった時の処理
-	if (!player_hit && _object->GetObjectType() == PLAYER && _object->GetColorData() == BLUE)
-	{
-		//色が変わって反射出来るようにする
-		this->velocity = { velocity.x * -1,velocity.y * -1 };
-		this->SetColorData(BLUE);
-		player_hit = true;
-	}
-#endif // 
 }
 
 bool BossAttackFire::SearchColor(Object* ob)

@@ -137,15 +137,6 @@ void BossAttackWater::Hit(Object* _object)
 		_object->SetColorData(color);
 		hitFlg = true;
 	}
-#if BOSS_MODE
-	//緑色のプレイヤーに当たった時の処理
-	if (!player_hit && _object->GetObjectType() == PLAYER && _object->GetColorData() == GREEN)
-	{
-		//色が変わる
-		this->SetColorData(GREEN);
-		player_hit = true;
-	}
-#endif // 
 }
 
 bool BossAttackWater::SearchColor(Object* ob)
