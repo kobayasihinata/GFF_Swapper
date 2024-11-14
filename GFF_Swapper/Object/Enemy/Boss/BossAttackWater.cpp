@@ -106,8 +106,6 @@ void BossAttackWater::Update(ObjectManager* _manager)
 		//ここで削除
 		_manager->DeleteObject(this);
 	}
-
-	
 }
 
 void BossAttackWater::Draw() const

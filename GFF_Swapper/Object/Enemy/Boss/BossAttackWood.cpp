@@ -53,18 +53,18 @@ void BossAttackWood::Update(ObjectManager* _manager)
 {
 	__super::Update(_manager);
 
-	if (camera_impact_once == false)
-	{
-		camera->SetImpact(15);
-		ResourceManager::StartSound(start_se);
-		camera_impact_once = true;
-	}
 	
 	if (++spawn_count > B_WOOD_SPAWN_TIME)
 	{
 		MoveBamboo();
 	}
 	if (velocity.y == 0.f) {
+		if (camera_impact_once == false)
+		{
+			camera->SetImpact(15);
+			ResourceManager::StartSound(start_se);
+			camera_impact_once = true;
+		}
 		if (++delete_count > B_WOOD_DELETE_TIME) {
 			_manager->DeleteObject(this);
 		}

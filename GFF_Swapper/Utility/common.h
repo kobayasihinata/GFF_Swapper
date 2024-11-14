@@ -28,7 +28,7 @@
 
 //ボスの詳細設定
 
-#define BOSS_ATTACK_CD 300			//ボスの色が切り替わって攻撃するまでの間隔
+#define BOSS_ATTACK_CD 400			//ボスの色が切り替わって攻撃するまでの間隔
 
 #define B_WOOD_SPAWN_TIME 120		//ボス攻撃竹が生え始める時間(警告を表示する時間)
 #define B_WOOD_DELETE_TIME 180		//ボス攻撃竹が生え終えてから消えるまでの時間

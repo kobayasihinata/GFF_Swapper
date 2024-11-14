@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "../Utility/PadInput.h"
+#include "../Utility/DebugInfomation.h"
 
 Camera* Camera::Get()
 {
@@ -15,44 +16,47 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 	if (_now_stage == 2)
 	{
 		camera_location = { 160,40 };
-		return;
 	}
-
-	//カメラのずらし方更新
-	CameraShiftUpdate();
-
-	//プレイヤー座標更新
-	player_location = _player_location;
-
-	//カメラ座標更新
-	camera_location.x = _player_location.x - (SCREEN_WIDTH / 2)+ camera_shift.x;
-	camera_location.y = _player_location.y - (SCREEN_HEIGHT / 2)+ camera_shift.y;
-
-	//カメラX座標が画面左端以下なら
-	if (camera_location.x <= lock_pos[0].x)
+	//カメラ更新（通常ステージ）
+	else
 	{
-		//カメラのX座標を左端固定する
-		camera_location.x = lock_pos[0].x;
-	}
-	//カメラX座標が画面右端以上なら
-	if (camera_location.x >= lock_pos[1].x)
-	{
-		//カメラのX座標を右端固定する
-		camera_location.x = lock_pos[1].x;
-	}
-	//カメラY座標が画面上端以上なら
-	if (camera_location.y <= lock_pos[0].y)
-	{
-		//カメラのX座標を上端固定する
-		camera_location.y = lock_pos[0].y;
-	}
-	//カメラY座標が画面下端以上なら
-	if (camera_location.y >= lock_pos[1].y)
-	{
-		//カメラのX座標を下端固定する
-		camera_location.y = lock_pos[1].y;
+		//カメラのずらし方更新
+		CameraShiftUpdate();
+
+		//プレイヤー座標更新
+		player_location = _player_location;
+
+		//カメラ座標更新
+		camera_location.x = _player_location.x - (SCREEN_WIDTH / 2) + camera_shift.x;
+		camera_location.y = _player_location.y - (SCREEN_HEIGHT / 2) + camera_shift.y;
+
+		//カメラX座標が画面左端以下なら
+		if (camera_location.x <= lock_pos[0].x)
+		{
+			//カメラのX座標を左端固定する
+			camera_location.x = lock_pos[0].x;
+		}
+		//カメラX座標が画面右端以上なら
+		if (camera_location.x >= lock_pos[1].x)
+		{
+			//カメラのX座標を右端固定する
+			camera_location.x = lock_pos[1].x;
+		}
+		//カメラY座標が画面上端以上なら
+		if (camera_location.y <= lock_pos[0].y)
+		{
+			//カメラのX座標を上端固定する
+			camera_location.y = lock_pos[0].y;
+		}
+		//カメラY座標が画面下端以上なら
+		if (camera_location.y >= lock_pos[1].y)
+		{
+			//カメラのX座標を下端固定する
+			camera_location.y = lock_pos[1].y;
+		}
 	}
 
+	DebugInfomation::Add("impact", impact);
 	//カメラ振動処理
 	if (impact > 0)
 	{

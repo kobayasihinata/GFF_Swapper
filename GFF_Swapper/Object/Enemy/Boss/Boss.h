@@ -6,10 +6,17 @@
 #include <mutex> 
 #include "../EnemyBat.h"
 #include "../../../Utility/common.h"
+#include "../../../Scene/Camera.h"
 #include "BossAttackFire.h"
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"
-
+static float WOOD_SPAWN[5][3]{
+	{80,120,160},
+	{315,355,395},
+	{570,610,650},
+	{825,865,905},
+	{1080,1120,1160}
+};
 enum class BossState {
 	MOVE = 0,
 	ATTACK,
@@ -27,6 +34,7 @@ private:
 		left,
 		right
 	};
+	class Camera* camera;	//カメラ位置
 	Vector2D vector;		//ボスのベクトル
 	bool stageHitFlg[2][4]; //bossとステージの当たり判定
 	float move[4];			//各方向加速度格納用
@@ -36,6 +44,7 @@ private:
 	float barrier_rad[3];	//バリアの半径
 	int barrier_num;		//バリアの数
 
+	int wood_count;			//木のカウント
 	int wing_color;
 	int part_color[3];
 

@@ -21,6 +21,7 @@
 
 Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), damage_flg(false), state_change_time(0), speed(0.0f),wing_fps(0),damage_se(0)
 {
+	camera = Camera::Get();
 	type = BOSS;
 	can_swap = TRUE;
 
@@ -36,6 +37,8 @@ Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), dam
 	for (int i = 0; i < 3; i++) {
 		part_color[i] = 0;
 	}
+
+	wood_count = 0;
 
 	// wing の初期化
 	wing.fill({ 0.0f,0.0f });
@@ -70,7 +73,7 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 	object_pos = _object_pos;
 
 	warp_pos = {
-		 {(SCREEN_WIDTH / 2 + 50.0f) , 125.0f},			 //中央
+		 {(SCREEN_WIDTH / 2 +30) , 125.0f},			 //中央
 		 {SCREEN_WIDTH - 300.0f, SCREEN_HEIGHT - 400.0f},//右
 		 {370.0f , SCREEN_HEIGHT - 400.0f}				 //左
 	};
@@ -409,6 +412,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 			//	attack = 0;
 			//}
 			attack = 2;
+			wood_count = 0;
 			if (local_location.x < 640.f) {
 				side = true;
 			}
@@ -432,7 +436,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 				Vector2D e = { 20.f,20.f };
 				_manager->CreateObject(new BossAttackFire, this->GetCenterLocation(), e, RED);
 			}
-			if (cnt > 300) {
+			if (cnt > BOSS_ATTACK_CD) {
 				cnt = 0;
 				f = false;
 				boss_state = BossState::MOVE;
@@ -459,7 +463,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 				_manager->CreateObject(new BossAttackWater, l, e, BLUE);
 				attack_num++;
 			}
-			if (cnt > 300) {
+			if (cnt > BOSS_ATTACK_CD) {
 				cnt = 0;
 				f = false;
 				attack_num = 0;
@@ -473,14 +477,18 @@ void Boss::BossAtack(ObjectManager *_manager)
 			if (++t > 20) {
 				can_swap = true;
 			}
-			if (cnt % 2 == 0) {
-				Vector2D e = { 1000.0f,40.f };
-				Vector2D l = { (float)(cnt * 20 - 4620) ,930.f };
-				_manager->CreateObject(new BossAttackWood, l, e, GREEN);
+			if (cnt % 30 == 0 && wood_count<5) {
+				for (int i = 0; i < 3; i++)
+				{
+					Vector2D e = { 1000.0f,40.f };
+					Vector2D l = { camera->GetCameraLocation().x + WOOD_SPAWN[wood_count][i] ,930.f };
+					_manager->CreateObject(new BossAttackWood, l, e, GREEN);
+				}
+				wood_count++;
 				
 				f = false;
 			}
-			if (cnt > 300) {
+			if (cnt > BOSS_ATTACK_CD) {
 				cnt = 0;
 				f = false;
 				boss_state = BossState::MOVE;
