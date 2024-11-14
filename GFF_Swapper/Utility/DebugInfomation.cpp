@@ -33,7 +33,7 @@ void DebugInfomation::Draw()
 		int i = 0;
 		for (const auto& draw_list : draw_list)
 		{
-			DrawFormatString(105, 101+i*11, 0x00ff00, "%s:%f", draw_list.first, draw_list.second);
+			DrawFormatString(DEBUG_X, DEBUG_Y + i * 11, 0x00ff00, "%s:%f", draw_list.first, draw_list.second);
 			i++;
 		}
 	}
