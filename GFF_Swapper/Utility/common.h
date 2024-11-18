@@ -26,9 +26,20 @@
 
 #define STAGE_NUM 3					//ステージ数
 
+//色を数字で取得する
+static int ColorList[4]
+{
+    0xff0000,   //赤
+    0x00ff00,   //緑
+    0x0000ff,   //青
+    0xffffff   //白
+};
+
 //ボスの詳細設定
 
+#define BOSS_SIZE 250
 #define BOSS_ATTACK_CD 400			//ボスの色が切り替わって攻撃するまでの間隔
+
 
 #define B_WOOD_SPAWN_TIME 120		//ボス攻撃竹が生え始める時間(警告を表示する時間)
 #define B_WOOD_DELETE_TIME 180		//ボス攻撃竹が生え終えてから消えるまでの時間

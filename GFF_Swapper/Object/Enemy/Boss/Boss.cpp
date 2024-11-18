@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 
-#define BOSS_SIZE 250
 #define STATE_CHANGE_INTERVAL 340
 #define BOSS_MAX_SPEED 4.0f
 
@@ -56,7 +55,13 @@ Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), dam
 
 	wing_color = 0;
 
+	change_color_timer = 0.0f;
+	next_color = 0;
+	change_rand = 0;
+
 	boss_color = BOSS_RED;
+
+	velocity = 0;
 }
 
 Boss::~Boss()
@@ -120,26 +125,22 @@ void Boss::Update(ObjectManager* _manager)
 	//UpdateWingPositions();
 
 	boss_anim = (float)sin(PI * 2.f / 60.f * wing_fps) * 5.f;
-	Vector2D player_pos = _manager->GetPlayerLocation();
 
-	if (player_pos.x > 140) {
-
-		switch (boss_state)
-		{
-		case BossState::MOVE:
-			// ボスの移動処理を呼び出し
-			Move();
-			break;
-		case BossState::ATTACK:
-			BossAtack(_manager);
-			break;
-		case BossState::DEATH:
-			_manager->DeleteObject(this);
-			_manager->UpdateState(GameMainState::GameClear);
-			break;
-		default:
-			break;
-		}
+	switch (boss_state)
+	{
+	case BossState::MOVE:
+		// ボスの移動処理を呼び出し
+		Move();
+		break;
+	case BossState::ATTACK:
+		BossAtack(_manager);
+		break;
+	case BossState::DEATH:
+		_manager->DeleteObject(this);
+		_manager->UpdateState(GameMainState::GameClear);
+		break;
+	default:
+		break;
 	}
 
 	// ダメージを受けている場合の処理
@@ -262,15 +263,15 @@ void Boss::Draw() const
 		{
 			DrawWings();
 			//本体
-			DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
-			DrawCircleAA(local_location.x + BOSS_SIZE / 2 + shake_anim, local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 34, 0xFFFFFF, FALSE, 3.0f);
-			DrawCircleAA(local_location.x + BOSS_SIZE / 2 + shake_anim, local_location.y + BOSS_SIZE / 2 + boss_anim, 38, 36, color, FALSE, 2.0f);
+			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2,			  change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
+			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 34, 0xFFFFFF, FALSE, 3.0f);
+			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 38, 36, color, FALSE, 2.0f);
 			if(barrier_num > 0) {
 				DrawHexagonSphere();
 				// バリアの描画
-				DrawCircleAA(local_location.x + BOSS_SIZE / 2 + shake_anim, local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
-				DrawCircleAA(local_location.x + BOSS_SIZE / 2 + shake_anim, local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
-				DrawCircleAA(local_location.x + BOSS_SIZE / 2 + shake_anim, local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
+				DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
+				DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
+				DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
 			}
 		}
 	}
@@ -278,17 +279,17 @@ void Boss::Draw() const
 	{
 		DrawWings();
 		//本体
-		DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
-		DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 34, 0xFFFFFF, FALSE, 3.0f);
+		DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
+		DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 34, 0xFFFFFF, FALSE, 3.0f);
 		//DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 36, color, FALSE, 2.0f);
 
 		if (barrier_num > 0) {
 			// バリアの描画
 			DrawHexagonSphere();
 			//for (int i = 0; i < barrier_num; i++) {
-			DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE , 3.0f);
-			DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
-			DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
+			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE , 3.0f);
+			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
+			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
 		}
 	}
 
@@ -308,6 +309,53 @@ void Boss::Draw() const
 	//	}
 	//	DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, barrier_rad[i], 50, barrier_color, FALSE, 5.f);
 	//}
+	
+
+	//色変化エフェクト描画
+	if (cnt > 0 && cnt < 240)
+	{
+		int delay1 = cnt + 5;
+		int delay2 = cnt + 10;
+		int delay3 = cnt + 15;
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*15), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*15), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*15), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*15), 100, next_color, false);
+	}
+	else
+	{
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-260)*20, 100, color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-250)*20, 100, color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-240)*20, 100, color, false);
+
+	}
+
+	//火攻撃のターゲット線
+	if (attack == 0 && cnt >= 240)
+	{
+		//for (int i = 0; i < 100; i++)
+		//{
+		//	if (cnt%5 == i % 5)
+		//	{
+		//		DrawLineAA(local_location.x + (erea.x / 2) + (velocity.x * (i*5)), 
+		//				   local_location.y + (erea.y / 2) + (velocity.y * (i*5)), 
+		//				   local_location.x + (erea.x / 2) + (velocity.x * (i*5 + 5)), 
+		//				   local_location.y + (erea.y / 2) + (velocity.y * (i*5 + 5)), 0xff0000, true);
+		//																    
+		//}															    
+		//	else														    
+		//	{
+		//		DrawLineAA(local_location.x + (erea.x / 2) + (velocity.x * (i * 5)),
+		//			local_location.y + (erea.y / 2) + (velocity.y * (i * 5)),
+		//			local_location.x + (erea.x / 2) + (velocity.x * (i * 5 + 5)),
+		//			local_location.y + (erea.y / 2) + (velocity.y * (i * 5 + 5)), 0xffffff, true);
+		//	}
+		//}	
+						DrawLineAA(local_location.x + (erea.x / 2), 
+						   local_location.y + (erea.y / 2), 
+						   local_location.x + (erea.x / 2) + (velocity.x * 1000), 
+						   local_location.y + (erea.y / 2) + (velocity.y * 1000), 0xff0000, true);
+	}
 }
 
 void Boss::Finalize()
@@ -327,6 +375,13 @@ void Boss::Move()
 
 	// ボスの状態を攻撃状態に変更する
 	boss_state = BossState::ATTACK;
+
+	//次の攻撃を更新
+	if (--attack < 0) {
+		attack = 2;
+	}
+	//attack = 0;
+	next_color = ColorList[attack];
 }
 	
 void Boss::Hit(Object* _object)
@@ -407,11 +462,8 @@ void Boss::BossAtack(ObjectManager *_manager)
 	if ((local_location.x > 0 && local_location.x < 1280 && local_location.y > 0 && local_location.y < 720) && ++cnt >= 240) {
 		oldF = f;
 		f = true;
+		change_rand = 0;
 		if (cnt == 240) {
-			//if (++attack > 2) {
-			//	attack = 0;
-			//}
-			attack = 2;
 			wood_count = 0;
 			if (local_location.x < 640.f) {
 				side = true;
@@ -421,6 +473,15 @@ void Boss::BossAtack(ObjectManager *_manager)
 			}
 		}
 	}
+	else
+	{
+		change_rand = GetRand(30) - 15;
+	}
+
+	//ターゲット線の計算用
+	Vector2D player_center;
+	Vector2D boss_center;
+	float rad;
 
 	if (f) {
 		can_swap = false;
@@ -428,6 +489,16 @@ void Boss::BossAtack(ObjectManager *_manager)
 		{
 		case 0://火
 			color = RED;
+			//ターゲットを表す線の更新
+			player_center = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2), 
+							  _manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
+			boss_center = { this->location.x + BOSS_SIZE / 2,
+							this->location.y + BOSS_SIZE / 2 };
+
+			rad = atan2f(player_center.y - this->location.y - BOSS_SIZE / 2, player_center.x - this->location.x - BOSS_SIZE / 2);
+			velocity.x = 5 * cosf(rad);
+			velocity.y = 5 * sinf(rad);
+
 			if (++t > 60) {
 				
 				can_swap = true;
@@ -444,7 +515,35 @@ void Boss::BossAtack(ObjectManager *_manager)
 			}
 			break;
 
-		case 1://水
+		case 1://木
+			color = GREEN;
+			if (++t > 20) {
+				can_swap = true;
+			}
+			if (cnt % 30 == 0 && wood_count < 5) {
+				for (int i = 0; i < 3; i++)
+				{
+					Vector2D e = { 1000.0f,40.f };
+					Vector2D l = { camera->GetCameraLocation().x + WOOD_SPAWN[wood_count][i] ,930.f };
+					_manager->CreateObject(new BossAttackWood, l, e, GREEN);
+				}
+				wood_count++;
+
+				f = false;
+			}
+			if (cnt > BOSS_ATTACK_CD) {
+				cnt = 0;
+				f = false;
+				boss_state = BossState::MOVE;
+				woodNum = 0;
+				t = 0;
+				for (int i = 0; i < 3; i++)
+				{
+					attackWood[i] = 0.f;
+				}
+			}
+			break;
+		case 2://水
 			color = BLUE;
 			if (++t > 60) {
 				can_swap = true;
@@ -471,34 +570,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 				t = 0;
 			}
 			break;
-
-		default://木
-			color = GREEN;
-			if (++t > 20) {
-				can_swap = true;
-			}
-			if (cnt % 30 == 0 && wood_count<5) {
-				for (int i = 0; i < 3; i++)
-				{
-					Vector2D e = { 1000.0f,40.f };
-					Vector2D l = { camera->GetCameraLocation().x + WOOD_SPAWN[wood_count][i] ,930.f };
-					_manager->CreateObject(new BossAttackWood, l, e, GREEN);
-				}
-				wood_count++;
-				
-				f = false;
-			}
-			if (cnt > BOSS_ATTACK_CD) {
-				cnt = 0;
-				f = false;
-				boss_state = BossState::MOVE;
-				woodNum = 0;
-				t = 0;
-				for (int i = 0; i < 3; i++)
-				{
-					attackWood[i] = 0.f;
-				}
-			}
+		default:
 			break;
 		}
 	}
@@ -678,6 +750,7 @@ void Boss::InvertedWingPositions()
 		wing_mirror[i].y = wing[i].y;
 	}
 }
+
 // ボスの羽の位置をファイルに保存する
 void Boss::SavePosition()
 {

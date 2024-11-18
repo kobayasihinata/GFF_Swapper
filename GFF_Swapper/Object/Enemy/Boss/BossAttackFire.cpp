@@ -44,16 +44,15 @@ void BossAttackFire::Update(ObjectManager* _manager)
 	__super::Update(_manager);
 
 	if (!flg) {
+
 		//プレイヤーとボスの座標からベクトルを計算
-		Vector2D player = _manager->GetPlayerLocation();
-		Vector2D boss = { _manager->GetBossLocation()};
-		Vector2D v;
-		float len = sqrtf(powf(player.x - boss.x, 2) + powf(player.y - boss.y + (GetRand(6) - 3), 2));
-		v.x = (player.x - boss.x) / len;
-		v.y = (player.y - boss.y) / len;
-		
-		velocity.x = v.x * 5;
-		velocity.y = v.y * 5;
+		Vector2D player = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2), 
+							_manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
+		Vector2D boss = { _manager->GetBossLocation().x + BOSS_SIZE / 2,
+						  _manager->GetBossLocation().y + BOSS_SIZE / 2 };
+		float rad = atan2f(player.y - boss.y, player.x - boss.x);
+		velocity.x = 5 * cosf(rad);
+		velocity.y = 5 * sinf(rad);
 
 		flg = true;
 	}

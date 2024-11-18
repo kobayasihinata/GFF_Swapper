@@ -26,14 +26,6 @@
 
 class Player;
 
-static int ColorList[4]
-{
-    0xff0000,   //赤
-    0x00ff00,   //緑
-    0x0000ff,   //青
-    0xffffff   //白
-};
-
 class GameMain :
     public AbstractScene
 {

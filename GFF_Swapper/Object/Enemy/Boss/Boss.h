@@ -58,8 +58,13 @@ private:
 
 	float speed;				//移動速度;
 
+	float change_color_timer;	//色変化にかける時間
+	int next_color;				//次に変わる色
+	int change_rand;		//ボスを揺らす
 	int boss_color;
+
 	//計算用
+	Vector2D velocity;
 	int cunt;
 	int c;
 	int tutirial_num;

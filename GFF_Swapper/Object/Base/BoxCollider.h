@@ -6,7 +6,7 @@
 class BoxCollider
 {
 protected:
-	Vector2D location;			//中心座標
+	Vector2D location;			//座標
 	Vector2D local_location;	//画面上での座標
 	Vector2D erea;					//範囲
 public:
