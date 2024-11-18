@@ -266,10 +266,6 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 			case WOOD_BLOCK:
 			case WATER_BLOCK:
 			case PLAYER_RESPAWN_BLOCK:
-			case WEATHER_NORMAL:
-			case WEATHER_RAIN:
-			case WEATHER_FIRE:
-			case WEATHER_SEED:
 				for (int k = 0; k < 8; k++)
 				{
 					_d.stage_around_data[k] = CheckAroundBlock(i, j, k);
@@ -318,6 +314,10 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 				//チュートリアル開始範囲
 			case TUTORIAL_RANGE:
 				object_manager->CreateObject(new Tutorial, {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {50, 250}, stage_data[i][j]);
+			case CANNON_FIRE:
+			case CANNON_WOOD:
+			case CANNON_WATER:
+				object_manager->CreateObject(new Cannon(stage_data[i][j] - 25, 0), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 40, 40 }, stage_data[i][j]);
 			default:
 				break;
 			}

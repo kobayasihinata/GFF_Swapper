@@ -5,6 +5,7 @@ class BossAttackFire : public Object
 {
 private:
 	class Camera* camera;                                      //カメラ座標
+	Vector2D parent_center_location;						   //このオブジェクトを生成したオブジェクトの中心座標
 	Vector2D velocity;
 	bool flg;
 	bool hitFlg;
@@ -14,7 +15,7 @@ private:
 	int end_se;		//攻撃終了SE
 
 public:
-	BossAttackFire();
+	BossAttackFire(Vector2D _parent_center_location);
 	~BossAttackFire();
 
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;

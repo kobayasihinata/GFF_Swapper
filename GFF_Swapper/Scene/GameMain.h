@@ -15,6 +15,7 @@
 #include "../Object/Tutorial/TutorialText.h"
 #include "../Object/Tutorial/Tutorial.h"
 #include "../Object/Base/ObjectManager.h"
+#include "../Object/Enemy/Boss/Cannon.h"
 #include "../Utility/DebugInfomation.h"
 #include "Camera.h"
 

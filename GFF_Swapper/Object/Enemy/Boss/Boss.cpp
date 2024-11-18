@@ -317,10 +317,10 @@ void Boss::Draw() const
 		int delay1 = cnt + 5;
 		int delay2 = cnt + 10;
 		int delay3 = cnt + 15;
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*15), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*15), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*15), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*15), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*10), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*10), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*10), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*10), 100, next_color, false);
 	}
 	else
 	{
@@ -503,9 +503,9 @@ void Boss::BossAtack(ObjectManager *_manager)
 				
 				can_swap = true;
 			}
-			if (cnt % 30 == 0) {
+			if (cnt % 30 == 0 && cnt < 310) {
 				Vector2D e = { 20.f,20.f };
-				_manager->CreateObject(new BossAttackFire, this->GetCenterLocation(), e, RED);
+				_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), e, RED);
 			}
 			if (cnt > BOSS_ATTACK_CD) {
 				cnt = 0;
@@ -548,7 +548,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 			if (++t > 60) {
 				can_swap = true;
 			}
-			if (cnt % 30 == 0) {
+			if (cnt % 30 == 0 && cnt<310) {
 				Vector2D e = { 40.f,40.f };
 				Vector2D l;
 				if (side) {

@@ -33,14 +33,13 @@ enum BlockList	{
 	ENEMY_FROG_GREEN,	
 	ENEMY_FROG_BLUE	,
 	ENEMY_BOSS,
-	WEATHER_NORMAL,
-	WEATHER_RAIN,
-	WEATHER_FIRE,
-	WEATHER_SEED,
 	TUTOSTAGE_TRANSITION,
 	FIRSTSTAGE_TRANSITION,
 	BOSSSTAGE_TRANSITION,
-	TUTORIAL_RANGE
+	TUTORIAL_RANGE,
+	CANNON_FIRE,
+	CANNON_WOOD,
+	CANNON_WATER,
 };
 
 //ColorData格納用
@@ -85,16 +84,14 @@ static int text_color[29]
 	0x0000ff,	//青蛙
 
 	0xffffff,	//ボス
-	0xffffff,	//通常天気
-	0x0000ff,	//雨
-	0xff0000,	//火球
-	0x00ff00,	//種
-
 	0x000000,	//チュートリアルステージ遷移
 	0x000000,	//１ステージ遷移
 	0x000000,	//ボスステージ遷移
 
 	0xff00ff,	//チュートリアル開始範囲
+	0xff0000,	//砲台赤
+	0x00ff00,	//砲台緑
+	0x0000ff,	//砲台青
 
 };
 

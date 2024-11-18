@@ -8,7 +8,7 @@
 Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4)
 {
 	block_type = _type;
-	next_stage = _next_stage - 25;
+	next_stage = _next_stage - 21;
 
 	//炎
 	if (_type == RED_BLOCK || _type == FIRE_BLOCK)
@@ -25,16 +25,20 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 	{
 		type = WATER;
 	}
+	//ステージ変更ブロック
+	else if (_type == BOSSSTAGE_TRANSITION || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION)
+	{
+		type = CHANGESTAGE;
+	}
 	//それ以外
 	else
 	{
 		type = BLOCK;
 	}
 	//すり抜けるブロック
-	if (_type == PLAYER_RESPAWN_BLOCK || _type == WEATHER_NORMAL || _type == WEATHER_RAIN || _type == WEATHER_FIRE || _type == WEATHER_SEED || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
+	if (_type == PLAYER_RESPAWN_BLOCK || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
 	{
 		can_hit = FALSE;
-		weather = _type - WEATHER_NORMAL;
 	}
 	//すり抜けないブロック
 	else
@@ -313,14 +317,6 @@ void Stage::Draw()const
 			DrawBoxAA(local_location.x + (erea.x / 2) - 2, local_location.y, local_location.x + (erea.x / 2) + 2, local_location.y + erea.y, respawn_color, TRUE);
 			DrawBoxAA(local_location.x, local_location.y + erea.y - 4, local_location.x + erea.x, local_location.y + erea.y, respawn_color, TRUE);
 			break;
-			//天気更新ブロックは何も表示しなくても良いかも
-		case WEATHER_NORMAL:
-		case WEATHER_RAIN:
-		case WEATHER_FIRE:
-		case WEATHER_SEED:
-			DrawStringF(local_location.x, local_location.y, "天気", text_color[block_type]);
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, text_color[block_type], false);
-			break;
 			//ステージ遷移ブロック
 		case TUTOSTAGE_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
@@ -379,12 +375,6 @@ void Stage::Draw()const
 		case ENEMY_BOSS:
 			DrawStringF(local_location.x, local_location.y, "boss", text_color[block_type]);
 			break;
-			//天気ゾーン
-		case WEATHER_RAIN:
-		case WEATHER_FIRE:
-		case WEATHER_SEED:
-			DrawStringF(local_location.x, local_location.y, "weather", text_color[block_type]);
-			break;
 			//ステージ遷移ブロック
 		case TUTOSTAGE_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
@@ -394,6 +384,12 @@ void Stage::Draw()const
 			//チュートリアル開始範囲
 		case TUTORIAL_RANGE :
 			DrawStringF(local_location.x, local_location.y, "range", text_color[block_type]);
+			break;
+			//砲台
+		case CANNON_FIRE:
+		case CANNON_WOOD:
+		case CANNON_WATER:
+			DrawStringF(local_location.x, local_location.y, "cannon", text_color[block_type]);
 			break;
 		default:
 			//ブロックなら数字を表示
@@ -439,12 +435,6 @@ void Stage::Hit(Object* _object)
 	if (_object->GetObjectType() == PLAYER)
 	{
 		hit_flg = true;
-	}
-	//プレイヤーに当たった時、自身が天気変更ブロックなら、対応した天気に変更させる
-	if (_object->GetObjectType() == PLAYER && (block_type == WEATHER_NORMAL || block_type == WEATHER_RAIN || block_type == WEATHER_FIRE || block_type == WEATHER_SEED))
-	{
-		change_weather_flg = true;
-		return;
 	}
 
 	//草ブロック同士が当たった場合、座標に応じて描画を切り替える

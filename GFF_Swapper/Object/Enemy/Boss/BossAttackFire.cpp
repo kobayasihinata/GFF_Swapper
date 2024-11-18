@@ -2,8 +2,9 @@
 #include "../../../Scene/GameMain.h"
 #include "../../../Utility/ResourceManager.h"
 
-BossAttackFire::BossAttackFire()
+BossAttackFire::BossAttackFire(Vector2D _parent_center_location)
 {
+	this->parent_center_location = _parent_center_location;
 	camera = Camera::Get();
 	type = FIRE;
 	can_swap = FALSE;
@@ -48,9 +49,7 @@ void BossAttackFire::Update(ObjectManager* _manager)
 		//プレイヤーとボスの座標からベクトルを計算
 		Vector2D player = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2), 
 							_manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
-		Vector2D boss = { _manager->GetBossLocation().x + BOSS_SIZE / 2,
-						  _manager->GetBossLocation().y + BOSS_SIZE / 2 };
-		float rad = atan2f(player.y - boss.y, player.x - boss.x);
+		float rad = atan2f(player.y - parent_center_location.y, player.x - parent_center_location.x);
 		velocity.x = 5 * cosf(rad);
 		velocity.y = 5 * sinf(rad);
 

@@ -80,7 +80,6 @@ private:
     int current_menu;           //選択中のメニュー
     float stick_angle;          //スティックのアングルを保存
 
-    int logo_img;       //タイトルロゴの格納
     Vector2D logo_size;         //ロゴ画像の大きさ
     int title_bgm;      //タイトルBGM
     int swap_se;        //交換SE
