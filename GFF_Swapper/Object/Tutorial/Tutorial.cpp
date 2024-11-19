@@ -52,7 +52,7 @@ void Tutorial::Update(ObjectManager* _manager)
 
 void Tutorial::Draw() const
 {
-	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
+	//DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 	//DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
 	// DrawBoxAA(local_location.x + 200, local_location.y - 400, local_location.x + erea.x + 400, local_location.y + 70, GetColor(0, 0, 0), TRUE);
 
