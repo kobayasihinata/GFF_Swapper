@@ -26,7 +26,7 @@ void ObjectManager::Update(GameMain* _g)
 				create_object.object->SetAroundBlock(i, create_object.stage_around_data[i]);
 			}
 		}
-		create_object.object->Initialize(create_object.location, create_object.size, create_object.color,0);
+		create_object.object->Initialize(create_object.location, create_object.size, create_object.color, 0);
 		object_list.push_back(create_object.object);
 	}
 
@@ -40,11 +40,12 @@ void ObjectManager::Update(GameMain* _g)
 		{
 			if (*it == delete_object)
 			{
+
 				it = object_list.erase(it);
 				for (auto it2 = in_screen_object.begin(); it2 != in_screen_object.end();)
 				{
 					if (*it2 == delete_object)
-					{;
+					{
 						it2 = in_screen_object.erase(it2);
 						break;
 					}
@@ -190,6 +191,11 @@ void ObjectManager::CreateObject(SpawnData _data)
 
 void ObjectManager::CreatePlayer(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
 {
+	if (player_object != nullptr)
+	{
+		player_object->Finalize();
+		delete player_object;
+	}
 	player_object = _object;
 	player_object->Initialize(_location, _erea, _color_data, 0);
 }

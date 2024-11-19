@@ -81,7 +81,7 @@ Player::Player()
 
 Player::~Player()
 {
-
+	
 }
 
 void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)

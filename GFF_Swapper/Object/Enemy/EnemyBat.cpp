@@ -344,7 +344,7 @@ void EnemyBat::Hit(Object* _object)
 	}
 	//赤コウモリ
 	//触れたブロックが緑＆自分の色が赤だったら触れた緑ブロックを燃やす
-	//水の中に突っ込むと即死　雨粒は即死だが死ぬ際の動きに変化あり
+	//水の中に突っ込むと即死
 	if (_object->GetColorData() == BLUE &&
 		_object->GetObjectType() != PLAYER &&
 		this->color == RED) {
