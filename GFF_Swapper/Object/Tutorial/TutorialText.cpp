@@ -1,5 +1,7 @@
 #include "DxLib.h"
 #include "TutorialText.h"
+#include "../../Utility/DebugInfomation.h"
+
 
 TutorialText::TutorialText() : GNum(0), GColor(GREEN), Gbutton_draw{ false, false, false, false }, GGNum(0), frame(0), Gstick_angle(0.0), stage_height(0), p_c(GREEN), add_x(0), add_y(0), f_c(RED), Gdraw_stick_shift{ 0, 0 }, circleAng(0.f), cosor_flg(false), p_swap_x(0), e_swap_x(0)
 {
@@ -158,151 +160,153 @@ void TutorialText::Update(Vector2D _p, int y)
 
 void TutorialText::Draw() const
 {
+	//DebugInfomation::Add("Tutorialtext loc", in_camera->GetCameraLocation().x);
+	DebugInfomation::Add("Tutorialtext height", stage_height);
 	SetFontSize(50);
 
-	// 最初のチュートリアルテキストボックス
-	DrawBoxAA(515 - in_camera->GetCameraLocation().x, stage_height - 546 - in_camera->GetCameraLocation().y, 903 - in_camera->GetCameraLocation().x, stage_height - 317 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
-	DrawBoxAA(518 - in_camera->GetCameraLocation().x, stage_height - 543 - in_camera->GetCameraLocation().y, 900 - in_camera->GetCameraLocation().x, stage_height - 320 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
+	//// 最初のチュートリアルテキストボックス
+	//DrawBoxAA(515 - in_camera->GetCameraLocation().x, stage_height - 546 - in_camera->GetCameraLocation().y, 903 - in_camera->GetCameraLocation().x, stage_height - 317 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
+	//DrawBoxAA(518 - in_camera->GetCameraLocation().x, stage_height - 543 - in_camera->GetCameraLocation().y, 900 - in_camera->GetCameraLocation().x, stage_height - 320 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
 
-	// 左スティック：移動の説明
-	DrawCircleAA(580 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 25, 100, 0x000000, TRUE);
-	DrawCircleAA(580 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 25, 100, 0x666666, FALSE, 3.0f);
-	DrawCircleAA(580 - in_camera->GetCameraLocation().x + Gdraw_stick_shift.x, stage_height - 480 - in_camera->GetCameraLocation().y + Gdraw_stick_shift.y, 18, 100, 0x666666, TRUE);
-	DrawStringF(610 - in_camera->GetCameraLocation().x, stage_height - 500 - in_camera->GetCameraLocation().y, "：Move", 0xffffff);
+	//// 左スティック：移動の説明
+	//DrawCircleAA(580 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 25, 100, 0x000000, TRUE);
+	//DrawCircleAA(580 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 25, 100, 0x666666, FALSE, 3.0f);
+	//DrawCircleAA(580 - in_camera->GetCameraLocation().x + Gdraw_stick_shift.x, stage_height - 480 - in_camera->GetCameraLocation().y + Gdraw_stick_shift.y, 18, 100, 0x666666, TRUE);
+	//DrawStringF(610 - in_camera->GetCameraLocation().x, stage_height - 500 - in_camera->GetCameraLocation().y, "：Move", 0xffffff);
 
-	if (Gbutton_draw[0] == false)
-	{
-		// A ボタンイメージ描画
-		DrawCircleAA(577 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y + 60, 25, 100, 0x557b0e, FALSE);
-		DrawStringF(577 - in_camera->GetCameraLocation().x - 12, stage_height - 460 - in_camera->GetCameraLocation().y + 38, "A", 0x557b0e);
-	}
-	else
-	{
-		DrawCircleAA(577 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y + 55, 25, 100, 0x557b0e, TRUE);
-		DrawCircleAA(577 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y + 60, 25, 100, 0x557b0e, TRUE);
-		DrawStringF(577 - in_camera->GetCameraLocation().x - 12, stage_height - 460 - in_camera->GetCameraLocation().y + 33, "A", 0x000000);
-	}
-	DrawStringF(610 - in_camera->GetCameraLocation().x, stage_height - 428 - in_camera->GetCameraLocation().y, "：Jump", 0xffffff);
+	//if (Gbutton_draw[0] == false)
+	//{
+	//	// A ボタンイメージ描画
+	//	DrawCircleAA(577 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y + 60, 25, 100, 0x557b0e, FALSE);
+	//	DrawStringF(577 - in_camera->GetCameraLocation().x - 12, stage_height - 460 - in_camera->GetCameraLocation().y + 38, "A", 0x557b0e);
+	//}
+	//else
+	//{
+	//	DrawCircleAA(577 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y + 55, 25, 100, 0x557b0e, TRUE);
+	//	DrawCircleAA(577 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y + 60, 25, 100, 0x557b0e, TRUE);
+	//	DrawStringF(577 - in_camera->GetCameraLocation().x - 12, stage_height - 460 - in_camera->GetCameraLocation().y + 33, "A", 0x000000);
+	//}
+	//DrawStringF(610 - in_camera->GetCameraLocation().x, stage_height - 428 - in_camera->GetCameraLocation().y, "：Jump", 0xffffff);
 
-	// 色ブロックに乗れるかチュートリアルテキスト
-	DrawBoxAA(1742 - in_camera->GetCameraLocation().x, stage_height - 700 - in_camera->GetCameraLocation().y, 2073 - in_camera->GetCameraLocation().x, stage_height - 397 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
-	DrawBoxAA(1745 - in_camera->GetCameraLocation().x, stage_height - 697 - in_camera->GetCameraLocation().y, 2070 - in_camera->GetCameraLocation().x, stage_height - 400 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
+	//// 色ブロックに乗れるかチュートリアルテキスト
+	//DrawBoxAA(1742 - in_camera->GetCameraLocation().x, stage_height - 700 - in_camera->GetCameraLocation().y, 2073 - in_camera->GetCameraLocation().x, stage_height - 397 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
+	//DrawBoxAA(1745 - in_camera->GetCameraLocation().x, stage_height - 697 - in_camera->GetCameraLocation().y, 2070 - in_camera->GetCameraLocation().x, stage_height - 400 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
 
-	// 緑ブロック描画
-	if (GColor == GREEN)
-	{
-		// 赤　マル
-		DrawCircleAA(1960 - in_camera->GetCameraLocation().x, stage_height - 630 - in_camera->GetCameraLocation().y, 40, 100, 0xCC3300, FALSE, 10.0f);
-		for (int i = 0; i < 160; i += 40)
-		{
-			DrawBoxAA(1800 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y, 1840 - in_camera->GetCameraLocation().x + i, stage_height - 500 - in_camera->GetCameraLocation().y, GColor, TRUE);
-			DrawBoxAA(1810 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 20, 1815 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 25, 0x999999, true);
-			DrawBoxAA(1830 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 15, 1835 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 20, 0x999999, true);
-			DrawBoxAA(1825 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 35, 1830 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 40, 0x999999, true);
-		}
-	}
-	else
-	{
-		// 青 バツ
-		DrawLineAA(1910 - in_camera->GetCameraLocation().x, stage_height - 680 - in_camera->GetCameraLocation().y, 2012 - in_camera->GetCameraLocation().x, stage_height - 580 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
-		DrawLineAA(2012 - in_camera->GetCameraLocation().x, stage_height - 680 - in_camera->GetCameraLocation().y, 1910 - in_camera->GetCameraLocation().x, stage_height - 580 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
+	//// 緑ブロック描画
+	//if (GColor == GREEN)
+	//{
+	//	// 赤　マル
+	//	DrawCircleAA(1960 - in_camera->GetCameraLocation().x, stage_height - 630 - in_camera->GetCameraLocation().y, 40, 100, 0xCC3300, FALSE, 10.0f);
+	//	for (int i = 0; i < 160; i += 40)
+	//	{
+	//		DrawBoxAA(1800 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y, 1840 - in_camera->GetCameraLocation().x + i, stage_height - 500 - in_camera->GetCameraLocation().y, GColor, TRUE);
+	//		DrawBoxAA(1810 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 20, 1815 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 25, 0x999999, true);
+	//		DrawBoxAA(1830 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 15, 1835 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 20, 0x999999, true);
+	//		DrawBoxAA(1825 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 35, 1830 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y + 40, 0x999999, true);
+	//	}
+	//}
+	//else
+	//{
+	//	// 青 バツ
+	//	DrawLineAA(1910 - in_camera->GetCameraLocation().x, stage_height - 680 - in_camera->GetCameraLocation().y, 2012 - in_camera->GetCameraLocation().x, stage_height - 580 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
+	//	DrawLineAA(2012 - in_camera->GetCameraLocation().x, stage_height - 680 - in_camera->GetCameraLocation().y, 1910 - in_camera->GetCameraLocation().x, stage_height - 580 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
 
-		// 青ブロック描画
-		for (int i = 0; i < 160; i += 40)
-		{
-			DrawBoxAA(1800 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y, 1840 - in_camera->GetCameraLocation().x + i, stage_height - 500 - in_camera->GetCameraLocation().y, GColor, TRUE);
-		}
-	}
-	// チュートリアルテキスト プレイヤー描画
-	GDrawPlayer(0, 0, 0, GNum, GREEN);
+	//	// 青ブロック描画
+	//	for (int i = 0; i < 160; i += 40)
+	//	{
+	//		DrawBoxAA(1800 - in_camera->GetCameraLocation().x + i, stage_height - 540 - in_camera->GetCameraLocation().y, 1840 - in_camera->GetCameraLocation().x + i, stage_height - 500 - in_camera->GetCameraLocation().y, GColor, TRUE);
+	//	}
+	//}
+	//// チュートリアルテキスト プレイヤー描画
+	//GDrawPlayer(0, 0, 0, GNum, GREEN);
 
-	// 色交換のチュートリアルテキスト
-	DrawBoxAA(4100 - in_camera->GetCameraLocation().x, stage_height - 650 - in_camera->GetCameraLocation().y, 4503 - in_camera->GetCameraLocation().x, stage_height - 400 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
-	DrawBoxAA(4103 - in_camera->GetCameraLocation().x, stage_height - 647 - in_camera->GetCameraLocation().y, 4500 - in_camera->GetCameraLocation().x, stage_height - 403 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
+	//// 色交換のチュートリアルテキスト
+	//DrawBoxAA(4100 - in_camera->GetCameraLocation().x, stage_height - 650 - in_camera->GetCameraLocation().y, 4503 - in_camera->GetCameraLocation().x, stage_height - 400 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
+	//DrawBoxAA(4103 - in_camera->GetCameraLocation().x, stage_height - 647 - in_camera->GetCameraLocation().y, 4500 - in_camera->GetCameraLocation().x, stage_height - 403 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
 
-	if (Gbutton_draw[1] == false)
-	{
-		// B ボタンイメージ描画
-		DrawCircleAA(577 - in_camera->GetCameraLocation().x + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 55 - 200, 25, 100, 0xc5482c, TRUE);
-		DrawCircleAA(577 - in_camera->GetCameraLocation().x + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 60 - 200, 25, 100, 0xc5482c, TRUE);
-		DrawStringF(577 - in_camera->GetCameraLocation().x - 12 + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 33 - 200, "B", 0x000000);
-	}
-	else
-	{
-		DrawCircleAA(577 - in_camera->GetCameraLocation().x + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 60 - 200, 25, 100, 0xc5482c, FALSE);
-		DrawStringF(577 - in_camera->GetCameraLocation().x - 12 + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 38 - 200, "B", 0xc5482c);
-	}
+	//if (Gbutton_draw[1] == false)
+	//{
+	//	// B ボタンイメージ描画
+	//	DrawCircleAA(577 - in_camera->GetCameraLocation().x + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 55 - 200, 25, 100, 0xc5482c, TRUE);
+	//	DrawCircleAA(577 - in_camera->GetCameraLocation().x + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 60 - 200, 25, 100, 0xc5482c, TRUE);
+	//	DrawStringF(577 - in_camera->GetCameraLocation().x - 12 + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 33 - 200, "B", 0x000000);
+	//}
+	//else
+	//{
+	//	DrawCircleAA(577 - in_camera->GetCameraLocation().x + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 60 - 200, 25, 100, 0xc5482c, FALSE);
+	//	DrawStringF(577 - in_camera->GetCameraLocation().x - 12 + 3600, stage_height - 460 - in_camera->GetCameraLocation().y + 38 - 200, "B", 0xc5482c);
+	//}
 
-	if (Gbutton_draw[1] == true)
-	{
-		//選択カーソル
-		GDrawCircle(cosor_flg);
-	}
+	//if (Gbutton_draw[1] == true)
+	//{
+	//	//選択カーソル
+	//	GDrawCircle(cosor_flg);
+	//}
 
-	DrawStringF(4210 - in_camera->GetCameraLocation().x, stage_height - 623 - in_camera->GetCameraLocation().y, "＆", 0xffffff);
+	//DrawStringF(4210 - in_camera->GetCameraLocation().x, stage_height - 623 - in_camera->GetCameraLocation().y, "＆", 0xffffff);
 
-	// 左スティック描画
-	DrawCircleAA(580 - in_camera->GetCameraLocation().x + 3710, stage_height - 480 - in_camera->GetCameraLocation().y - 121, 25, 100, 0x000000, TRUE);
-	DrawCircleAA(580 - in_camera->GetCameraLocation().x + 3710, stage_height - 480 - in_camera->GetCameraLocation().y - 121, 25, 100, 0x666666, FALSE, 3.0f);
-	DrawCircleAA(580 - in_camera->GetCameraLocation().x + Gdraw_stick_shift.x + 3710, stage_height - 480 - in_camera->GetCameraLocation().y + Gdraw_stick_shift.y - 121, 18, 100, 0x666666, TRUE);
+	//// 左スティック描画
+	//DrawCircleAA(580 - in_camera->GetCameraLocation().x + 3710, stage_height - 480 - in_camera->GetCameraLocation().y - 121, 25, 100, 0x000000, TRUE);
+	//DrawCircleAA(580 - in_camera->GetCameraLocation().x + 3710, stage_height - 480 - in_camera->GetCameraLocation().y - 121, 25, 100, 0x666666, FALSE, 3.0f);
+	//DrawCircleAA(580 - in_camera->GetCameraLocation().x + Gdraw_stick_shift.x + 3710, stage_height - 480 - in_camera->GetCameraLocation().y + Gdraw_stick_shift.y - 121, 18, 100, 0x666666, TRUE);
 
-	// チュートリアルテキスト プレイヤー描画
-	GDrawPlayer(2350, -130,0, 0, p_c);
-	// チュートリアルテキスト 蛙描画
-	GDrawFrag();
+	//// チュートリアルテキスト プレイヤー描画
+	//GDrawPlayer(2350, -130,0, 0, p_c);
+	//// チュートリアルテキスト 蛙描画
+	//GDrawFrag();
 
-	// 赤ブロック
-	DrawBoxAA(1800 - in_camera->GetCameraLocation().x + 2600, stage_height - 540 - in_camera->GetCameraLocation().y + 65, 1840 - in_camera->GetCameraLocation().x + 2600, stage_height - 500 - in_camera->GetCameraLocation().y + 65, RED, TRUE);
-	
-	if (Gbutton_draw[1] == true && cosor_flg == true)
-	{
-		if (p_swap_x < 230)
-		{
-			// player 緑
-			DrawBoxAA((4170 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4190 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, GREEN, TRUE);
-			DrawBoxAA((4170 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4190 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, 0x000000, FALSE);
-		}
+	//// 赤ブロック
+	//DrawBoxAA(1800 - in_camera->GetCameraLocation().x + 2600, stage_height - 540 - in_camera->GetCameraLocation().y + 65, 1840 - in_camera->GetCameraLocation().x + 2600, stage_height - 500 - in_camera->GetCameraLocation().y + 65, RED, TRUE);
+	//
+	//if (Gbutton_draw[1] == true && cosor_flg == true)
+	//{
+	//	if (p_swap_x < 230)
+	//	{
+	//		// player 緑
+	//		DrawBoxAA((4170 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4190 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, GREEN, TRUE);
+	//		DrawBoxAA((4170 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4190 + p_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, 0x000000, FALSE);
+	//	}
 
-		if (e_swap_x > -240 && p_swap_x > 230)
-		{
-			// frog 赤
-			DrawBoxAA((4410 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4430 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, RED, TRUE);
-			DrawBoxAA((4410 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4430 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, 0x000000, FALSE);
-		}
-	}
-	else if(Gbutton_draw[1] == true && cosor_flg == false)
-	{
+	//	if (e_swap_x > -240 && p_swap_x > 230)
+	//	{
+	//		// frog 赤
+	//		DrawBoxAA((4410 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4430 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, RED, TRUE);
+	//		DrawBoxAA((4410 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 540 - in_camera->GetCameraLocation().y, (4430 - -e_swap_x) - in_camera->GetCameraLocation().x, stage_height - 520 - in_camera->GetCameraLocation().y, 0x000000, FALSE);
+	//	}
+	//}
+	//else if(Gbutton_draw[1] == true && cosor_flg == false)
+	//{
 
-	}
+	//}
 
-	// ダメージゾーンのチュートリアルテキスト
-	DrawBoxAA(5950 - in_camera->GetCameraLocation().x, stage_height - 500 - in_camera->GetCameraLocation().y, 6243 - in_camera->GetCameraLocation().x, stage_height - 260 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
-	DrawBoxAA(5953 - in_camera->GetCameraLocation().x, stage_height - 497 - in_camera->GetCameraLocation().y, 6240 - in_camera->GetCameraLocation().x, stage_height - 263 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
+	//// ダメージゾーンのチュートリアルテキスト
+	//DrawBoxAA(5950 - in_camera->GetCameraLocation().x, stage_height - 500 - in_camera->GetCameraLocation().y, 6243 - in_camera->GetCameraLocation().x, stage_height - 260 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
+	//DrawBoxAA(5953 - in_camera->GetCameraLocation().x, stage_height - 497 - in_camera->GetCameraLocation().y, 6240 - in_camera->GetCameraLocation().x, stage_height - 263 - in_camera->GetCameraLocation().y, 0x555555, TRUE, 3.0f);
 
-	// 水描画
-	for (int i = 0; i < 6; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-			ResourceManager::StageAnimDraw({ (6040 + (j * BOX_WIDTH)) - in_camera->GetCameraLocation().x, stage_height - (500 - (i * BOX_HEIGHT)) - in_camera->GetCameraLocation().y }, 5);
-		}
-	}
+	//// 水描画
+	//for (int i = 0; i < 6; i++)
+	//{
+	//	for (int j = 0; j < 2; j++)
+	//	{
+	//		ResourceManager::StageAnimDraw({ (6040 + (j * BOX_WIDTH)) - in_camera->GetCameraLocation().x, stage_height - (500 - (i * BOX_HEIGHT)) - in_camera->GetCameraLocation().y }, 5);
+	//	}
+	//}
 
-	if (Gbutton_draw[3] == false)
-	{
-		GDrawPlayer(4150, -300, add_x, 0, RED);
-		// 青 バツ
-		DrawLineAA(5960 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 6030 - in_camera->GetCameraLocation().x, stage_height - 410 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
-		DrawLineAA(5960 - in_camera->GetCameraLocation().x, stage_height - 410 - in_camera->GetCameraLocation().y, 6030 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
-		SetFontSize(35);
-		DrawString(6122 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y, "Damage", 0xff0000);
-	}
-	else
-	{
-		GDrawPlayer(4150, -300, add_x, 0, BLUE);
-		// 赤　マル
-		DrawCircleAA(6000 - in_camera->GetCameraLocation().x, stage_height - 450 - in_camera->GetCameraLocation().y, 30, 100, 0xCC3300, FALSE, 10.0f);
-	}
+	//if (Gbutton_draw[3] == false)
+	//{
+	//	GDrawPlayer(4150, -300, add_x, 0, RED);
+	//	// 青 バツ
+	//	DrawLineAA(5960 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 6030 - in_camera->GetCameraLocation().x, stage_height - 410 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
+	//	DrawLineAA(5960 - in_camera->GetCameraLocation().x, stage_height - 410 - in_camera->GetCameraLocation().y, 6030 - in_camera->GetCameraLocation().x, stage_height - 480 - in_camera->GetCameraLocation().y, 0x3300CC, 20.0f);
+	//	SetFontSize(35);
+	//	DrawString(6122 - in_camera->GetCameraLocation().x, stage_height - 460 - in_camera->GetCameraLocation().y, "Damage", 0xff0000);
+	//}
+	//else
+	//{
+	//	GDrawPlayer(4150, -300, add_x, 0, BLUE);
+	//	// 赤　マル
+	//	DrawCircleAA(6000 - in_camera->GetCameraLocation().x, stage_height - 450 - in_camera->GetCameraLocation().y, 30, 100, 0xCC3300, FALSE, 10.0f);
+	//}
 	
 	// ボスエリアのチュートリアルテキスト
 	//DrawBoxAA(15415 - in_camera->GetCameraLocation().x, stage_height - 680 - in_camera->GetCameraLocation().y, 16003 - in_camera->GetCameraLocation().x, stage_height - 360 - in_camera->GetCameraLocation().y, 0xffffff, FALSE, 3.0f);
