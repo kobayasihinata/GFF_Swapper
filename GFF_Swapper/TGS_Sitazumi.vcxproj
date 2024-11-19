@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Object\Enemy\Boss\Cannon.cpp" />
     <ClCompile Include="Utility\DebugInfomation.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="main.cpp" />
@@ -51,6 +52,7 @@
     <ClCompile Include="Utility\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Object\Enemy\Boss\Cannon.h" />
     <ClInclude Include="Utility\DebugInfomation.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Object\Base\ObjectManager.h" />

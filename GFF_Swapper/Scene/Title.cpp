@@ -37,9 +37,7 @@ void Title::Initialize()
 		}
 	}
 
-	logo_img = ResourceManager::SetGraph("Resource/Images/Logo1.png");
 	//GraphFilter(ResourceManager::GetGraph(logo_img), DX_GRAPH_FILTER_GAUSS, 16, 1400);
-	GetGraphSizeF(ResourceManager::GetGraph(logo_img), &logo_size.x, &logo_size.y);
 
 	swap_se = ResourceManager::SetSound("Resource/Sounds/Effect/swap.wav");
 	rise_se = ResourceManager::SetSound("Resource/Sounds/System/rise.wav");

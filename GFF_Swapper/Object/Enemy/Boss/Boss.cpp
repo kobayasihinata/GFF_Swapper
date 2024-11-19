@@ -112,6 +112,8 @@ void Boss::Update(ObjectManager* _manager)
 		stageHitFlg[1][i] = false;
 	}
 
+	//プレイヤーローカル座標取得（描画用）
+	player_local_location = _manager->GetPlayerLocalLocation();
 	speed = BOSS_MAX_SPEED;
 	vector = { 1.0f ,1.0f };
 
@@ -317,10 +319,10 @@ void Boss::Draw() const
 		int delay1 = cnt + 5;
 		int delay2 = cnt + 10;
 		int delay3 = cnt + 15;
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*15), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*15), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*15), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*15), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*10), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*10), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*10), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*10), 100, next_color, false);
 	}
 	else
 	{
@@ -330,31 +332,30 @@ void Boss::Draw() const
 
 	}
 
-	//火攻撃のターゲット線
+	//火攻撃のターゲット線＆照準
 	if (attack == 0 && cnt >= 240)
 	{
-		//for (int i = 0; i < 100; i++)
-		//{
-		//	if (cnt%5 == i % 5)
-		//	{
-		//		DrawLineAA(local_location.x + (erea.x / 2) + (velocity.x * (i*5)), 
-		//				   local_location.y + (erea.y / 2) + (velocity.y * (i*5)), 
-		//				   local_location.x + (erea.x / 2) + (velocity.x * (i*5 + 5)), 
-		//				   local_location.y + (erea.y / 2) + (velocity.y * (i*5 + 5)), 0xff0000, true);
-		//																    
-		//}															    
-		//	else														    
-		//	{
-		//		DrawLineAA(local_location.x + (erea.x / 2) + (velocity.x * (i * 5)),
-		//			local_location.y + (erea.y / 2) + (velocity.y * (i * 5)),
-		//			local_location.x + (erea.x / 2) + (velocity.x * (i * 5 + 5)),
-		//			local_location.y + (erea.y / 2) + (velocity.y * (i * 5 + 5)), 0xffffff, true);
-		//	}
-		//}	
-						DrawLineAA(local_location.x + (erea.x / 2), 
-						   local_location.y + (erea.y / 2), 
-						   local_location.x + (erea.x / 2) + (velocity.x * 1000), 
-						   local_location.y + (erea.y / 2) + (velocity.y * 1000), 0xff0000, true);
+		//ターゲット線
+		DrawLineAA(local_location.x + (erea.x / 2), 
+		   local_location.y + (erea.y / 2), 
+		   local_location.x + (erea.x / 2) + (velocity.x * 1000), 
+		   local_location.y + (erea.y / 2) + (velocity.y * 1000), 0xff0000, true);
+
+		int line = 50;
+		//照準
+		DrawCircleAA(player_local_location.x + (PLAYER_WIDTH / 2),
+			player_local_location.y + (PLAYER_HEIGHT / 2),
+			PLAYER_HEIGHT/2,50, 0xffffff, false);
+
+		DrawLineAA(player_local_location.x- line,
+			player_local_location.y + (PLAYER_HEIGHT / 2),
+			player_local_location.x + PLAYER_WIDTH+ line,
+			player_local_location.y + (PLAYER_HEIGHT / 2), 0xffffff);
+
+		DrawLineAA(player_local_location.x + (PLAYER_WIDTH / 2),
+			player_local_location.y- line,
+			player_local_location.x + (PLAYER_WIDTH / 2),
+			player_local_location.y + PLAYER_HEIGHT+ line, 0xffffff);
 	}
 }
 
@@ -488,7 +489,6 @@ void Boss::BossAtack(ObjectManager *_manager)
 		switch (attack)
 		{
 		case 0://火
-			color = RED;
 			//ターゲットを表す線の更新
 			player_center = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2), 
 							  _manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
@@ -503,9 +503,10 @@ void Boss::BossAtack(ObjectManager *_manager)
 				
 				can_swap = true;
 			}
-			if (cnt % 30 == 0) {
+			if (cnt % 30 == 0 && cnt < 310) {
+				color = RED;
 				Vector2D e = { 20.f,20.f };
-				_manager->CreateObject(new BossAttackFire, this->GetCenterLocation(), e, RED);
+				_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), e, RED);
 			}
 			if (cnt > BOSS_ATTACK_CD) {
 				cnt = 0;
@@ -516,11 +517,11 @@ void Boss::BossAtack(ObjectManager *_manager)
 			break;
 
 		case 1://木
-			color = GREEN;
 			if (++t > 20) {
 				can_swap = true;
 			}
 			if (cnt % 30 == 0 && wood_count < 5) {
+				color = GREEN;
 				for (int i = 0; i < 3; i++)
 				{
 					Vector2D e = { 1000.0f,40.f };
@@ -544,11 +545,11 @@ void Boss::BossAtack(ObjectManager *_manager)
 			}
 			break;
 		case 2://水
-			color = BLUE;
 			if (++t > 60) {
 				can_swap = true;
 			}
-			if (cnt % 30 == 0) {
+			if (cnt % 30 == 0 && cnt<310) {
+				color = BLUE;
 				Vector2D e = { 40.f,40.f };
 				Vector2D l;
 				if (side) {

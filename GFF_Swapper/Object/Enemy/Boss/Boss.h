@@ -65,6 +65,7 @@ private:
 
 	//計算用
 	Vector2D velocity;
+	Vector2D player_local_location;	//プレイヤーの座標
 	int cunt;
 	int c;
 	int tutirial_num;

@@ -35,7 +35,7 @@ void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 
 	wing_se = ResourceManager::SetSound("Resource/Sounds/Enemy/flapping_wings.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
-	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_managerrass.wav");
+	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
 }
 
@@ -211,7 +211,8 @@ void EnemyBat::Hit(Object* _object)
 {
 	/*delete_object = _object;*/
 	//ブロックと当たった時の処理
-	if (_object->GetObjectType() == BLOCK /*|| _object->GetObjectType() == ENEMY*/){
+	if ((_object->GetObjectType() == BLOCK || 
+		_object->GetObjectType() == GROUND_BLOCK) /*|| _object->GetObjectType() == ENEMY*/){
 		Vector2D tmpl = location;
 		Vector2D tmpe = erea;
 		move[0] = 0;
@@ -343,8 +344,11 @@ void EnemyBat::Hit(Object* _object)
 	}
 	//赤コウモリ
 	//触れたブロックが緑＆自分の色が赤だったら触れた緑ブロックを燃やす
-	//水の中に突っ込むと即死　雨粒は即死だが死ぬ際の動きに変化あり
-	if (_object->GetObjectType() == WATER && this->color == RED) {
+	//水の中に突っ込むと即死
+	if (_object->GetColorData() == BLUE &&
+		_object->GetObjectType() != PLAYER &&
+		this->color == RED) {
+		
 		//死亡状態へ
 		if (bat_state != BatState::DEATH)
 		{
@@ -357,7 +361,9 @@ void EnemyBat::Hit(Object* _object)
 	//青コウモリ
 	//触れたブロックが赤＆自分の色が青だったら触れた赤ブロックを消す
 	//コウモリの色が吸い取られて死ぬ
-	if (_object->GetObjectType() == WOOD && this->color == BLUE) {
+	if (_object->GetColorData() == GREEN &&
+		_object->GetObjectType() != PLAYER &&
+		this->color == BLUE) {
 		//wing_angle = sin(PI * 2.f / 12.f * up) * 20.f; // 藻掻いているように見える風に
 		//死亡状態へ
 		if (bat_state != BatState::DEATH)
@@ -371,7 +377,9 @@ void EnemyBat::Hit(Object* _object)
 	//緑コウモリ
 	//触れたブロックが青＆自分の色が緑だったら、雨粒を吸い取り　水場などに当たると反射する
 	//当たったら即死
-	if (_object->GetObjectType() == FIRE && this->color == GREEN) {
+	if (_object->GetColorData() == RED &&
+		_object->GetObjectType() != PLAYER &&
+		this->color == GREEN) {
 		if (bat_state != BatState::DEATH)
 		{
 			bat_state = BatState::DEATH;
@@ -381,9 +389,10 @@ void EnemyBat::Hit(Object* _object)
 	}
 
 	//ダメージゾーンを上書きする
-	if ((this->color == GREEN && _object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE) ||
-		(this->color == BLUE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE) ||
-		(this->color == RED && _object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE))
+	if (!_object->GetCanSwap() && !_object->GetIsBossAttack()&&
+		((this->color == GREEN && _object->GetObjectType() == WATER) ||
+		(this->color == BLUE && _object->GetObjectType() == FIRE) ||
+		(this->color == RED && _object->GetObjectType() == WOOD)))
 	{
 		_object->SetColorData(color);
 	}

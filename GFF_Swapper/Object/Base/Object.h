@@ -9,7 +9,10 @@
 #define WOOD 4			//Objectの種類用
 #define WATER 5			//Objectの種類用
 #define BOSS 6			//Objectの種類用
-#define TUTORIAL 7	//Objectの種類用
+#define TUTORIAL 7		//Objectの種類用
+#define CHANGESTAGE 8	//Objectの種類用
+#define CANNON 9		//Objectの種類用
+#define GROUND_BLOCK 10	//Objectの種類用
 
 //仮想クラス
 class ObjectManager;
@@ -70,6 +73,34 @@ public:
 		{
 			stage_around_data[i] = around_data[i];
 		}
+	}
+
+	//１つ目のオブジェクトから見た２つ目のオブジェクトとの相性を返す -1=不利 0=あいこ 1=有利
+	int CheckCompatibility(Object* _object1, Object* _object2)
+	{
+		//不利属性か
+		if ((_object1->GetColorData() == FIRE && _object2->GetColorData() == WATER) ||
+			(_object1->GetColorData() == WATER && _object2->GetColorData() == WOOD) ||
+			(_object1->GetColorData() == WOOD && _object2->GetColorData() == FIRE))
+		{
+			return -1;
+		}
+		//同じ属性か
+		if ((_object1->GetColorData() == FIRE && _object2->GetColorData() == FIRE) ||
+			(_object1->GetColorData() == WATER && _object2->GetColorData() == WATER) ||
+			(_object1->GetColorData() == WOOD && _object2->GetColorData() == WOOD))
+		{
+			return 0;
+		}
+		//有利属性か
+		if ((_object1->GetColorData() == FIRE && _object2->GetColorData() == WOOD) ||
+			(_object1->GetColorData() == WATER && _object2->GetColorData() == FIRE) ||
+			(_object1->GetColorData() == WOOD && _object2->GetColorData() == WATER))
+		{
+			return 1;
+		}
+		//どちらか片方の色が白、または想定外の数値なら
+		return 100;
 	}
 
 	//各変数の取得

@@ -5,10 +5,10 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), delete_fire(0), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), default_object(true), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4)
 {
 	block_type = _type;
-	next_stage = _next_stage - 25;
+	next_stage = _next_stage - 21;
 
 	//炎
 	if (_type == RED_BLOCK || _type == FIRE_BLOCK)
@@ -25,16 +25,25 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 	{
 		type = WATER;
 	}
+	//ステージ変更ブロック
+	else if (_type == BOSSSTAGE_TRANSITION || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION)
+	{
+		type = CHANGESTAGE;
+	}
+	//灰ブロック
+	else if(_type == GRAY_BLOCK)
+	{
+		type = GROUND_BLOCK;
+	}
 	//それ以外
 	else
 	{
 		type = BLOCK;
 	}
 	//すり抜けるブロック
-	if (_type == PLAYER_RESPAWN_BLOCK || _type == WEATHER_NORMAL || _type == WEATHER_RAIN || _type == WEATHER_FIRE || _type == WEATHER_SEED || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
+	if (_type == PLAYER_RESPAWN_BLOCK || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
 	{
 		can_hit = FALSE;
-		weather = _type - WEATHER_NORMAL;
 	}
 	//すり抜けないブロック
 	else
@@ -113,14 +122,6 @@ void Stage::Update(ObjectManager* _manager)
 		_manager->SpawnEffect(location, erea, DeathEffect, 15, WHITE);
 	}
 
-	//このステージブロックがゲーム中で火に変更されたブロックなら、一定時間経過で消す
-	if (default_object == FALSE && type == FIRE && can_swap == FALSE && ++delete_fire > 180)
-	{
-		if (this != nullptr) {
-			_manager->DeleteObject(this);
-		}
-	}
-
 	Vector2D player_respawn = { location.x,location.y - PLAYER_HEIGHT };
 
 	//フラグが立っているなら
@@ -182,8 +183,6 @@ void Stage::Update()
 				block_type = FIRE_BLOCK;
 			}
 			type = FIRE;
-			//ゲーム中で変更された火
-			default_object = FALSE;
 		}
 		else if (color == GREEN)
 		{
@@ -214,8 +213,6 @@ void Stage::Update()
 			type = WATER;
 			draw_wood_flg = false;
 		}
-		//火が消える時間をリセット
-		delete_fire = 0;
 	}
 
 	//hit_timerに0が入ったらアニメーション開始
@@ -255,55 +252,24 @@ void Stage::Draw()const
 			break;
 			//地面(赤、緑、青)
 		case RED_BLOCK:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, true);
-			break;
-		case GREEN_BLOCK:
-			if (debug_flg == false)
-			{
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(wood_image), true);
-			}
-			else
-			{
-				DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
-				DrawBoxAA(local_location.x + 10, local_location.y + 20, local_location.x + 15, local_location.y + 25, 0x00ee00, true);
-				DrawBoxAA(local_location.x + 30, local_location.y + 15, local_location.x + 35, local_location.y + 20, 0x00ee00, true);
-				DrawBoxAA(local_location.x + 25, local_location.y + 35, local_location.x + 30, local_location.y + 40, 0x00ee00, true);
-			}
-			break;
-		case BLUE_BLOCK:
-			if (debug_flg == false)
-			{
-					ResourceManager::DrawAnimGraph(local_location, water_image);
-			}
-			break;
-			//ダメージゾーンの描画
 		case FIRE_BLOCK:
 			if (debug_flg == false)
 			{
-				DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff5555, true);
+				ResourceManager::DrawAnimGraph(local_location, fire_image);
 			}
 			break;
-		case WATER_BLOCK:
-			if (debug_flg == false)
-			{
-				ResourceManager::DrawAnimGraph(local_location, water_image);
-			}
-			break;
+		case GREEN_BLOCK:
 		case WOOD_BLOCK:
 			if (debug_flg == false)
 			{
 				DrawGraph(local_location.x, local_location.y, ResourceManager::GetGraph(wood_image), true);
-				/*if (draw_wood_flg == true)
-				{
-					DrawBoxAA(local_location.x+3, local_location.y, local_location.x + erea.x-3, local_location.y + erea.y, 0x00cc00, true);
-					DrawBoxAA(local_location.x +2, local_location.y, local_location.x + erea.x-2, local_location.y + 2, 0x00ff00, true);
-					DrawBoxAA(local_location.x+2, local_location.y + erea.y, local_location.x + erea.x-2, local_location.y + erea.y - 2, 0x00ff00, true);
-					DrawBoxAA(local_location.x + 10, local_location.y+2, local_location.x + 13, local_location.y + erea.y-2, 0x00ee00, true);
-				}
-				else
-				{
-					ResourceManager::StageAnimDraw(local_location, type);
-				}*/
+			}
+			break;
+		case BLUE_BLOCK:
+		case WATER_BLOCK:
+			if (debug_flg == false)
+			{
+				ResourceManager::DrawAnimGraph(local_location, water_image);
 			}
 			break;
 		case PLAYER_RESPAWN_BLOCK:
@@ -312,14 +278,6 @@ void Stage::Draw()const
 						   local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), respawn_color, TRUE);
 			DrawBoxAA(local_location.x + (erea.x / 2) - 2, local_location.y, local_location.x + (erea.x / 2) + 2, local_location.y + erea.y, respawn_color, TRUE);
 			DrawBoxAA(local_location.x, local_location.y + erea.y - 4, local_location.x + erea.x, local_location.y + erea.y, respawn_color, TRUE);
-			break;
-			//天気更新ブロックは何も表示しなくても良いかも
-		case WEATHER_NORMAL:
-		case WEATHER_RAIN:
-		case WEATHER_FIRE:
-		case WEATHER_SEED:
-			DrawStringF(local_location.x, local_location.y, "天気", text_color[block_type]);
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, text_color[block_type], false);
 			break;
 			//ステージ遷移ブロック
 		case TUTOSTAGE_TRANSITION:
@@ -346,6 +304,11 @@ void Stage::Draw()const
 			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xaaaaaa, true);
 			//ブロックなら数字を表示
 			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%d", block_type);
+			break;
+		case RED_BLOCK:
+		case GREEN_BLOCK:
+		case BLUE_BLOCK:
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, text_color[block_type], true);
 			break;
 		case FIRE_BLOCK:
 		case WOOD_BLOCK:
@@ -379,12 +342,6 @@ void Stage::Draw()const
 		case ENEMY_BOSS:
 			DrawStringF(local_location.x, local_location.y, "boss", text_color[block_type]);
 			break;
-			//天気ゾーン
-		case WEATHER_RAIN:
-		case WEATHER_FIRE:
-		case WEATHER_SEED:
-			DrawStringF(local_location.x, local_location.y, "weather", text_color[block_type]);
-			break;
 			//ステージ遷移ブロック
 		case TUTOSTAGE_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
@@ -394,6 +351,12 @@ void Stage::Draw()const
 			//チュートリアル開始範囲
 		case TUTORIAL_RANGE :
 			DrawStringF(local_location.x, local_location.y, "range", text_color[block_type]);
+			break;
+			//砲台
+		case CANNON_FIRE:
+		case CANNON_WOOD:
+		case CANNON_WATER:
+			DrawStringF(local_location.x, local_location.y, "cannon", text_color[block_type]);
 			break;
 		default:
 			//ブロックなら数字を表示
@@ -432,19 +395,13 @@ void Stage::Hit(Object* _object)
 	//処理を省略して良いオブジェクトなら処理終了
 	if (check_ignore_flg)return;
 
-	//相手がブロックなら処理終了
-	if (_object->GetObjectType() == BLOCK)return;
+	//相手が地面ブロックなら処理終了
+	if (_object->GetObjectType() == GROUND_BLOCK)return;
 
 	//プレイヤーに当たったらフラグを立てる
 	if (_object->GetObjectType() == PLAYER)
 	{
 		hit_flg = true;
-	}
-	//プレイヤーに当たった時、自身が天気変更ブロックなら、対応した天気に変更させる
-	if (_object->GetObjectType() == PLAYER && (block_type == WEATHER_NORMAL || block_type == WEATHER_RAIN || block_type == WEATHER_FIRE || block_type == WEATHER_SEED))
-	{
-		change_weather_flg = true;
-		return;
 	}
 
 	//草ブロック同士が当たった場合、座標に応じて描画を切り替える
@@ -455,13 +412,6 @@ void Stage::Hit(Object* _object)
 		{
 			draw_wood_flg = true;
 		}
-		return;
-	}
-
-	//火ブロックと溶岩ブロックが当たっている場合は火を消さない
-	if (this->type == FIRE && this->can_swap == FALSE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == TRUE)
-	{
-		delete_fire = 0;
 		return;
 	}
 
@@ -480,8 +430,6 @@ void Stage::Hit(Object* _object)
 		{
 			SetColorData(RED);
 			ResourceManager::StartSound(change_fire);
-			//ゲーム中で変更されたオブジェクト
-			default_object = FALSE;
 			touch_object = 0;
 			return;
 		}
@@ -490,8 +438,6 @@ void Stage::Hit(Object* _object)
 		{
 			SetColorData(BLUE);
 			ResourceManager::StartSound(change_water);
-			//ゲーム中で変更されたオブジェクト
-			default_object = FALSE;
 			touch_object = 0;
 			return;
 		}
@@ -500,8 +446,6 @@ void Stage::Hit(Object* _object)
 		{
 			SetColorData(GREEN);
 			ResourceManager::StartSound(change_wood);
-			//ゲーム中で変更されたオブジェクト
-			default_object = FALSE;
 			touch_object = 0;
 			return;
 		}
@@ -560,8 +504,6 @@ void Stage::DrawSolidBody(int _color)const
 
 void Stage::CheckIgnoreObject()
 {
-	////周辺に空気が無いブロック(内側)なら、省略可能オブジェクト
-	//check_ignore_flg = !CheckNullAround();
 	////グレーのブロックなら省略可能
 	//if (block_type == GRAY_BLOCK)
 	//{
@@ -577,14 +519,15 @@ void Stage::StageLoadGraph()
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/moss.PNG");
 		ground_image = ResourceManager::SetDivGraph("Resource/Images/sozai/ground.PNG", 9, 3, 3, 40, 40,0);
 		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/puddle.PNG", 8, 4, 2, 40, 40,8);
-		//fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/");
+		fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/magma.PNG", 8, 4, 2, 40, 40, 15);
 	}
 	//ダメージゾーンの画像を読み込む
 	if (block_type == WOOD_BLOCK || block_type == FIRE_BLOCK || block_type == WATER_BLOCK)
 	{
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/lvy.PNG");
 		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/waterfall.PNG", 8, 4, 2, 40, 40,8);
-		//fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/");
+		fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/fire.PNG", 8, 4, 2, 40, 40, 8);
+
 	}
 }
 
