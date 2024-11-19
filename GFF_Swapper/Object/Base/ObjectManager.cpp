@@ -157,18 +157,17 @@ void ObjectManager::Draw()const
 		enemy->Draw();
 	}
 
-	//ボスを描画
+	//プレイヤーの描画
+	player_object->Draw();
+
+	//ボスの描画
 	if (!boss_blind_flg)
 	{
 		if (boss_object != nullptr)boss_object->Draw();
 	}
-	//プレイヤーを最後に描画
-	player_object->Draw();
 
 	//エフェクトの描画
 	effect_spawner->Draw();
-#ifdef _DEBUG
-#endif // _DEBUG
 
 }
 

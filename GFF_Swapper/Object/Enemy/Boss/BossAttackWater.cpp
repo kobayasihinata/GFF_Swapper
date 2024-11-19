@@ -81,7 +81,7 @@ void BossAttackWater::Update(ObjectManager* _manager)
 	else {
 		//Location player = _manager->GetPlayerLocation();
 		//if (player.x - location.x > 0) {
-		if(location.x < 640.f){
+		if(local_location.x < (SCREEN_WIDTH/2)){
 			velocity.x = 3.f;
 		}
 		else {
@@ -130,7 +130,7 @@ void BossAttackWater::Draw() const
 
 void BossAttackWater::Hit(Object* _object)
 {
-	if ((_object->GetObjectType() == BLOCK || _object->GetObjectType() == FIRE) && _object->GetColorData() != WHITE && _object->GetIsBossAttack() == FALSE) {
+	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == FIRE) && _object->GetColorData() != WHITE && _object->GetIsBossAttack() == FALSE) {
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);
 		hitFlg = true;

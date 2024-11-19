@@ -374,7 +374,7 @@ int ResourceManager::GetDivGraph(int _num1, int _num2)
 
 void ResourceManager::DrawAnimGraph(Vector2D location, int _handle)
 {
-	DrawGraphF(location.x, location.y, div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image], TRUE);
+	DrawGraphF(location.x, location.y, div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image], FALSE);
 }
 
 void ResourceManager::StartSound(int _num, bool roop_flg)

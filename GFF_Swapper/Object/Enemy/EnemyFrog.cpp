@@ -186,7 +186,7 @@ void EnemyFrog::Hit(Object* _object)
 	__super::Hit(_object);
 
 	//ブロックと当たった時の処理
-	if (_object->GetObjectType() == BLOCK && _object->GetCanHit() == TRUE)
+	if ((_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE)
 	{
 		Vector2D tmpl = location;
 		Vector2D tmpe = erea;

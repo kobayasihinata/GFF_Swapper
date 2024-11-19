@@ -39,7 +39,7 @@ void Cannon::Update(ObjectManager* _manager)
 		switch (cannon_type)
 		{
 		case 0:
-			_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), { 40,40 }, RED);
+			_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), { 20,20 }, RED);
 			break;
 		case 1:
 			_manager->CreateObject(new BossAttackWood, { this->GetCenterLocation().x - 20,this->GetCenterLocation().y + 20 }, { 1000.0f,40.f }, GREEN);
