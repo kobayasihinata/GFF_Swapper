@@ -1,8 +1,9 @@
 #pragma once
 #include "../Base/Object.h"
 #include "../../Scene/Camera.h"
-#include <fstream>
-#include <string>
+#include <vector>   // std::vector を使うため
+#include <string>   // std::string を使うため
+#include <fstream>  // std::ifstream を使うため
 
 class Tutorial:
 	public Object
@@ -20,6 +21,7 @@ private:
 	Vector2D offset_size;	//描画ずらし用
 
 	std::string tutorial_text;
+	std::vector<std::string> tutorial_text_list;
 
 public:
 	//コンストラクタ
@@ -46,6 +48,7 @@ public:
 	void DrawTutorial4()const;
 
 	std::string LoadTextFile(const std::string& file_path);
+	//void LoadTextFile(const std::string& file_path);
 
 	//offsetをセット
 	void SetOffset();
