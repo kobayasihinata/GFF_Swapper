@@ -110,5 +110,8 @@ public:
 
 	//引数:もとになる座標、回転させたい座標、回転させたい角度
 	Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
+
+	//プレイヤーのリセット
+	void PlayerReset(ObjectManager* _manager);
 };
 

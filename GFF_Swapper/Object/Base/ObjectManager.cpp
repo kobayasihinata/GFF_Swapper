@@ -121,7 +121,7 @@ void ObjectManager::Update(GameMain* _g)
 	//ステージの変更があるなら変更
 	if (change_stage != -1)
 	{
-		_g->SetStage(change_stage, false);
+		_g->SetStage(change_stage);
 		change_stage = -1;
 	}
 }

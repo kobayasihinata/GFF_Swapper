@@ -117,16 +117,10 @@ void Player::Update(ObjectManager* _manager)
 			_manager->SpawnEffect(location, erea, ShineEffect, 20, color);
 		}
 
-		//ステージ遷移時に座標だけ移動させる用（体力や色情報などはそのまま）
+		//ステージ遷移時のリセット処理
 		if (_manager->player_respawn_flg)
 		{
-			location = _manager->player_respawn;
-			_manager->player_respawn_flg = false;
-			vector = 0;
-			swapTimer = -1;
-			searchFlg = false;
-			_manager->SetNowCurrentObject(nullptr);
-			draw_color = color;
+			PlayerReset(_manager);
 		}
 
 		if (stageHitFlg[1][bottom] != true) { //重力
@@ -1912,4 +1906,30 @@ Vector2D Player::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const
 	ret.y += BaseLoc.y;
 
 	return ret;
+}
+
+void Player::PlayerReset(ObjectManager* _manager)
+{
+	//座標をリスポーン地点に設定
+	location = _manager->player_respawn;
+	//移動量を0にする
+	vector = 0;
+	//色交換演出を止める
+	swapTimer = -1;
+	//色交換中かどうかをリセットする
+	searchFlg = false;
+	//プレイヤーによって選択されているオブジェクトをリセットする
+	_manager->SetNowCurrentObject(nullptr);
+	//HPを初期値に戻す
+	hp = 5;
+	//プレイヤーの色を初期色に戻す
+	color = DEFAULT_PLAYER_COLOR;
+	draw_color = color;
+	//プレイヤー再生成フラグを下ろす
+	_manager->player_respawn_flg = false;
+
+	//プレイヤースポーンエフェクトの生成
+	_manager->SpawnEffect({ _manager->player_respawn.x + PLAYER_WIDTH / 2 ,_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, _manager->GetPlayerColor());
+
+	
 }

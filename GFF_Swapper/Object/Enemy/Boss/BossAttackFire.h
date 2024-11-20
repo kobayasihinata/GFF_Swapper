@@ -11,6 +11,7 @@ private:
 	bool hitFlg;
 	int boundCnt;
 	bool player_hit;		//プレイヤーに当たったか判断
+
 	int start_se;	//攻撃開始SE
 	int end_se;		//攻撃終了SE
 
