@@ -102,7 +102,7 @@ void BossAttackFire::Draw() const
 void BossAttackFire::Hit(Object* _object)
 {
 	//地面ブロックか木に当たったら色を上書きしてフラグを立てる
-	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WOOD) && _object->GetColorData() != WHITE) {
+	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WOOD) && _object->GetColorData() != WHITE && !_object->GetIsBossAttack()) {
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);
 		hitFlg = true;

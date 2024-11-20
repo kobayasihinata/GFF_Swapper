@@ -18,7 +18,17 @@
 #define BOSS_BLUE  0x000080
 #define BOSS_GREEN 0x005E15
 
-Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), damage_flg(false), state_change_time(0), speed(0.0f),wing_fps(0),damage_se(0)
+Boss::Boss() :
+	vector{ 0.0f }, 
+	boss_state(BossState::ATTACK), 
+	barrier_num(3),		//ボスのバリアは初期値で３枚
+	attack_count(0),
+	stop_flg(true),	    //ボスは最初停止させておく
+	damage_flg(false), 
+	state_change_time(0), 
+	speed(0.0f),
+	wing_fps(0),
+	damage_se(0)
 {
 	camera = Camera::Get();
 	type = BOSS;
@@ -38,6 +48,7 @@ Boss::Boss() :vector{ 0.0f }, boss_state(BossState::ATTACK), barrier_num(3), dam
 	}
 
 	wood_count = 0;
+	fire_count = 0;
 
 	// wing の初期化
 	wing.fill({ 0.0f,0.0f });
@@ -105,6 +116,7 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 
 void Boss::Update(ObjectManager* _manager)
 {
+	__super::Update(_manager);
 	++wing_fps;
 	// ステージとの当たり判定フラグを初期化
 	for (int i = 0; i < 4; i++) {
@@ -128,21 +140,30 @@ void Boss::Update(ObjectManager* _manager)
 
 	boss_anim = (float)sin(PI * 2.f / 60.f * wing_fps) * 5.f;
 
-	switch (boss_state)
+	//プレイヤーが一定距離まで近づいてきたら更新開始
+	if (frame > 1 && player_local_location.x > 140)
 	{
-	case BossState::MOVE:
-		// ボスの移動処理を呼び出し
-		Move();
-		break;
-	case BossState::ATTACK:
-		BossAtack(_manager);
-		break;
-	case BossState::DEATH:
-		_manager->DeleteObject(this);
-		_manager->UpdateState(GameMainState::GameClear);
-		break;
-	default:
-		break;
+		stop_flg = false;
+	}
+	//停止させる状態でなければ更新
+	if (!stop_flg)
+	{
+		switch (boss_state)
+		{
+		case BossState::MOVE:
+			// ボスの移動処理を呼び出し
+			Move();
+			break;
+		case BossState::ATTACK:
+			BossAtack(_manager);
+			break;
+		case BossState::DEATH:
+			_manager->DeleteObject(this);
+			_manager->UpdateState(GameMainState::GameClear);
+			break;
+		default:
+			break;
+		}
 	}
 
 	// ダメージを受けている場合の処理
@@ -472,6 +493,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 			else {
 				side = false;
 			}
+			if (++attack_count > 20)attack_count = 20;
 		}
 	}
 	else
@@ -489,7 +511,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 		switch (attack)
 		{
 		case 0://火
-			//ターゲットを表す線の更新
+			//ターゲットまで伸びている直線の更新
 			player_center = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2), 
 							  _manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
 			boss_center = { this->location.x + BOSS_SIZE / 2,
@@ -499,17 +521,20 @@ void Boss::BossAtack(ObjectManager *_manager)
 			velocity.x = 5 * cosf(rad);
 			velocity.y = 5 * sinf(rad);
 
-			if (++t > 60) {
+
+			if (++t > 90 + (attack_count / 4)*30) {
 				
 				can_swap = true;
 			}
-			if (cnt % 30 == 0 && cnt < 310) {
+			if (cnt % 30 == 0 && fire_count <=(attack_count / 4)) {
 				color = RED;
 				Vector2D e = { 20.f,20.f };
 				_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), e, RED);
+				fire_count++;
 			}
-			if (cnt > BOSS_ATTACK_CD) {
+			if (cnt > BOSS_ATTACK_CD-(attack_count*10)) {
 				cnt = 0;
+				fire_count = 0;
 				f = false;
 				boss_state = BossState::MOVE;
 				t = 0;
@@ -520,7 +545,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 			if (++t > 20) {
 				can_swap = true;
 			}
-			if (cnt % 30 == 0 && wood_count < 5) {
+			if (cnt % 30 == 0 && wood_count <= (attack_count/4)) {
 				color = GREEN;
 				for (int i = 0; i < 3; i++)
 				{
@@ -532,7 +557,8 @@ void Boss::BossAtack(ObjectManager *_manager)
 
 				f = false;
 			}
-			if (cnt > BOSS_ATTACK_CD) {
+			if (cnt > BOSS_ATTACK_CD - (attack_count * 10)) {
+				wood_count = 0;
 				cnt = 0;
 				f = false;
 				boss_state = BossState::MOVE;
@@ -545,7 +571,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 			}
 			break;
 		case 2://水
-			if (++t > 60) {
+			if (++t > 120) {
 				can_swap = true;
 			}
 			if (cnt % 30 == 0 && cnt<310) {
@@ -563,7 +589,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 				_manager->CreateObject(new BossAttackWater, l, e, BLUE);
 				attack_num++;
 			}
-			if (cnt > BOSS_ATTACK_CD) {
+			if (cnt > BOSS_ATTACK_CD - (attack_count * 10)) {
 				cnt = 0;
 				f = false;
 				attack_num = 0;
