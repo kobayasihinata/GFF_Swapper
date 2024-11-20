@@ -274,6 +274,7 @@ AbstractScene* EditScene::Update()
 		{
 			current_downbutton_flg = false;
 		}
+
 		//つかんで動かす
 		if (KeyInput::OnPressedMouse(MOUSE_INPUT_RIGHT))
 		{
@@ -1067,7 +1068,7 @@ bool EditScene::CheckInArea(Vector2D _loc, float _width, float _height)
 bool EditScene::CheckInArea(float _x, float _y, float _width, float _height)
 {
 	Vector2D location{ _x,_y };
-	Vector2D size = { _height,_width };
+	Vector2D size = { _width,_height };
 
 	if (CheckInArea(location, size))
 	{

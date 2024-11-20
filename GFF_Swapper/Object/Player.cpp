@@ -122,12 +122,6 @@ void Player::Update(ObjectManager* _manager)
 		{
 			PlayerReset(_manager);
 		}
-		//メモリ破損の措置（ひなたへ）
-		if (local_location.y > 750)
-		{
-			location = _manager->player_respawn;
-			hp = 5;
-		}
 
 		if (stageHitFlg[1][bottom] != true) { //重力
 			switch (state)
