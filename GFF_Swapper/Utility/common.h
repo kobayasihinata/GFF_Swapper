@@ -35,6 +35,11 @@ static int ColorList[4]
     0xffffff   //白
 };
 
+#define EAST  0  //東
+#define WEST  1  //西
+#define SOUTH 2  //南
+#define NORTH 3  //北
+
 //ボスの詳細設定
 
 #define BOSS_SIZE 250

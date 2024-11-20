@@ -6,6 +6,7 @@ class BossAttackWood : public Object
 {
 private:
 	class Camera* camera;                                      //カメラ座標
+	float start_local_location_y;	//スポーン位置の高さ
 	Vector2D velocity;
 	float bambooHeight;  //高さ
 	Vector2D startLoc;
@@ -15,7 +16,6 @@ private:
 	int w_type;	//もとから生えてるのか地面から生えてくるのか
 	int knot;   //竹の節の数
 	bool camera_impact_once;	//カメラ振動
-	bool player_hit;		//プレイヤーに当たったか
 	int start_se;		//攻撃開始SE
 public:
 	BossAttackWood();

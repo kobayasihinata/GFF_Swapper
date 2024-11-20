@@ -545,20 +545,20 @@ void Boss::BossAtack(ObjectManager *_manager)
 			if (++t > 20) {
 				can_swap = true;
 			}
-			if (cnt % 30 == 0 && wood_count <= (attack_count/4)) {
+			if (cnt % 30 == 0 && attack_num <= (attack_count/4)) {
 				color = GREEN;
 				for (int i = 0; i < 3; i++)
 				{
 					Vector2D e = { 1000.0f,40.f };
-					Vector2D l = { camera->GetCameraLocation().x + WOOD_SPAWN[wood_count][i] ,930.f };
+					Vector2D l = { camera->GetCameraLocation().x + WOOD_SPAWN[attack_num][i] ,930.f };
 					_manager->CreateObject(new BossAttackWood, l, e, GREEN);
 				}
-				wood_count++;
+				attack_num++;
 
 				f = false;
 			}
-			if (cnt > BOSS_ATTACK_CD - (attack_count * 10)) {
-				wood_count = 0;
+			if (cnt > BOSS_ATTACK_CD - (attack_num * 10)) {
+				attack_num = 0;
 				cnt = 0;
 				f = false;
 				boss_state = BossState::MOVE;
@@ -574,17 +574,17 @@ void Boss::BossAtack(ObjectManager *_manager)
 			if (++t > 120) {
 				can_swap = true;
 			}
-			if (cnt % 30 == 0 && cnt<310) {
+			if (cnt % 30 == 0 && attack_num <= (attack_count / 4)) {
 				color = BLUE;
 				Vector2D e = { 40.f,40.f };
 				Vector2D l;
 				if (side) {
 					l.x = 300.f;
-					l.y = attack_num * 150.f + 150.f;
+					l.y = (attack_num%3) * 150.f + 150.f;
 				}
 				else {
 					l.x = 1200.f;
-					l.y = attack_num * 150.f + 150.f;
+					l.y = (attack_num%3) * 150.f + 150.f;
 				}
 				_manager->CreateObject(new BossAttackWater, l, e, BLUE);
 				attack_num++;

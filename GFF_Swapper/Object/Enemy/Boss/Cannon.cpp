@@ -65,13 +65,14 @@ void Cannon::Update(ObjectManager* _manager)
 		//プレイヤーが大砲に近いので、大砲を止める
 		cannon_stop = true;
 	}
-	//大砲を60フレーム毎に撃つ
-	if (!cannon_stop && frame % 60 == 0)
+
+	//大砲を弾の種類別のクールタイム毎に発射する
+	if (!cannon_stop && frame % cannon_cooldown[cannon_type] == 0)
 	{
 		switch (cannon_type)
 		{
 		case 0:
-			_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), { 20,20 }, RED);
+			_manager->CreateObject(new BossAttackFire(this->GetCenterLocation(),cannon_angle), this->GetCenterLocation(), { 20,20 }, RED);
 			break;
 		case 1:
 			_manager->CreateObject(new BossAttackWood, { this->GetCenterLocation().x - 20,this->GetCenterLocation().y + 20 }, { 1000.0f,40.f }, GREEN);
@@ -88,6 +89,10 @@ void Cannon::Update(ObjectManager* _manager)
 void Cannon::Draw()const
 {
 	DrawBox(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xaaaaaa, TRUE);
+	//発射周期の視覚化
+	DrawCircleAA(local_location.x + (erea.x/2),
+		local_location.y + (erea.y/2),
+		(cannon_cooldown[cannon_type] - (frame % cannon_cooldown[cannon_type]))*1.5f, 100, ColorList[cannon_type],false);
 #ifdef _DEBUG
 	//大砲停止範囲の描画
 	DrawBox(local_location.x - CANNON_STOP, 

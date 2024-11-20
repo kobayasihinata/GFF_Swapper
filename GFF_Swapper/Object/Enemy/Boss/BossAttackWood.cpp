@@ -22,8 +22,9 @@ BossAttackWood::~BossAttackWood()
 
 void BossAttackWood::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
-	location.x = _location.x;
-	location.y = _location.y;
+	location = _location;
+	start_local_location_y = location.y - camera->GetCameraLocation().y;
+
 	color = _color_data;
 
 	object_pos = _object_pos;
@@ -85,18 +86,17 @@ void BossAttackWood::Draw() const
 	for (int i = 0; i < (erea.y / BOX_HEIGHT); i++)
 	{
 
-		if (player_hit)
-		{
-			//ResourceManager::StageAnimDraw({ local_location.x,local_location.y + (i * BOX_HEIGHT), }, FIRE);
-			DrawBoxAA(local_location.x, local_location.y + (i * BOX_HEIGHT), local_location.x + erea.x, local_location.y + erea.y + (i * BOX_HEIGHT), 0xff0000, true);
-		}
-		else
+		if (start_local_location_y > local_location.y + (i * BOX_HEIGHT))
 		{
 			//ResourceManager::StageAnimDraw({ local_location.x, local_location.y + (i * BOX_HEIGHT) }, WOOD);
-			DrawBoxAA(local_location.x + 3, local_location.y + (i * BOX_HEIGHT), local_location.x + erea.x - 3, local_location.y + erea.y + (i * BOX_HEIGHT), 0x00cc00, true);
+			DrawBoxAA(local_location.x + 3, 
+					  local_location.y + (i * BOX_HEIGHT), 
+					  local_location.x + erea.x - 3, 
+					  local_location.y + (i * BOX_HEIGHT)+BOX_HEIGHT, 0x00cc00, true);
+
 			DrawBoxAA(local_location.x + 2, local_location.y + (i * BOX_HEIGHT), local_location.x + erea.x - 2, local_location.y + 2 + (i * BOX_HEIGHT), 0x00ff00, true);
-			DrawBoxAA(local_location.x + 2, local_location.y + erea.y + (i * BOX_HEIGHT), local_location.x + erea.x - 2, local_location.y + erea.y - 2 + (i * BOX_HEIGHT), 0x00ff00, true);
-			DrawBoxAA(local_location.x + 10, local_location.y + 2 + (i * BOX_HEIGHT), local_location.x + 13, local_location.y + erea.y - 2 + (i * BOX_HEIGHT), 0x00ee00, true);
+			DrawBoxAA(local_location.x + 2, local_location.y+ (i * BOX_HEIGHT), local_location.x + erea.x - 2, local_location.y  - 2 + (i * BOX_HEIGHT) + BOX_HEIGHT, 0x00ff00, true);
+			DrawBoxAA(local_location.x + 10, local_location.y + 2 + (i * BOX_HEIGHT), local_location.x + 13, local_location.y - 2 + (i * BOX_HEIGHT) + BOX_HEIGHT, 0x00ee00, true);
 		}
 	}
 
@@ -105,6 +105,12 @@ void BossAttackWood::Draw() const
 
 void BossAttackWood::Hit(Object* _object)
 {
+	//水ダメージゾーンに当たったら色だけ変える
+	if (_object->GetObjectType() == WATER && !_object->GetCanSwap())
+	{
+		_object->SetColorData(color);
+		return;
+	}
 	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WATER) && _object->GetColorData() != WHITE) {
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);

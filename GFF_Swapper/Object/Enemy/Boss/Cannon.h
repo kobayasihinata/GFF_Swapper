@@ -7,10 +7,14 @@
 #include "../../../Scene/Camera.h"
 
 #define CANNON_STOP 100  //プレイヤーがこの数値より近いところにいるなら、弾を止める
-#define EAST  0  //東
-#define WEST  1  //西
-#define SOUTH 2  //南
-#define NORTH 3  //北
+
+//弾の発射間隔(フレーム)赤緑青の順番
+static int cannon_cooldown[3]
+{
+	120,
+	300,
+	90
+};
 
 class Cannon :
     public Object
