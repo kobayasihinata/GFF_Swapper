@@ -210,8 +210,8 @@ void Player::Update(ObjectManager* _manager)
 					swap_once = true;
 					emoteFlg = true;
 				}
-
 			}
+
 			//硬直が終わったら色を交換
 			if (--swapTimer < 0)
 			{
@@ -276,12 +276,17 @@ void Player::Update(ObjectManager* _manager)
 			if (damageEffectFlg == false) {
 				damageEffectFlg = true;
 				hp--;
+				//ノックバック
+				vector.x -= 10;
+				vector.y -= 10;
 			}
 		}
 		if (damageEffectFlg) {
 			if (damageEffectTime == 90) {
 
-				camera->SetImpact(10);
+				camera->SetImpact(30);
+				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
+				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
 				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
 			}
 			damageEffectTime--;
@@ -348,7 +353,7 @@ void Player::Draw()const
 	}
 	else {
 		if (damageEffectFlg) {
-			if (damageEffectTime % 10 == 0) {
+			if (damageEffectTime % 3 == 0) {
 				DrawPlayer();
 			}
 		}
@@ -576,6 +581,7 @@ void Player::Hit(Object* _object)
 	if (!damageEffectFlg &&
 		CheckCollision(_object->GetLocation(), _object->GetErea()) &&
 		(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
+
 		//色ごとの判定
 		switch (color)
 		{
