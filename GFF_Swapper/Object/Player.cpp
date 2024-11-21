@@ -276,9 +276,6 @@ void Player::Update(ObjectManager* _manager)
 			if (damageEffectFlg == false) {
 				damageEffectFlg = true;
 				hp--;
-				//ノックバック
-				vector.x -= 10;
-				vector.y -= 10;
 			}
 		}
 		if (damageEffectFlg) {
@@ -579,36 +576,22 @@ void Player::Hit(Object* _object)
 
 	//ダメージ
 	if (!damageEffectFlg &&
-		CheckCollision(_object->GetLocation(), _object->GetErea()) &&
-		(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
+		(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE) &&
+		CheckCompatibility(this, _object) == -1) {
 
-		//色ごとの判定
-		switch (color)
+		damageFlg = true;
+		//ノックバック
+		//プレイヤーが右にいるなら右にノックバック
+		if (this->location.x > _object->GetLocation().x)
 		{
-		case RED:
-			if (_object->GetObjectType() == WATER || _object->GetColorData() == BLUE) {
-				damageFlg = true;
-			}
-			
-			break;
-
-		case BLUE:
-			if (_object->GetObjectType() == WOOD || _object->GetColorData() == GREEN) {
-				damageFlg = true;
-			}
-			
-			break;
-
-		case GREEN:
-			if (_object->GetObjectType() == FIRE || _object->GetColorData() == RED) {
-				damageFlg = true;
-			}
-			
-			break;
-
-		default:
-			break;
+			vector.x += 10;
 		}
+		//プレイヤーが左にいるなら左にノックバック
+		else
+		{
+			vector.x -= 10;
+		}
+		vector.y -= 10;
 	}
 
 	//ダメージゾーンを上書きする

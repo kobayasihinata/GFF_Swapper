@@ -79,23 +79,23 @@ public:
 	int CheckCompatibility(Object* _object1, Object* _object2)
 	{
 		//不利属性か
-		if ((_object1->GetColorData() == FIRE && _object2->GetColorData() == WATER) ||
-			(_object1->GetColorData() == WATER && _object2->GetColorData() == WOOD) ||
-			(_object1->GetColorData() == WOOD && _object2->GetColorData() == FIRE))
+		if ((_object1->GetColorData() == RED && _object2->GetColorData() == BLUE) ||
+			(_object1->GetColorData() == BLUE && _object2->GetColorData() == GREEN) ||
+			(_object1->GetColorData() == GREEN && _object2->GetColorData() == RED))
 		{
 			return -1;
 		}
 		//同じ属性か
-		if ((_object1->GetColorData() == FIRE && _object2->GetColorData() == FIRE) ||
-			(_object1->GetColorData() == WATER && _object2->GetColorData() == WATER) ||
-			(_object1->GetColorData() == WOOD && _object2->GetColorData() == WOOD))
+		if ((_object1->GetColorData() == RED && _object2->GetColorData() == RED) ||
+			(_object1->GetColorData() == BLUE && _object2->GetColorData() == BLUE) ||
+			(_object1->GetColorData() == GREEN && _object2->GetColorData() == GREEN))
 		{
 			return 0;
 		}
 		//有利属性か
-		if ((_object1->GetColorData() == FIRE && _object2->GetColorData() == WOOD) ||
-			(_object1->GetColorData() == WATER && _object2->GetColorData() == FIRE) ||
-			(_object1->GetColorData() == WOOD && _object2->GetColorData() == WATER))
+		if ((_object1->GetColorData() == RED && _object2->GetColorData() == GREEN) ||
+			(_object1->GetColorData() == BLUE && _object2->GetColorData() == RED) ||
+			(_object1->GetColorData() == GREEN && _object2->GetColorData() == BLUE))
 		{
 			return 1;
 		}

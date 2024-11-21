@@ -6,7 +6,7 @@ class BossAttackWood : public Object
 {
 private:
 	class Camera* camera;                                      //カメラ座標
-	float start_local_location_y;	//スポーン位置の高さ
+	float start_location_y;	//スポーン位置の高さ
 	Vector2D velocity;
 	float bambooHeight;  //高さ
 	Vector2D startLoc;

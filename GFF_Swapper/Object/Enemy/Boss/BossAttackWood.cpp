@@ -23,7 +23,7 @@ BossAttackWood::~BossAttackWood()
 void BossAttackWood::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
 	location = _location;
-	start_local_location_y = location.y - camera->GetCameraLocation().y;
+	start_location_y = location.y;
 
 	color = _color_data;
 
@@ -86,7 +86,7 @@ void BossAttackWood::Draw() const
 	for (int i = 0; i < (erea.y / BOX_HEIGHT); i++)
 	{
 
-		if (start_local_location_y > local_location.y + (i * BOX_HEIGHT))
+		if (start_location_y > location.y + (i * BOX_HEIGHT)+ BOX_HEIGHT)
 		{
 			//ResourceManager::StageAnimDraw({ local_location.x, local_location.y + (i * BOX_HEIGHT) }, WOOD);
 			DrawBoxAA(local_location.x + 3, 
