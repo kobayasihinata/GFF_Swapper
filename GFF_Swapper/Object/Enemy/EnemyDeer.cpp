@@ -458,6 +458,27 @@ void EnemyDeer::Hit(Object* _object)
 	{
 		_object->SetColorData(color);
 	}
+
+	//プレイヤーと当たった時の処理
+	if (_object->GetObjectType() == PLAYER)
+	{
+		//プレイヤーとの属性相性で処理を変える
+		switch (CheckCompatibility(this, _object))
+		{
+			//不利の場合
+		case -1:
+			break;
+			//あいこの場合
+		case 0:
+			break;
+			//有利の場合
+		case 1:
+			break;
+			//それ以外
+		default:
+			break;
+		}
+	}
 }
 
 bool EnemyDeer::CheckCollision(Vector2D l, Vector2D e)

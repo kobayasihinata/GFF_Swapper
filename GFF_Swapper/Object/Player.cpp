@@ -605,7 +605,7 @@ void Player::Hit(Object* _object)
 		}
 	}
 
-	//ジャンプの奴
+	//同じ属性のダメージゾーン内で繰り返しジャンプ出来る
 	if (((_object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE && this->color == BLUE && !stateFlg) ||
 		(_object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE && this->color == RED && !stateFlg) ||
 		(_object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE && this->color == GREEN && !stateFlg)) && !_object->GetIsBossAttack()){
