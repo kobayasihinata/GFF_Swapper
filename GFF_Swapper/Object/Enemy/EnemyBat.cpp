@@ -8,7 +8,7 @@
 
 #define ENEMY_SPEED 2.f
 
-EnemyBat::EnemyBat() :up(0), bat_state(BatState::LEFT), wing_angle(0.0f), vector{ 0.0f },death_timer(0), se_once(false)
+EnemyBat::EnemyBat() :up(0), bat_state(BatState::LEFT), wing_angle(0.0f), vector{ 0.0f }, faint_timer(0), death_timer(0), se_once(false)
 {
 	type = ENEMY;
 	can_swap = TRUE;
@@ -32,6 +32,8 @@ void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	color = _color_data;
 
 	object_pos = _object_pos;
+
+	vector = ENEMY_SPEED;
 
 	wing_se = ResourceManager::SetSound("Resource/Sounds/Enemy/flapping_wings.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
@@ -62,43 +64,70 @@ void EnemyBat::Update(ObjectManager* _manager)
 		se_once = false;
 	}
 
-	Vector2D player_pos = _manager->GetPlayerLocation();
-	Vector2D player_erea = _manager->GetPlayerErea();
-	// プレイヤーとの距離を計算
-	vector = { ENEMY_SPEED };
-	// プレイヤーの中心座標を計算
-	float player_center_x = player_pos.x + player_erea.x / 2;
-	float player_center_y = player_pos.y + player_erea.y / 2;
+	//スタン状態でないなら各種処理を実行
+	if (bat_state != BatState::FAINT)
+	{
+		Vector2D player_pos = _manager->GetPlayerLocation();
+		Vector2D player_erea = _manager->GetPlayerErea();
+		// プレイヤーとの距離を計算
 
-	// 自分の中心座標を計算
-	float enemy_center_x = location.x + erea.x / 2;
-	float enemy_center_y = location.y + erea.y / 2;
-	
-	// プレイヤーの中心座標との距離を計算
-	float dx = player_center_x - enemy_center_x + 10;
-	float dy = player_center_y - enemy_center_y + 10;
-	float length = sqrtf(dx * dx + dy * dy);
+		// プレイヤーの中心座標を計算
+		float player_center_x = player_pos.x + player_erea.x / 2;
+		float player_center_y = player_pos.y + player_erea.y / 2;
 
-	////プレイヤーが色変えるときコウモリもスローに
-	//if (_manager->GetSearchFlg()) {
-	//	location.x += vector.x * 0.1f;
-	//	location.y += vector.y * 0.1f;
-	//}
-	//プレイヤーの一定範囲内に入ったら
-	if (length < 450 && bat_state != BatState::DEATH) {
-		// 移動方向を決定
-		dx /= length;
-		dy /= length;
+		// 自分の中心座標を計算
+		float enemy_center_x = location.x + erea.x / 2;
+		float enemy_center_y = location.y + erea.y / 2;
 
-		// 移動する
-		location.x += dx * (vector.x + 1.5f);
-		location.y += dy * (vector.y + 1.5f);
+		// プレイヤーの中心座標との距離を計算
+		float dx = player_center_x - enemy_center_x + 10;
+		float dy = player_center_y - enemy_center_y + 10;
+		float length = sqrtf(dx * dx + dy * dy);
+
+		////プレイヤーが色変えるときコウモリもスローに
+		//if (_manager->GetSearchFlg()) {
+		//	location.x += vector.x * 0.1f;
+		//	location.y += vector.y * 0.1f;
+		//}
+		//プレイヤーの一定範囲内に入ったら
+		if (length < 450 && bat_state != BatState::DEATH) {
+			// 移動方向を決定
+			dx /= length;
+			dy /= length;
+
+			// 移動する
+			location.x += dx * (vector.x);
+			location.y += dy * (vector.y);
+
+			//加速度を敵の基本速度に近くなるように加算、減算していく
+			if (vector.x > ENEMY_SPEED)vector.x--;
+			if (vector.x < ENEMY_SPEED)vector.x++;
+			if (vector.y > ENEMY_SPEED)vector.y--;
+			if (vector.y < ENEMY_SPEED)vector.y++;
+		}
+		else
+		{
+			//移動
+			Move(_manager);
+		}
 	}
+	//スタン状態なら時間測定
 	else
 	{
-		//移動
-		Move(_manager);
+		if (++faint_timer > FAINT_TIME)
+		{
+			faint_timer = 0;
+			bat_state = BatState::LEFT;
+		}
+
+		location += vector;
+		//加速度を敵の基本速度に近くなるように加算、減算していく
+		if (vector.x > 0)vector.x--;
+		if (vector.x < 0)vector.x++;
+		if (vector.y > 0)vector.y--;
+		if (vector.y < 0)vector.y++;
 	}
+	
 
 	for (int i = 0; i < 4; i++) {
 		stageHitFlg[0][i] = false;
@@ -131,39 +160,45 @@ void EnemyBat::Draw() const
 	};
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (death_timer * 4));
-	//配列の各頂点を利用して三角形を描画する
-	for (int i = 0; i + 2 < vertices.size(); i += 3) {
-		//耳
-		if (i < 5) {
-			DrawTriangleAA(vertices[i].x, vertices[i].y,vertices[i + 1].x, vertices[i + 1].y,vertices[i + 2].x, vertices[i + 2].y, draw_color, TRUE);
-			DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, 0x000000, FALSE);
-		}
-		//右羽
-		else if (i >= 6 && i  < 14) {
-			// 羽の動き
-			DrawLineAA(vertices[7].x, vertices[7].y + wing_angle, vertices[8].x + wing_angle, vertices[8].y, 0x000000);
-			DrawLineAA(vertices[6].x, vertices[6].y - 2, vertices[7].x, vertices[7].y - 2 + wing_angle, 0x000000);
-			//DrawTriangleAA(vertices[i].x - 1, vertices[i].y - 1, vertices[i + 1].x - 1, vertices[i + 1].y - 1 + wing_angle, vertices[i + 2].x + wing_angle - 1, vertices[i + 2].y - 1, 0x000000, FALSE);
-			DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x + wing_angle, vertices[i + 2].y , draw_color, TRUE);
-		
-		}
-		//左羽
-		else if (i >= 15 && i < 23) {
-			// 羽の動き
-			DrawLineAA(vertices[16].x, vertices[16].y - 2 +wing_angle, vertices[17].x - wing_angle, vertices[17].y, 0x000000);
-			DrawLineAA(vertices[15].x, vertices[15].y - 2, vertices[16].x ,vertices[16].y - 2 + wing_angle, 0x000000);
-			//DrawTriangleAA(vertices[i].x + 1, vertices[i].y + 1, vertices[i + 1].x + 1, vertices[i + 1].y - 1 + wing_angle, vertices[i + 2].x - 3 - wing_angle, vertices[i + 2].y - 3, 0x000000, FALSE);
-			DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x - wing_angle, vertices[i + 2].y, draw_color, TRUE);
-			
-		}
-		//ひし形の描画
-		else if (i + 3 < vertices.size())
-		{
-			DrawQuadrangleAA(vertices[i].x, vertices[i].y,vertices[i + 1].x, vertices[i + 1].y,vertices[i + 2].x, vertices[i + 2].y,vertices[i + 3].x, vertices[i + 3].y, draw_color, TRUE);
-			DrawQuadrangleAA(vertices[i].x, vertices[i].y,vertices[i + 1].x, vertices[i + 1].y,vertices[i + 2].x, vertices[i + 2].y,vertices[i + 3].x, vertices[i + 3].y, 0x000000, FALSE);
-			i++;
+
+	//スタン状態でないなら描画、スタン状態なら３フレーム毎に描画（点滅）
+	if (bat_state != BatState::FAINT || (bat_state == BatState::FAINT && frame % 3 == 0))
+	{
+		//配列の各頂点を利用して三角形を描画する
+		for (int i = 0; i + 2 < vertices.size(); i += 3) {
+			//耳
+			if (i < 5) {
+				DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, draw_color, TRUE);
+				DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, 0x000000, FALSE);
+			}
+			//右羽
+			else if (i >= 6 && i < 14) {
+				// 羽の動き
+				DrawLineAA(vertices[7].x, vertices[7].y + wing_angle, vertices[8].x + wing_angle, vertices[8].y, 0x000000);
+				DrawLineAA(vertices[6].x, vertices[6].y - 2, vertices[7].x, vertices[7].y - 2 + wing_angle, 0x000000);
+				//DrawTriangleAA(vertices[i].x - 1, vertices[i].y - 1, vertices[i + 1].x - 1, vertices[i + 1].y - 1 + wing_angle, vertices[i + 2].x + wing_angle - 1, vertices[i + 2].y - 1, 0x000000, FALSE);
+				DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x + wing_angle, vertices[i + 2].y, draw_color, TRUE);
+
+			}
+			//左羽
+			else if (i >= 15 && i < 23) {
+				// 羽の動き
+				DrawLineAA(vertices[16].x, vertices[16].y - 2 + wing_angle, vertices[17].x - wing_angle, vertices[17].y, 0x000000);
+				DrawLineAA(vertices[15].x, vertices[15].y - 2, vertices[16].x, vertices[16].y - 2 + wing_angle, 0x000000);
+				//DrawTriangleAA(vertices[i].x + 1, vertices[i].y + 1, vertices[i + 1].x + 1, vertices[i + 1].y - 1 + wing_angle, vertices[i + 2].x - 3 - wing_angle, vertices[i + 2].y - 3, 0x000000, FALSE);
+				DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x - wing_angle, vertices[i + 2].y, draw_color, TRUE);
+
+			}
+			//ひし形の描画
+			else if (i + 3 < vertices.size())
+			{
+				DrawQuadrangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, vertices[i + 3].x, vertices[i + 3].y, draw_color, TRUE);
+				DrawQuadrangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, vertices[i + 3].x, vertices[i + 3].y, 0x000000, FALSE);
+				i++;
+			}
 		}
 	}
+	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	/*
 	if (hit_flg[0]) {
@@ -178,6 +213,8 @@ void EnemyBat::Finalize()
 
 void EnemyBat::Move(ObjectManager* _manager)
 {
+	//加速度を固定
+	vector.x = ENEMY_SPEED;
 	//左移動
 	if (bat_state == BatState::LEFT) {
 		location.x -= vector.x;
@@ -309,8 +346,10 @@ void EnemyBat::Hit(Object* _object)
 			if (t != 0) {
 				vector.x = 0.f;
 				move[left] = t;
-
-				bat_state = BatState::RIGHT;
+				if (bat_state != BatState::FAINT)
+				{
+					bat_state = BatState::RIGHT;
+				}
 			}
 		}
 
@@ -320,7 +359,10 @@ void EnemyBat::Hit(Object* _object)
 			if (t != 0) {
 				vector.x = 0.f;
 				move[right] = t;
-				bat_state = BatState::LEFT;
+				if (bat_state != BatState::FAINT)
+				{
+					bat_state = BatState::LEFT;
+				}
 			}
 		}
 
@@ -405,13 +447,104 @@ void EnemyBat::Hit(Object* _object)
 		{
 			//不利の場合
 		case -1:
+			//スタン状態でないなら実行
+			if (bat_state != BatState::FAINT)
+			{
+				//プレイヤーが左にいるなら右にノックバック
+				if (this->location.x > _object->GetLocation().x)
+				{
+					vector.x = 20;
+				}
+				//プレイヤーが右にいるなら左にノックバック
+				else
+				{
+					vector.x = -20;
+				}
+				//プレイヤーが上にいるなら下にノックバック
+				if (this->location.y > _object->GetLocation().y)
+				{
+					vector.y = 20;
+				}
+				//プレイヤーが下にいるなら上にノックバック
+				else
+				{
+					vector.y = -20;
+				}
+				//自身をスタン状態にする
+				bat_state = BatState::FAINT;
+			}
 			break;
 			//あいこの場合
 		case 0:
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				vector.x = 10;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				vector.x = -10;
+			}
+			//プレイヤーが上にいるなら下にノックバック
+			if (this->location.y > _object->GetLocation().y)
+			{
+				vector.y = 10;
+			}
+			//プレイヤーが下にいるなら上にノックバック
+			else
+			{
+				vector.y = -10;
+			}
 			break;
 			//有利の場合
 		case 1:
 			break;
+			//それ以外
+		default:
+			break;
+		}
+	}
+
+	//エネミーと当たった時の処理
+	if (_object->GetObjectType() == ENEMY)
+	{
+		//エネミーとの属性相性で処理を変える
+		switch (CheckCompatibility(this, _object))
+		{
+			//不利の場合
+		case -1:
+			//何もしない
+			break;
+
+			//あいこの場合
+		case 0:
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				vector.x = 20;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				vector.x = -20;
+			}
+			//プレイヤーが上にいるなら下にノックバック
+			if (this->location.y > _object->GetLocation().y)
+			{
+				vector.y = 20;
+			}
+			//プレイヤーが下にいるなら上にノックバック
+			else
+			{
+				vector.y = -20;
+			}
+			break;
+			//有利の場合
+		case 1:
+			//何もしない
+			break;
+
 			//それ以外
 		default:
 			break;

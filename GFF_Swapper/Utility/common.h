@@ -40,6 +40,10 @@ static int ColorList[4]
 #define SOUTH 2  //南
 #define NORTH 3  //北
 
+//敵の設定
+#define FAINT_TIME 180      //気絶している時間
+
+
 //ボスの詳細設定
 
 #define BOSS_SIZE 250

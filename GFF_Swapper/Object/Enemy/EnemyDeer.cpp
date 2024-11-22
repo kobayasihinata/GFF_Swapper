@@ -6,12 +6,14 @@
 
 EnemyDeer::EnemyDeer()
 {
+	velocity = 0;
 	type = ENEMY;
 	can_swap = TRUE;
 	can_hit = TRUE;
 
 	//deer_state = DeerState::LEFT;
 	deer_state = DeerState::GRAVITY;
+	old_deer_state = DeerState::GRAVITY;
 
 	//location == 当たり判定用 local_location == 画像を動かすだけの物
 	//locationの中に値を入れると 上記の変数のどちらでも値を使用できる
@@ -42,6 +44,7 @@ EnemyDeer::EnemyDeer()
 	deer_draw = d_draw::vr_one;
 
 	frame = 0;
+	faint_timer = 0;
 
 	anim_fps = 0;
 
@@ -124,8 +127,12 @@ void EnemyDeer::Update(ObjectManager* _manager)
 
 void EnemyDeer::Draw()const
 {
-	if (deer_state == DeerState::LEFT || deer_state == DeerState::GRAVITY || deer_state == DeerState::IDLE || (deer_state == DeerState::DEATH))
+	//スタン中以外、スタン中なら一定フレーム毎に描画（点滅）
+	if (deer_state != DeerState::FAINT || (deer_state == DeerState::FAINT && frame % 3 == 0))
 	{
+		//-x方向に移動中なら
+		if (velocity.x < 0)
+		{
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
 
 		//頭
@@ -177,9 +184,10 @@ void EnemyDeer::Draw()const
 		//ResourceManager::DrawRotaBox(local_location.x + 75.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 75.0f, local_location.y + 88.0f, -leg_angle[3], draw_color, true);
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-	}
-	else if (deer_state == DeerState::RIGHT || (deer_state == DeerState::DEATH))
-	{
+		}
+		//x方向に移動中なら
+		else
+		{
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
 
 		//頭
@@ -231,19 +239,18 @@ void EnemyDeer::Draw()const
 		//ResourceManager::DrawRotaBox(local_location.x + 75.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 75.0f, local_location.y + 88.0f, -leg_angle[3], draw_color, true);
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		}
 	}
 }
 
 void EnemyDeer::EnemyDeerMove()
 {
-	//重力(かけ続けないといけない)
-	location.y += 10;
+	//重力
+	velocity.y += 10;
 
 	switch (deer_state)
 	{
 	case DeerState::GRAVITY:
-
-		location.y += 10;
 
 		break;
 
@@ -256,20 +263,34 @@ void EnemyDeer::EnemyDeerMove()
 
 	case DeerState::LEFT:
 
-		location.x -= 1;
+		velocity.x -= 1;
 		DeerAnim();
 		break;
 
 	case DeerState::RIGHT:
 
-		location.x += 1;
+		velocity.x += 1;
 		DeerAnim();
 		break;
-
+	case DeerState::FAINT:
+		//一定時間経過でスタン解除
+		if (++faint_timer > FAINT_TIME)
+		{
+			faint_timer = 0;
+			ChangeDeerState(old_deer_state);
+		}
+		break;
 	case DeerState::DEATH:
-
+		break;
+	default:
 		break;
 	}
+
+	location += velocity;
+
+	//加速度減算
+	velocity.x -= (velocity.x / 2);
+	velocity.y -= (velocity.y / 2);
 }
 
 void EnemyDeer::Finalize()
@@ -328,7 +349,7 @@ void EnemyDeer::Hit(Object* _object)
 
 			if (!deer_spawn)
 			{
-				deer_state = DeerState::LEFT;
+				ChangeDeerState(DeerState::LEFT);
 				deer_spawn = true;
 			}
 		}
@@ -373,7 +394,7 @@ void EnemyDeer::Hit(Object* _object)
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
 			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
-			deer_state = DeerState::RIGHT;
+			if (deer_state != DeerState::FAINT)ChangeDeerState(DeerState::RIGHT);
 		}
 		else {
 			stageHitFlg[0][left] = false;
@@ -385,7 +406,7 @@ void EnemyDeer::Hit(Object* _object)
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right]) {
 			stageHitFlg[0][right] = true;
 			stageHitFlg[1][right] = true;
-			deer_state = DeerState::LEFT;
+			if (deer_state != DeerState::FAINT)ChangeDeerState(DeerState::LEFT);
 		}
 		else {
 			stageHitFlg[0][right] = false;
@@ -467,13 +488,86 @@ void EnemyDeer::Hit(Object* _object)
 		{
 			//不利の場合
 		case -1:
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x += 10;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				velocity.x -= 10;
+			}
+			velocity.y -= 5;
+			if (deer_state != DeerState::FAINT)
+			{
+				ChangeDeerState(DeerState::FAINT);
+			}
 			break;
 			//あいこの場合
 		case 0:
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x += 10;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				velocity.x -= 10;
+			}
 			break;
 			//有利の場合
 		case 1:
+			//何もしない
 			break;
+			//それ以外
+		default:
+			break;
+		}
+	}
+
+	//エネミーと当たった時の処理
+	if (_object->GetObjectType() == ENEMY)
+	{
+		//エネミーとの属性相性で処理を変える
+		switch (CheckCompatibility(this, _object))
+		{
+			//不利の場合
+		case -1:
+			//何もしない
+			break;
+
+			//あいこの場合
+		case 0:
+			//エネミーが左にいるなら右に方向転換
+			if (this->location.x > _object->GetLocation().x)
+			{
+				//スタン状態でないなら方向転換
+				if(deer_state != DeerState::FAINT)deer_state = DeerState::RIGHT;
+			}
+			//エネミーが右にいるなら左に方向転換
+			else
+			{
+				//スタン状態でないなら方向転換
+				if (deer_state != DeerState::FAINT)deer_state = DeerState::LEFT;
+			}
+			//プレイヤーが上にいるなら下にノックバック
+			if (this->location.y > _object->GetLocation().y)
+			{
+				velocity.y = 20;
+			}
+			//プレイヤーが下にいるなら上にノックバック
+			else
+			{
+				velocity.y = -20;
+			}
+			break;
+			//有利の場合
+		case 1:
+			//何もしない
+			break;
+
 			//それ以外
 		default:
 			break;
@@ -537,4 +631,10 @@ void EnemyDeer::DeerAnim()
 			speed = -speed;
 		}
 	}
+}
+
+void EnemyDeer::ChangeDeerState(DeerState _state)
+{
+	old_deer_state = deer_state;
+	deer_state = _state;
 }

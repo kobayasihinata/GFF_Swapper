@@ -53,6 +53,9 @@ private:
 	static int image_data[IMAGE_NUM];							//画像格納用
 	static int sound_data[SOUND_NUM];							//音源格納用
 	static int sound_freq;										//音声の再生速度
+	static int se_volume;									    //SEの音量
+	static int bgm_volume;									    //BGMの音量
+	static int master_volume;								    //全体の音量
 
 	//ステージアニメーション用
 	static int anim;											//アニメーション測定

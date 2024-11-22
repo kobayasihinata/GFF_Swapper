@@ -82,8 +82,8 @@ AbstractScene* GameMain::Update()
 	{
 		fadein_flg = false;
 	}
-	//演出中は更新を止める
-	if (frame == 1 || fadein_flg == false)
+	//演出中は更新を止める(プレイヤーの位置を移動させるために最初の2フレームだけ更新)
+	if (frame == 1 || frame == 2 || fadein_flg == false)
 	{
 		switch (gm_state)
 		{
@@ -108,10 +108,6 @@ AbstractScene* GameMain::Update()
 		default:
 			printfDx("存在しないゲームモード");
 			break;
-		}
-		if (KeyInput::OnKey(KEY_INPUT_C))
-		{
-			gm_state = GameMainState::GameClear;
 		}
 
 #ifdef _DEBUG

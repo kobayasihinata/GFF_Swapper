@@ -239,6 +239,10 @@ void Player::Update(ObjectManager* _manager)
 		}
 		PlayerAnim();
 
+		//加速度が早すぎる場合移動しない
+		if (fabsf(vector.x) > 50)vector.x = 0;
+		if (fabsf(vector.y) > 50)vector.y = 0;
+
 		if (searchFlg) {
 			location.x += vector.x * 0.02f;
 			location.y += vector.y * 0.02f;
@@ -574,24 +578,44 @@ void Player::Hit(Object* _object)
 
 	}
 
-	//ダメージ
-	if (!damageEffectFlg &&
-		(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE) &&
-		CheckCompatibility(this, _object) == -1) {
+	//敵と当たった時の処理
+	if (_object->GetObjectType() == ENEMY)
+	{
+		//プレイヤーとの属性相性で処理を変える
+		switch (CheckCompatibility(this, _object))
+		{
+			//不利の場合
+		case -1:
+			//ダメージ
+			if (!damageEffectFlg &&
+				(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
 
-		damageFlg = true;
-		//ノックバック
-		//プレイヤーが右にいるなら右にノックバック
-		if (this->location.x > _object->GetLocation().x)
-		{
-			vector.x += 10;
+				damageFlg = true;
+				//ノックバック
+				//プレイヤーが右にいるなら右にノックバック
+				if (this->location.x > _object->GetLocation().x)
+				{
+					vector.x += 10;
+				}
+				//プレイヤーが左にいるなら左にノックバック
+				else
+				{
+					vector.x -= 10;
+				}
+				vector.y -= 10;
+			}
+			break;
+			//あいこの場合
+		case 0:
+			vector.x = (vector.x*1.2f) * -1;
+			break;
+			//有利の場合
+		case 1:
+			break;
+			//それ以外
+		default:
+			break;
 		}
-		//プレイヤーが左にいるなら左にノックバック
-		else
-		{
-			vector.x -= 10;
-		}
-		vector.y -= 10;
 	}
 
 	//ダメージゾーンを上書きする

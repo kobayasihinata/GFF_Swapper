@@ -9,6 +9,9 @@ char* ResourceManager::sound_filepath[SOUND_NUM];
 int ResourceManager::image_data[IMAGE_NUM];
 int ResourceManager::sound_data[SOUND_NUM];
 int ResourceManager::sound_freq = 50000;
+int ResourceManager::se_volume;
+int ResourceManager::bgm_volume;
+int ResourceManager::master_volume;
 
 int ResourceManager::anim;			
 FireAnim ResourceManager::fire_anim[ANIM_BLOCK_NUM];

@@ -8,6 +8,7 @@ enum class BatState {
 	IDLE = 0,
 	LEFT,
 	RIGHT,
+	FAINT,
 	DEATH
 };
 
@@ -33,6 +34,7 @@ private:
 
 	//bool hit_flg[3];
 
+	float faint_timer;	//スタン時間測定
 	int death_timer;	//死亡演出
 
 	int wing_se;		//羽SE

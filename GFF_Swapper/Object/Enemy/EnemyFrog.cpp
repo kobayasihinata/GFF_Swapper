@@ -6,9 +6,10 @@
 EnemyFrog::EnemyFrog():
 	timer(0),
 	frog_state(FrogState::LEFT_JUMP), 
-	vector{0,0}, 
+	velocity{0,0},
 	death_timer(0), 
 	old_location{0,0},
+	faint_timer(0),
 	jump_cooldown_timer(0),
 	jump_timer(0),
 	face_angle(0.0f),
@@ -49,14 +50,14 @@ void EnemyFrog::Update(ObjectManager* _manager)
 {
 	__super::Update(_manager);
 
-	//if (vector.x != 0 || vector.y != 0)
+	//if (velocity.x != 0 || velocity.y != 0)
 	//{
 	//	_manager->SpawnEffect(location, erea, 1, 20, color);
 	//}
 	if (stageHitFlg[1][bottom] != true) { //重力
-		vector.y += 1.f;
-		if (vector.y > 16.f) {
-			vector.y = 16.f;
+		velocity.y += 1.f;
+		if (velocity.y > 16.f) {
+			velocity.y = 16.f;
 		}
 		effect_once = false;
 	}
@@ -67,7 +68,7 @@ void EnemyFrog::Update(ObjectManager* _manager)
 			_manager->SpawnEffect(location, erea, LandingEffect, 15, color);
 			effect_once = true;
 		}
-		vector.y = 0.f;
+		velocity.y = 0.f;
 	}
 	UpdataState(_manager);
 	//カエルの状態に応じて更新
@@ -77,39 +78,59 @@ void EnemyFrog::Update(ObjectManager* _manager)
 		jump_timer = 0;
 		if (++jump_cooldown_timer > JUMP_COOLDOWN)
 		{
-			vector.x = ((float)GetRand(5) + 3);
-			vector.y = -((float)GetRand(6) + 17);
+			velocity.x = ((float)GetRand(5) + 3);
+			velocity.y = -((float)GetRand(6) + 17);
 			//ジャンプ前の座標を保存
 			old_location = location;
 			ResourceManager::StartSound(jump_se);
 			jump_cooldown_timer = 0;
 		}
 		//空中で僅かに加速(ブロックに引っかかる対策)
-		if (vector.x == 0 && stageHitFlg[1][bottom] == false)
+		if (velocity.x == 0 && stageHitFlg[1][bottom] == false)
 		{
-			vector.x = 0.5f;
+			velocity.x = 0.6f;
 		}
+		//加速度を０まで緩やかに加算、減算する
+		if (velocity.x > 0)velocity.x--;
+		if (velocity.x < 0)velocity.x++;
+		if (velocity.y > 0)velocity.y--;
+		if (velocity.y < 0)velocity.y++;
 		break;
 	case FrogState::LEFT_IDOL:
 		jump_timer = 0;
 		if (++jump_cooldown_timer > JUMP_COOLDOWN)
 		{
-			vector.x = -((float)GetRand(5) + 3);
-			vector.y = -((float)GetRand(6) + 17);
+			velocity.x = -((float)GetRand(5) + 3);
+			velocity.y = -((float)GetRand(6) + 17);
 			//ジャンプ前の座標を保存
 			old_location = location;
 			ResourceManager::StartSound(jump_se);
 			jump_cooldown_timer = 0;
 		}
 		//空中で僅かに加速(ブロックに引っかかる対策)
-		if (vector.x == 0 && stageHitFlg[1][bottom] == false)
+		if (velocity.x == 0 && stageHitFlg[1][bottom] == false)
 		{
-			vector.x = -0.5f;
+			velocity.x = -0.6f;
 		}
+		//加速度を０まで緩やかに加算、減算する
+		if (velocity.x > 0)velocity.x--;
+		if (velocity.x < 0)velocity.x++;
+		if (velocity.y > 0)velocity.y--;
+		if (velocity.y < 0)velocity.y++;
 		break;
 	case FrogState::LEFT_JUMP:
 	case FrogState::RIGHT_JUMP:
 		jump_timer++;
+		break;
+	case FrogState::FAINT:
+		if (++faint_timer > FAINT_TIME)
+		{
+			faint_timer = 0;
+			frog_state = FrogState::RIGHT_IDOL;
+		}
+		//加速度を０まで緩やかに加算、減算する
+		if (velocity.x > 0)velocity.x--;
+		if (velocity.x < 0)velocity.x++;
 		break;
 	case FrogState::DEATH:
 		_manager->SpawnEffect(location, erea, DeathEffect, 15, color);
@@ -138,10 +159,10 @@ void EnemyFrog::Draw()const
 
 	////残像描画
 	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 - (death_timer * 4)) - 500);
-	//JumpFrogDraw({ local_location.x - (vector.x * 2),local_location.y - (vector.y * 2) },face_angle);
+	//JumpFrogDraw({ local_location.x - (velocity.x * 2),local_location.y - (velocity.y * 2) },face_angle);
 
 	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 - (death_timer * 4)) - 100);
-	//JumpFrogDraw({ local_location.x - (vector.x * 3),local_location.y - (vector.y * 3) }, face_angle);
+	//JumpFrogDraw({ local_location.x - (velocity.x * 3),local_location.y - (velocity.y * 3) }, face_angle);
 
 
 
@@ -155,19 +176,25 @@ void EnemyFrog::Draw()const
 	{
 	case FrogState::RIGHT_IDOL:
 		//IdolFrogDraw(local_location, (int)frog_state);
-		DrawTurnGraphF(local_location.x, local_location.y, ResourceManager::GetGraph(frog_image[GetColorNum(color)]), TRUE);		break;
+		DrawTurnGraphF(local_location.x, local_location.y, ResourceManager::GetGraph(frog_image[GetColorNum(color)]), TRUE);
 		break;
 	case FrogState::LEFT_IDOL:
 		//IdolFrogDraw(local_location, (int)frog_state);
 		DrawGraphF(local_location.x, local_location.y, ResourceManager::GetGraph(frog_image[GetColorNum(color)]), TRUE);
 		break;
 	case FrogState::LEFT_JUMP:
-		DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle, TRUE, FALSE);
+		JumpFrogDraw(local_location, face_angle);		
 		break;
 	case FrogState::RIGHT_JUMP:
-		//JumpFrogDraw(local_location, face_angle);
-		DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle, TRUE, TRUE);
-
+		JumpFrogDraw(local_location, face_angle);
+		//DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle, TRUE, TRUE);
+		break;
+	case FrogState::FAINT:
+		//3フレーム毎に描画する（点滅）
+		if (frame % 3 == 0)
+		{
+			JumpFrogDraw(local_location, frame * 5);
+		}
 		break;
 	case FrogState::DEATH:
 		break;
@@ -229,7 +256,7 @@ void EnemyFrog::Hit(Object* _object)
 		if (stageHitFlg[0][top]) {//上方向に埋まっていたら
 			float t = (_object->GetLocation().y + _object->GetErea().y) - location.y;
 			if (t != 0) {
-				vector.y = 0.f;
+				velocity.y = 0.f;
 				move[top] = t;
 			}
 		}
@@ -282,7 +309,7 @@ void EnemyFrog::Hit(Object* _object)
 		if (stageHitFlg[0][left]) {//左方向に埋まっていたら
 			float t = (_object->GetLocation().x + _object->GetErea().x) - location.x;
 			if (t != 0) {
-				vector.x = 0.f;
+				velocity.x = 0.f;
 				move[left] = t;
 			}
 		}
@@ -291,7 +318,7 @@ void EnemyFrog::Hit(Object* _object)
 		if (stageHitFlg[0][right]) {//右方向に埋まっていたら
 			float t = _object->GetLocation().x - (location.x + erea.x);
 			if (t != 0) {
-				vector.x = 0.f;
+				velocity.x = 0.f;
 				move[right] = t;
 			}
 		}
@@ -347,13 +374,85 @@ void EnemyFrog::Hit(Object* _object)
 		{
 			//不利の場合
 		case -1:
+			//スタン状態でないなら実行
+			if (frog_state != FrogState::FAINT)
+			{
+				//プレイヤーが左にいるなら右にノックバック
+				if (this->location.x > _object->GetLocation().x)
+				{
+					velocity.x = 10;
+				}
+				//プレイヤーが右にいるなら左にノックバック
+				else
+				{
+					velocity.x = -10;
+				}
+				velocity.y = -5;
+				//スタン状態になる
+				frog_state = FrogState::FAINT;
+			}
 			break;
 			//あいこの場合
 		case 0:
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x += 10;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				velocity.x -= 10;
+			}
 			break;
 			//有利の場合
 		case 1:
 			break;
+			//それ以外
+		default:
+			break;
+		}
+	}
+
+	//エネミーと当たった時の処理
+	if (_object->GetObjectType() == ENEMY)
+	{
+		//エネミーとの属性相性で処理を変える
+		switch (CheckCompatibility(this, _object))
+		{
+			//不利の場合
+		case -1:
+			//何もしない
+			break;
+
+			//あいこの場合
+		case 0:
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x = 20;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				velocity.x = -20;
+			}
+			//プレイヤーが上にいるなら下にノックバック
+			if (this->location.y > _object->GetLocation().y)
+			{
+				velocity.y = 20;
+			}
+			//プレイヤーが下にいるなら上にノックバック
+			else
+			{
+				velocity.y = -20;
+			}
+			break;
+			//有利の場合
+		case 1:
+			//何もしない
+			break;
+
 			//それ以外
 		default:
 			break;
@@ -487,7 +586,7 @@ void EnemyFrog::IdolFrogDraw(Vector2D location, bool _direction)const
 void EnemyFrog::Move(ObjectManager* _manager)
 {
 	//顔の向き更新
-	if (vector.x == 0 && vector.y == 0)
+	if (velocity.x == 0 && velocity.y == 0)
 	{
 		if (frog_state == FrogState::LEFT_JUMP)
 		{
@@ -502,48 +601,53 @@ void EnemyFrog::Move(ObjectManager* _manager)
 	{
 		if (frog_state == FrogState::LEFT_JUMP)
 		{
-			face_angle = atanf(vector.y / vector.x) * 60 +180;
+			face_angle = atanf(velocity.y / velocity.x) * 60 +180;
 		}
 		if (frog_state == FrogState::RIGHT_JUMP)
 		{
 
-			face_angle = atanf(vector.y / vector.x) * 60;
+			face_angle = atanf(velocity.y / velocity.x) * 60;
 		}
 	}
 	//移動
-	location.x += vector.x;
-	location.y += vector.y;
+	location.x += velocity.x;
+	location.y += velocity.y;
 }
 
 void EnemyFrog::UpdataState(ObjectManager* _manager)
 {
 	//死んでいたら更新を止める
 	if (frog_state == FrogState::DEATH)return;
-	//地面についているか判断
-	if (stageHitFlg[1][bottom])
+
+	//スタン中以外はステートの更新をする
+	if (frog_state != FrogState::FAINT)
 	{
-		//カエルとプレイヤーの座標を比較して、カエルがプレイヤーに向かって行くように
-		if (location.x > _manager->GetPlayerLocation().x)
+		//地面についているか判断
+		if (stageHitFlg[1][bottom])
 		{
-			//ジャンプ後にX座標が変わらなければ、反対方向に飛ぶ
-			frog_state = old_location.x == location.x ?  FrogState::RIGHT_IDOL: FrogState::LEFT_IDOL;
+			//カエルとプレイヤーの座標を比較して、カエルがプレイヤーに向かって行くように
+			if (location.x > _manager->GetPlayerLocation().x)
+			{
+				//ジャンプ後にX座標が変わらなければ、反対方向に飛ぶ
+				frog_state = old_location.x == location.x ? FrogState::RIGHT_IDOL : FrogState::LEFT_IDOL;
+			}
+			else
+			{
+				//ジャンプ後にX座標が変わらなければ、反対方向に飛ぶ
+				frog_state = old_location.x == location.x ? FrogState::LEFT_IDOL : FrogState::RIGHT_IDOL;
+			}
 		}
+		//地面についていなくて、StateがIDOLなら変更する
 		else
 		{
-			//ジャンプ後にX座標が変わらなければ、反対方向に飛ぶ
-			frog_state = old_location.x == location.x ? FrogState::LEFT_IDOL : FrogState::RIGHT_IDOL;
-		}
-	}
-	//地面についていなくて、StateがIDOLなら変更する
-	else
-	{
-		if (frog_state == FrogState::LEFT_IDOL)
-		{
-			frog_state = FrogState::LEFT_JUMP;
-		}
-		if (frog_state == FrogState::RIGHT_IDOL)
-		{
-			frog_state = FrogState::RIGHT_JUMP;
+			if (frog_state == FrogState::LEFT_IDOL)
+			{
+				frog_state = FrogState::LEFT_JUMP;
+			}
+			if (frog_state == FrogState::RIGHT_IDOL)
+			{
+				frog_state = FrogState::RIGHT_JUMP;
+			}
 		}
 	}
 
