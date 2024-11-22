@@ -4,10 +4,10 @@
 #include "../../Utility/PadInput.h"
 
 
-Tutorial::Tutorial(): tutorial_time(0),tutorial_flg(false), tutorial_completed(false)
+Tutorial::Tutorial(int _num): tutorial_time(0),tutorial_flg(false), tutorial_completed(false)
 {
 	in_camera = Camera::Get();
-	tutorial_num = 1;
+	tutorial_num = _num - 23;
 }
 
 Tutorial::~Tutorial()
@@ -28,7 +28,7 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	// チュートリアル終了フラグ
 	tutorial_completed = false;
 
-	tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto1.txt"); // ファイル名を指定
+	//tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto1.txt"); // ファイル名を指定
 	//LoadTextFile("Resource/Dat/TutorialText.txt"); //
 
 }
@@ -72,7 +72,7 @@ void Tutorial::Update(ObjectManager* _manager)
 
 void Tutorial::Draw() const
 {
-	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
+	//DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 	//DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
 	// DrawBoxAA(local_location.x + 200, local_location.y - 400, local_location.x + erea.x + 400, local_location.y + 70, GetColor(0, 0, 0), TRUE);
 
