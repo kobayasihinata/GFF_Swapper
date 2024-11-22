@@ -25,7 +25,7 @@ private:
 
 public:
 	//コンストラクタ
-	Tutorial(int _num);
+	Tutorial();
 	~Tutorial();
 
 	

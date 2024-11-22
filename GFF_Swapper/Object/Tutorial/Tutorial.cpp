@@ -4,10 +4,10 @@
 #include "../../Utility/PadInput.h"
 
 
-Tutorial::Tutorial(int _num): tutorial_time(0),tutorial_flg(false), tutorial_completed(false)
+Tutorial::Tutorial(): tutorial_time(0),tutorial_flg(false), tutorial_completed(false)
 {
 	in_camera = Camera::Get();
-	tutorial_num = _num;
+	tutorial_num = 1;
 }
 
 Tutorial::~Tutorial()
