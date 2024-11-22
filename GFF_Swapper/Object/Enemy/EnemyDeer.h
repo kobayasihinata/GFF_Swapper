@@ -1,6 +1,5 @@
 #pragma once
 #include "../Base/Object.h"
-#include "../Base/CharaBase.h"
 #include "../../Utility/common.h"
 
 # define PI 3.14159265359
@@ -12,6 +11,7 @@ enum class DeerState {
 	IDLE,
 	LEFT,
 	RIGHT,
+	FAINT,
 	DEATH
 };
 
@@ -34,7 +34,9 @@ private:
 		right
 	};
 
+	Vector2D velocity;		//加速度
 	DeerState deer_state;
+	DeerState old_deer_state;	//ひとつ前のステートを保管
 	d_draw deer_draw;
 
 	bool deer_spawn;
@@ -42,6 +44,7 @@ private:
 
 	float tn = 0.0f;
 
+	float faint_timer;		//気絶している時間測定
 	float move[4]; //各方向加速度格納用
 	bool stageHitFlg[2][4]; //プレイヤーステージの当たり判定
 	//0の行はステージのブロック一つ一つに対しての判定
@@ -82,5 +85,7 @@ public:
 	bool CheckCollision(Vector2D l, Vector2D e); //ステージとの当たり判定
 
 	void DeerAnim();
+
+	void ChangeDeerState(DeerState _state);
 };
 

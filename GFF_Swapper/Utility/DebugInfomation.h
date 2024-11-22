@@ -7,6 +7,7 @@
 
 #define DEBUG_X 100
 #define DEBUG_Y 100
+
 class DebugInfomation
 {
 private:

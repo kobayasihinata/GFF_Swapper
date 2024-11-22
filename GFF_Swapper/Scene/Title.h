@@ -22,7 +22,7 @@ static char menu_string[MENU_NUM][256] =
 {
     "PLAY",
     "HELP",
-    "END",
+    "OPTION",
     "END"
 };
 

@@ -8,6 +8,7 @@ enum class FrogState {
 	LEFT_IDOL,
 	LEFT_JUMP,
 	RIGHT_JUMP,
+	FAINT,
 	DEATH
 };
 
@@ -27,10 +28,12 @@ private:
 	FrogState frog_state;	 //カエルの状態
 
 	bool death_flg;			 //生きているか
-	Vector2D vector;		 //カエルのベクトル
+	Vector2D velocity;		 //カエルのベクトル
 	bool stageHitFlg[2][4];  //カエルとステージの当たり判定
 	float move[4];			 //各方向加速度格納用
 	Vector2D old_location;	 //ジャンプ前の座標格納
+
+	float faint_timer;		//気絶している時間測定
 
 	int jump_cooldown_timer; //次のジャンプまでの時間測定
 	int jump_timer;			 //ジャンプしている間の時間測定

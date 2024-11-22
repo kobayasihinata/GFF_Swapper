@@ -139,7 +139,7 @@ void BossAttackFire::SetAngle(ObjectManager* _manager)
 		break;
 		//それ以外
 	default:
-		//プレイヤーとボスの座標からベクトルを計算
+		//プレイヤーの座標からベクトルを計算
 		Vector2D player = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2),
 							_manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
 		float rad = atan2f(player.y - parent_center_location.y, player.x - parent_center_location.x);

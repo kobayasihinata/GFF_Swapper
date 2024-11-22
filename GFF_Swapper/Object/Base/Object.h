@@ -1,6 +1,7 @@
 #pragma once
 #include"BoxCollider.h"
 #include"ColorData.h"
+#include "../../Utility/DebugInfomation.h"
 
 #define BLOCK 0			//Objectの種類用
 #define PLAYER 1		//Objectの種類用

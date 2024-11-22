@@ -82,8 +82,8 @@ AbstractScene* GameMain::Update()
 	{
 		fadein_flg = false;
 	}
-	//演出中は更新を止める
-	if (frame == 1 || fadein_flg == false)
+	//演出中は更新を止める(プレイヤーの位置を移動させるために最初の2フレームだけ更新)
+	if (frame == 1 || frame == 2 || fadein_flg == false)
 	{
 		switch (gm_state)
 		{
@@ -109,10 +109,6 @@ AbstractScene* GameMain::Update()
 			printfDx("存在しないゲームモード");
 			break;
 		}
-		if (KeyInput::OnKey(KEY_INPUT_C))
-		{
-			gm_state = GameMainState::GameClear;
-		}
 
 #ifdef _DEBUG
 		//強制クリア
@@ -137,6 +133,10 @@ AbstractScene* GameMain::Update()
 		if (KeyInput::OnKey(KEY_INPUT_3))
 		{
 			SetStage(2);
+		}
+		if (KeyInput::OnKey(KEY_INPUT_4))
+		{
+			SetStage(3);
 		}
 #endif
 	}
@@ -189,16 +189,19 @@ void GameMain::Draw() const
 
 void GameMain::LoadStageData(int _stage)
 {
-	const char* a = "Resource/Dat/1stStageData.txt";
+	const char* a = "Resource/Dat/TutorialOneStageData.txt";
 	switch (_stage)
 	{
 	case 0:
-		a = "Resource/Dat/TutorialStageData.txt";
+		a = "Resource/Dat/TutorialOneStageData.txt";
 		break;
 	case 1:
-		a = "Resource/Dat/1stStageData.txt";
+		a = "Resource/Dat/TutorialTwoStageData.txt";
 		break;
 	case 2:
+		a = "Resource/Dat/1stStageData.txt";
+		break;
+	case 3:
 		a = "Resource/Dat/BossStageData.txt";
 		break;
 	default:
@@ -344,8 +347,8 @@ void GameMain::SetStage(int _stage)
 	//壁生成フラグリセット
 	create_once = false;
 
-	//BGMの再生
-	if (now_stage == 0)
+	//BGMの再生 & ボス暗転設定
+	if (now_stage != STAGE_NUM-1)
 	{
 		ResourceManager::StopSound(bgm_normal);
 		ResourceManager::StopSound(bgm_noise);
@@ -354,7 +357,7 @@ void GameMain::SetStage(int _stage)
 		ResourceManager::StartSound(bgm_normal, TRUE);
 		ResourceManager::StartSound(bgm_noise, TRUE);
 	}
-	else if (now_stage == 2)
+	else
 	{
 		ResourceManager::StopSound(bgm_normal);
 		ResourceManager::StopSound(bgm_noise);
@@ -405,7 +408,7 @@ void GameMain::UpdateGameMain()
 	back_ground->Update();
 
 	//プレイヤーがボスエリアに入ったら退路を閉じる
-	if (now_stage == 2 && object_manager->GetPlayerLocalLocation().x > 160 && object_manager->GetPlayerLocalLocation().x < 200 && create_once == false)
+	if (now_stage == STAGE_NUM-1 && object_manager->GetPlayerLocalLocation().x > 160 && object_manager->GetPlayerLocalLocation().x < 200 && create_once == false)
 	{
 		object_manager->CreateObject(new Stage(2), { 160,520 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		object_manager->CreateObject(new Stage(2), { 160,560 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
@@ -434,7 +437,7 @@ void GameMain::DrawGameMain()const
 	back_ground->Draw(camera->GetCameraLocation());
 
 	// チュートリアルテキストはボスエリアで描画しない
-	if (now_stage != 2)
+	if (now_stage != STAGE_NUM-1)
 	{
 		tutorial_text.Draw();
 	}

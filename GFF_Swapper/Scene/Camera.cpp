@@ -13,7 +13,7 @@ Camera* Camera::Get()
 void Camera::Update(int _now_stage, Vector2D _player_location)
 {
 	//カメラ更新（ボスステージ）
-	if (_now_stage == 2)
+	if (_now_stage == STAGE_NUM-1)
 	{
 		camera_location = { 160,40 };
 	}

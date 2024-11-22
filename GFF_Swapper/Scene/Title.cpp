@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include "GameMain.h"
 #include "Help.h"
+#include "Option.h"
 #include "End.h"
 #include "../Utility/PadInput.h"
 #include"../Utility/ResourceManager.h"
@@ -21,12 +22,14 @@ void Title::Initialize()
 {
 	player_location = { (SCREEN_WIDTH / 2) - (PLAYER_WIDTH / 2), SCREEN_HEIGHT - PLAYER_HEIGHT-75 };
 	menu_location[0] = { 250,300 };
-	menu_location[1] = { 565,250 };
-	menu_location[2] = { 900,300 };
+	menu_location[1] = { 465,250 };
+	menu_location[2] = { 665,250 };
+	menu_location[3] = { 900,300 };
 	draw_stick_location = { 300,600 };
 	menu_size[0] = { 150,75 };
 	menu_size[1] = { 150,75 };
 	menu_size[2] = { 150,75 };
+	menu_size[3] = { 150,75 };
 
 	for (int i = 0; i < 7; i++)
 	{
@@ -93,19 +96,34 @@ AbstractScene* Title::Update()
 	if (swap_anim_flg == false)
 	{
 		//選択メニュー更新（スティック）
-		if (current_menu != 0 && cursor_location.x < player_location.x && cursor_location.y < player_location.y + (PLAYER_HEIGHT / 2) - 30)
+		if (current_menu != 0 && 
+			cursor_location.x < player_location.x-50 && 
+			cursor_location.y < player_location.y + (PLAYER_HEIGHT / 2) - 30)
 		{
 			current_menu = 0;
 			ResourceManager::StartSound(cursor_se);
 		}
-		else if (current_menu != 1 && cursor_location.x > player_location.x && cursor_location.x < player_location.x + PLAYER_WIDTH && cursor_location.y < player_location.y + (PLAYER_HEIGHT / 2) - 30)
+		else if (current_menu != 1 && 
+				 cursor_location.x > player_location.x-50 && 
+				 cursor_location.x < player_location.x + PLAYER_WIDTH && 
+				 cursor_location.y < player_location.y + (PLAYER_HEIGHT / 2) - 30)
 		{
 			current_menu = 1;
 			ResourceManager::StartSound(cursor_se);
 		}
-		else if (current_menu != 2 && cursor_location.x > player_location.x + PLAYER_WIDTH && cursor_location.y < player_location.y + (PLAYER_HEIGHT / 2) - 30)
+		else if (current_menu != 2 &&
+				 cursor_location.x > player_location.x + PLAYER_WIDTH &&
+				 cursor_location.x < player_location.x + PLAYER_WIDTH+50 &&
+				 cursor_location.y < player_location.y + (PLAYER_HEIGHT / 2) - 30)
 		{
 			current_menu = 2;
+			ResourceManager::StartSound(cursor_se);
+		}
+		else if (current_menu != 3 && 
+				 cursor_location.x > player_location.x + PLAYER_WIDTH+50 && 
+				 cursor_location.y < player_location.y + (PLAYER_HEIGHT / 2) - 30)
+		{
+			current_menu = 3;
 			ResourceManager::StartSound(cursor_se);
 		}
 		//カーソル更新
@@ -117,13 +135,13 @@ AbstractScene* Title::Update()
 		{
 			if (--current_menu < 0)
 			{
-				current_menu = 2;
+				current_menu = MENU_NUM-1;
 			}
 			ResourceManager::StartSound(cursor_se);
 		}
 		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_RIGHT))
 		{
-			if (++current_menu > 2)
+			if (++current_menu > MENU_NUM-1)
 			{
 				current_menu = 0;
 			}
@@ -227,6 +245,10 @@ AbstractScene* Title::Update()
 					return new Help();
 					break;
 				case 2:
+					//オプション画面
+					return new Option();
+					break;
+				case 3:
 					//ゲーム終了
 					return new End();
 					break;
@@ -348,7 +370,7 @@ void Title::Draw()const
 
 			SetFontSize(48);
 			//メニュー項目の描画
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < MENU_NUM; i++)
 			{
 				if (swap_anim_timer <= 30)
 				{
@@ -520,6 +542,7 @@ void Title::DrawPlayer(int _num)const
 																																							 
 			break;
 		case 1:
+		case 2:
 			//帽子　中央
 			DrawTriangleAA(player_location.x + (PLAYER_WIDTH / 2), player_location.y+3, player_location.x + 20, player_location.y + 23, player_location.x + 40, player_location.y + 23, player_color, true);
 			DrawTriangleAA(player_location.x + (PLAYER_WIDTH / 2), player_location.y+3, player_location.x + 20, player_location.y + 23, player_location.x + 40, player_location.y + 23, 0x000000, false);
@@ -560,7 +583,7 @@ void Title::DrawPlayer(int _num)const
 			ResourceManager::DrawRotaBox(player_location.x + 25, player_location.y + 70, 7, 27, player_location.x + 25, player_location.y + 80, 0, 0x000000, false);
 
 			break;
-		case 2:
+		case 3:
 			//帽子　中央
 			DrawTriangleAA(player_location.x + (PLAYER_WIDTH / 2), player_location.y, player_location.x + 20, player_location.y + 20, player_location.x + 40, player_location.y + 20, player_color, true);
 			DrawTriangleAA(player_location.x + (PLAYER_WIDTH / 2), player_location.y, player_location.x + 20, player_location.y + 20, player_location.x + 40, player_location.y + 20, 0x000000, false);

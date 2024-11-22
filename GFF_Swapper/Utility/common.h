@@ -24,7 +24,7 @@
 
 #define FADEIN_TIME 120				//ゲームメインに遷移して来た時のフェードイン演出の時間
 
-#define STAGE_NUM 3					//ステージ数
+#define STAGE_NUM 4					//ステージ数
 
 //色を数字で取得する
 static int ColorList[4]
@@ -39,6 +39,10 @@ static int ColorList[4]
 #define WEST  1  //西
 #define SOUTH 2  //南
 #define NORTH 3  //北
+
+//敵の設定
+#define FAINT_TIME 180      //気絶している時間
+
 
 //ボスの詳細設定
 
