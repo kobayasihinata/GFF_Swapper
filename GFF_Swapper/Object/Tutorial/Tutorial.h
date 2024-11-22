@@ -25,7 +25,7 @@ private:
 
 public:
 	//コンストラクタ
-	Tutorial();
+	Tutorial(int _num);
 	~Tutorial();
 
 	
@@ -42,10 +42,7 @@ public:
 	}
 
 	//チュートリアルの描画
-	void DrawTutorial1()const;
-	void DrawTutorial2()const;
-	void DrawTutorial3()const;
-	void DrawTutorial4()const;
+	void DrawTutorial()const;
 
 	std::string LoadTextFile(const std::string& file_path);
 	//void LoadTextFile(const std::string& file_path);

@@ -4,13 +4,10 @@
 #include "../../Utility/PadInput.h"
 
 
-
-// クラス内にマップを追加
-
-
-Tutorial::Tutorial(): tutorial_num(1) , tutorial_time(0),tutorial_flg(false), tutorial_completed(false)
+Tutorial::Tutorial(int _num): tutorial_time(0),tutorial_flg(false), tutorial_completed(false)
 {
 	in_camera = Camera::Get();
+	tutorial_num = _num;
 }
 
 Tutorial::~Tutorial()
@@ -31,7 +28,7 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	// チュートリアル終了フラグ
 	tutorial_completed = false;
 
-	tutorial_text = LoadTextFile("Resource/Dat/TutorialText.txt"); // ファイル名を指定
+	tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto1.txt"); // ファイル名を指定
 	//LoadTextFile("Resource/Dat/TutorialText.txt"); //
 
 }
@@ -52,12 +49,30 @@ void Tutorial::Update(ObjectManager* _manager)
 			tutorial_time = 0;
 			tutorial_num++;
 		}
+
+		switch (tutorial_num)
+		{
+		case 1:
+			tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto1.txt"); // ファイル名を指定
+			break;
+		case 2:
+			tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto2.txt"); // ファイル名を指定
+			break;
+		case 3:
+			tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto3.txt"); // ファイル名を指定
+			break;
+		case 4:
+			//DrawTutorial4();
+			break;
+		}
 	}
+
+	
 }
 
 void Tutorial::Draw() const
 {
-	//DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
+	DrawBoxAA(local_location.x, local_location.y - 550, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 	//DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
 	// DrawBoxAA(local_location.x + 200, local_location.y - 400, local_location.x + erea.x + 400, local_location.y + 70, GetColor(0, 0, 0), TRUE);
 
@@ -67,37 +82,21 @@ void Tutorial::Draw() const
 	
 	//DrawBoxAA(local_location.x, local_location.y - 500, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
 
-	if (tutorial_flg)
-	{
-		switch (tutorial_num)
-		{
-		case 1:
-			DrawTutorial1();
-			break;
-		case 2:
-			//DrawTutorial2();
-			break;
-		case 3:
-			//DrawTutorial3();
-			break;
-		case 4:
-			//DrawTutorial4();
-			break;
-		default:
-			break;
-		}
-		//DrawTutorial1();
-	}
 
 	// 現在のチュートリアル番号に対応するテキストを取得
-	if (tutorial_num > 0 && tutorial_num <= tutorial_text_list.size()) {
+	/*if (tutorial_num > 0 && tutorial_num <= tutorial_text_list.size()) {
 		DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text_list[tutorial_num - 1].c_str());
+	}*/
+
+	if (tutorial_flg)
+	{
+		DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
+		// チュートリアルテキストを描画
+		DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text.c_str());
 	}
 
-	DebugInfomation::Add("Tutorial Time", tutorial_time);
-	DebugInfomation::Add("Tutorial NUM", tutorial_num);
-	//DebugInfomation::Add("Tutorial loc", in_camera->GetCameraLocation().x);
-	DebugInfomation::Add("Tutorial loc ", local_location.x);
+	DebugInfomation::Add("tuto_loc", location.x);
+	DebugInfomation::Add("tuto_num", tutorial_num);
 }
 
 void Tutorial::Finalize()
@@ -114,26 +113,18 @@ void Tutorial::Hit(Object* _object)
 	if (_object->GetObjectType() == PLAYER && !tutorial_completed)
 	{
 		tutorial_flg = true;
+		if (location.x > 2000)
+		{
+			tutorial_num = 2;
+		}
 	}
 }
 
-void Tutorial::DrawTutorial1() const
+void Tutorial::DrawTutorial() const
 {
 	DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
 	// チュートリアルテキストを描画
 	DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text.c_str());
-}
-
-void Tutorial::DrawTutorial2() const
-{
-}
-
-void Tutorial::DrawTutorial3() const
-{
-}
-
-void Tutorial::DrawTutorial4() const
-{
 }
 
 std::string Tutorial::LoadTextFile(const std::string& file_path)
