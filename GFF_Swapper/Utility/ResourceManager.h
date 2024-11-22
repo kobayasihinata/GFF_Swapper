@@ -41,17 +41,26 @@ struct AnimData {
 	char* div_image_filepath;	//分割画像パス格納用
 	int div_image_handle[DIV_IMAGE_MAX];		//分割画像格納用
 	int div_image_num;			//分割画像要素数格納用
-	int now_image = 0;			//分割画像要素数格納用
+	int now_image = 0;			//現在の画像
 	int anim_speed;				//画像切り替え速度
+	bool player_flg;				//プレイヤー画像かどうか
+	int image_width_num;		//画像の横の枚数(プレイヤー用)
+	int image_height_num;		//画像の縦の枚数(プレイヤー用)
+};
+
+//音源データ格納用
+struct SoundData {
+	char* sound_filepath;		//音源パス格納用
+	int sound_handle;				//音源格納用
+	bool bgm_or_se;				//BGMかSEか false = BGM  true = SE
 };
 class ResourceManager
 {
 private:
 	static char* image_filepath[IMAGE_NUM];						//画像パス格納用
 	static AnimData div_image_data[DIV_IMAGE_NUM];				//分割画像パス格納用
-	static char* sound_filepath[SOUND_NUM];						//音源パス格納用
 	static int image_data[IMAGE_NUM];							//画像格納用
-	static int sound_data[SOUND_NUM];							//音源格納用
+	static SoundData sound_data[SOUND_NUM];							//音源格納用
 	static int sound_freq;										//音声の再生速度
 	static int se_volume;									    //SEの音量
 	static int bgm_volume;									    //BGMの音量
@@ -89,10 +98,10 @@ public:
 	static int SetGraph(const char* p);
 
 	//分割画像格納
-	static int SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize, int AnimSpeed);
+	static int SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize, int AnimSpeed, bool player_flg = false);
 
-	//音源格納
-	static int SetSound(const char* p);
+	//音源格納 _bgm_or_se = BGMかSEか　デフォルトでtrue(se)にしてあるので、BGMの時はfalseに
+	static int SetSound(const char* p, bool _bgm_or_se = true);
 
 	//画像呼び出し
 	static int GetGraph(int _num);
@@ -103,14 +112,17 @@ public:
 	//アニメーションの描画（指定した分割画像がアニメーション処理された状態の物を呼び出す）
 	static void DrawAnimGraph(Vector2D location , int _handle);
 
+	//プレイヤーアニメーションの描画（指定した分割画像がアニメーション処理された状態の物を呼び出す）
+	static void DrawPlayerAnimGraph(Vector2D location, int _handle,int _color);
+
 	//音源再生開始
-	static void StartSound(int _num, bool roop_flg = false);
+	static void StartSound(int _num);
 
 	//音源再生終了
 	static void StopSound(int _num);
 
-	//音源音量調整　_volume=0～255
-	static void SetSoundVolume(int _num, int _volume);
+	//全体音量調整　_volume=0～255
+	static void SetSoundVolume(int _volume);
 
 	//音源再生速度調整
 	static void SetSoundFreq(int _num);

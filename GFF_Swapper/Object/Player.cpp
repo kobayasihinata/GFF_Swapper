@@ -54,6 +54,7 @@ Player::Player()
 	{
 		angle[i] = 0.f;
 	}
+	p_state = playerState::MOVE_RIGHT;
 	pState = idle;
 	pStateOld = idle;
 	moveFrontFlg = true;
@@ -61,7 +62,6 @@ Player::Player()
 	circleAng = 0.f;
 
 	landing_se = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
-	ResourceManager::SetSoundVolume(landing_se, 255);
 	walk_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	walk_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/walk_fire.wav");
 	walk_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/walk_grass.wav");
@@ -71,6 +71,9 @@ Player::Player()
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/damage_grass.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_water.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
+
+	//プレイヤーの画像の読み込み
+	LoadPlayerImage();
 
 	now_riding = 0;
 	draw_color = 0;
@@ -237,7 +240,9 @@ void Player::Update(ObjectManager* _manager)
 		if (hp > 0) {
 			MoveActor();
 		}
+
 		PlayerAnim();
+		AnimStateUpdate();	//アニメーションの状態更新
 
 		//加速度が早すぎる場合移動しない
 		if (fabsf(vector.x) > 50)vector.x = 0;
@@ -355,11 +360,13 @@ void Player::Draw()const
 	else {
 		if (damageEffectFlg) {
 			if (damageEffectTime % 3 == 0) {
-				DrawPlayer();
+				//DrawPlayer();
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)),TRUE);
 			}
 		}
 		else {//見た目
-			DrawPlayer();
+			//DrawPlayer();
+			DrawPlayerImage();
 		}
 	}
 
@@ -369,6 +376,7 @@ void Player::Draw()const
 		ResourceManager::DrawHeart({ 150.f + i * 50.f,75.f }, { 40.f,40.f });
 	}
 
+	//色交換カーソル
 	if (searchedObj != nullptr && searchFlg) {
 		DrawCircleAA(searchedObj->GetLocalLocation().x + searchedObj->GetErea().x / 2,
 			searchedObj->GetLocalLocation().y + searchedObj->GetErea().y / 2, 40, 40, 0xffff00, FALSE, 4);
@@ -616,6 +624,12 @@ void Player::Hit(Object* _object)
 		default:
 			break;
 		}
+	}
+
+	//不利な属性のブロックかダメージゾーンと当たった時の処理
+	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == FIRE) && CheckCompatibility(this, _object) == -1)
+	{
+		damageFlg = true;
 	}
 
 	//ダメージゾーンを上書きする
@@ -1368,6 +1382,20 @@ float Player::GetLength(Vector2D l1, Vector2D l2)
 	return len;
 }
 
+void Player::LoadPlayerImage()
+{
+	for (int i = 0; i < PLAYER_STATE_NUM; i++)
+	{
+		player_image[i] = ResourceManager::SetDivGraph(player_imagepath[i], 
+			player_anim_image_num[i][0], 
+			player_anim_image_num[i][1], 
+			player_anim_image_num[i][2], 
+			player_anim_image_num[i][3], 
+			player_anim_image_num[i][4], 
+			player_anim_image_num[i][5],TRUE);
+	}
+}
+
 void Player::PlayerSound()
 {
 	//スローモーション中は10フレームに一回だけ音を鳴らす
@@ -1460,6 +1488,67 @@ void Player::PlayerAnim()
 	}
 }
 
+void Player::AnimStateUpdate()
+{
+	//右向きかどうか
+	if (moveFrontFlg)
+	{
+		//ダメージを受けていたらダメージアニメーション
+		if (damageEffectFlg)
+		{
+			p_state = playerState::DAMAGE_RIGHT;
+			return;
+		}
+		//ジャンプ更新
+		if (!stageHitFlg[1][bottom]) 
+		{
+			p_state = playerState::JUMP_RIGHT;
+		}
+		else
+		{
+			//idle状態判定
+			if (vector.x > -0.4f && vector.x < 0.4f) 
+			{
+				p_state = playerState::IDLE_RIGHT;
+		
+			}
+			else
+			{
+				p_state = playerState::MOVE_RIGHT;
+			}
+		}
+	}
+	//左向きなら
+	else
+	{
+		//ダメージを受けていたらダメージアニメーション
+		if (damageEffectFlg)
+		{
+			p_state = playerState::DAMAGE_LEFT;
+			return;
+		}
+		//ジャンプ更新
+		if (!stageHitFlg[1][bottom])
+		{
+			p_state = playerState::JUMP_LEFT;
+		}
+		else
+		{
+			//idle状態判定
+			if (vector.x > -0.4f && vector.x < 0.4f)
+			{
+				p_state = playerState::IDLE_LEFT;
+
+			}
+			else
+			{
+				p_state = playerState::MOVE_LEFT;
+			}
+		}
+	}
+	DebugInfomation::Add("p_state", stageHitFlg[0][bottom]);
+}
+
 void Player::DrawPlayer() const
 {
 	if (moveFrontFlg == true) {
@@ -1527,7 +1616,6 @@ void Player::DrawPlayer() const
 			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 55, 28, 7, local_location.x + 35, local_location.y + 55, angle[1], 0xffffff, false);
 		}
 
-
 		//足 前から
 		if (hp > 2) {
 			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], draw_color, true);
@@ -1570,6 +1658,8 @@ void Player::DrawPlayer() const
 			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0x000000, true);
 			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0xffffff, false);
 		}
+		
+	
 	}
 	else {
 		if (hp > 3) {
@@ -1685,6 +1775,11 @@ void Player::DrawPlayer() const
 		}
 
 	}
+}
+
+void Player::DrawPlayerImage()const
+{
+	ResourceManager::DrawPlayerAnimGraph(local_location, player_image[p_state], color);
 }
 
 void Player::DrawPlayerFront(bool f) const

@@ -45,7 +45,7 @@ void Title::Initialize()
 	swap_se = ResourceManager::SetSound("Resource/Sounds/Effect/swap.wav");
 	rise_se = ResourceManager::SetSound("Resource/Sounds/System/rise.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
-	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav"), TRUE);
+	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
 
 	for (int i = 0; i < BG_BLOCK_WIDTH_NUM; i++)
 	{
@@ -69,7 +69,7 @@ void Title::Initialize()
 
 void Title::Finalize()
 {
-	ResourceManager::StopSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav"));
+	ResourceManager::StopSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
 }
 
 AbstractScene* Title::Update()

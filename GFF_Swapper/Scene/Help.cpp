@@ -21,7 +21,6 @@ void Help::Initialize()
 {
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 	decision_se = ResourceManager::SetSound("Resource/Sounds/System/decision.wav");
-	ResourceManager::SetSoundVolume(decision_se, 200);
 }
 
 void Help::Finalize()

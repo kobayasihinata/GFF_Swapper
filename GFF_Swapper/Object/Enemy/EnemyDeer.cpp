@@ -499,7 +499,8 @@ void EnemyDeer::Hit(Object* _object)
 				velocity.x -= 10;
 			}
 			velocity.y -= 5;
-			if (deer_state != DeerState::FAINT)
+			//スタン状態か死亡状態でないなら実行
+			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)
 			{
 				ChangeDeerState(DeerState::FAINT);
 			}

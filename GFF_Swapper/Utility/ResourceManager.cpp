@@ -5,9 +5,8 @@
 
 char* ResourceManager::image_filepath[IMAGE_NUM];
 AnimData ResourceManager::div_image_data[DIV_IMAGE_NUM];
-char* ResourceManager::sound_filepath[SOUND_NUM];
 int ResourceManager::image_data[IMAGE_NUM];
-int ResourceManager::sound_data[SOUND_NUM];
+SoundData ResourceManager::sound_data[SOUND_NUM];
 int ResourceManager::sound_freq = 50000;
 int ResourceManager::se_volume;
 int ResourceManager::bgm_volume;
@@ -87,13 +86,29 @@ void ResourceManager::StageAnimUpdate()
 	{
 		//アニメーションがない分割画像なら(マップチップ等)アニメーション処理を飛ばす
 		if (div_image_data[i].anim_speed <= 0)continue;
-		//画像ごとの周期に達したら次の画像に切り替え
-		if (anim % div_image_data[i].anim_speed == 0)
+		//プレイヤー画像なら処理の仕方を変える
+		if (div_image_data[i].player_flg)
 		{
-			//画像の枚数をオーバーしたら最初の画像へ
-			if (++div_image_data[i].now_image >= div_image_data[i].div_image_num)
+			//画像ごとの周期に達したら次の画像に切り替え
+			if (anim % div_image_data[i].anim_speed == 0)
 			{
-				div_image_data[i].now_image = 0;
+				//画像の枚数をオーバーしたら最初の画像へ
+				if (++div_image_data[i].now_image >= div_image_data[i].image_width_num)
+				{
+					div_image_data[i].now_image = 0;
+				}
+			}
+		}
+		else
+		{
+			//画像ごとの周期に達したら次の画像に切り替え
+			if (anim % div_image_data[i].anim_speed == 0)
+			{
+				//画像の枚数をオーバーしたら最初の画像へ
+				if (++div_image_data[i].now_image >= div_image_data[i].div_image_num)
+				{
+					div_image_data[i].now_image = 0;
+				}
 			}
 		}
 	}
@@ -321,7 +336,7 @@ int ResourceManager::SetGraph(const char* p)
 	return -1;	//画像をどこにも格納できなかった場合
 }
 
-int ResourceManager::SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize,int AnimSpeed)
+int ResourceManager::SetDivGraph(const char* p, int AllNum, int XNum, int YNum, int  XSize, int YSize,int AnimSpeed, bool player_flg)
 {
 	for (int i = 0; i < DIV_IMAGE_NUM; i++)
 	{
@@ -331,7 +346,10 @@ int ResourceManager::SetDivGraph(const char* p, int AllNum, int XNum, int YNum, 
 			LoadDivGraph(p, AllNum, XNum, YNum, XSize, YSize, div_image_data[i].div_image_handle);
 			div_image_data[i].div_image_filepath = const_cast<char*>(p);
 			div_image_data[i].div_image_num = AllNum;
+			div_image_data[i].image_width_num = XNum;
+			div_image_data[i].image_height_num = YNum;
 			div_image_data[i].anim_speed = AnimSpeed;
+			div_image_data[i].player_flg = player_flg;
 			return i;
 		}
 		//同じ画像が既にあるならその格納場所を返す
@@ -343,20 +361,21 @@ int ResourceManager::SetDivGraph(const char* p, int AllNum, int XNum, int YNum, 
 	return -1;	//画像をどこにも格納できなかった場合
 }
 
-int ResourceManager::SetSound(const char* p)
+int ResourceManager::SetSound(const char* p,bool _bgm_or_se)
 {
 	for (int i = 0; i < SOUND_NUM; i++)
 	{
 		//空の配列に音源を格納する
-		if (sound_data[i] == NULL)
+		if (sound_data[i].sound_handle == NULL)
 		{
-			sound_data[i] = LoadSoundMem(p);
-			ChangeVolumeSoundMem(200, sound_data[i]);
-			sound_filepath[i] = const_cast<char*>(p);
+			sound_data[i].sound_handle = LoadSoundMem(p);
+			sound_data[i].bgm_or_se = _bgm_or_se;
+			/*ChangeVolumeSoundMem(200, sound_data[i]);*/
+			sound_data[i].sound_filepath = const_cast<char*>(p);
 			return i;
 		}
 		//同じ音源が既にあるならその格納場所を返す
-		else if (sound_filepath[i] == p)
+		else if (sound_data[i].sound_filepath == p)
 		{
 			return i;
 		}
@@ -380,41 +399,59 @@ void ResourceManager::DrawAnimGraph(Vector2D location, int _handle)
 	DrawGraphF(location.x, location.y, div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image], TRUE);
 }
 
-void ResourceManager::StartSound(int _num, bool roop_flg)
+void ResourceManager::DrawPlayerAnimGraph(Vector2D location, int _handle, int _color)
 {
-	// 再生周波数を設定する
-	//SetFrequencySoundMem(sound_freq, sound_data[_num]);
-	
-	//再生
-	if (roop_flg)
+	int color = _color;
+	//色を数字に直す
+	switch (color)
 	{
-		PlaySoundMem(sound_data[_num], DX_PLAYTYPE_LOOP, FALSE);
+	case RED:
+		color = 0;
+		break;
+	case GREEN:
+		color = 1;
+		break;
+	case BLUE:
+		color = 2;
+		break;
+	default:
+		break;
+	}
+	DrawGraphF(location.x, location.y, div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image + (color * div_image_data[_handle].image_width_num)], TRUE);
+}
+
+void ResourceManager::StartSound(int _num)
+{
+	//再生
+	if (sound_data[_num].bgm_or_se)
+	{
+		PlaySoundMem(sound_data[_num].sound_handle, DX_PLAYTYPE_BACK);
 	}
 	else
 	{
-		PlaySoundMem(sound_data[_num], DX_PLAYTYPE_BACK);
+		PlaySoundMem(sound_data[_num].sound_handle, DX_PLAYTYPE_LOOP, FALSE);
 	}
 }
 
 void ResourceManager::StopSound(int _num)
 {
-	StopSoundMem(sound_data[_num]);
+	StopSoundMem(sound_data[_num].sound_handle);
 }
 
-void ResourceManager::SetSoundVolume(int _num, int _volume)
+void ResourceManager::SetSoundVolume(int _volume)
 {
 	if (_volume > 255)
 	{
-		ChangeVolumeSoundMem(255, sound_data[_num]);
+		master_volume = 255;
 
 	}
 	else if (_volume < 0)
 	{
-		ChangeVolumeSoundMem(0, sound_data[_num]);
+		master_volume = 0;
 	}
 	else
 	{
-		ChangeVolumeSoundMem(_volume, sound_data[_num]);
+		master_volume = _volume;
 	}
 }
 

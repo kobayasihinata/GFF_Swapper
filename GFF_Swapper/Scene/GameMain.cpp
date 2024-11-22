@@ -33,10 +33,10 @@ void GameMain::Initialize()
 	object_manager = new ObjectManager();
 	object_manager->Initialize();
 
-	bgm_title =  ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav");
-	bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNormal.wav");
-	bgm_noise =  ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNoise.wav");
-	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainAbnormal.wav");
+	bgm_title =  ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav",false);
+	bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNormal.wav", false);
+	bgm_noise =  ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNoise.wav", false);
+	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainAbnormal.wav", false);
 
 	game_clear_bgm = ResourceManager::SetSound("Resource/Sounds/BGM/GameClear.wav");
 
@@ -354,8 +354,8 @@ void GameMain::SetStage(int _stage)
 		ResourceManager::StopSound(bgm_noise);
 		ResourceManager::StopSound(bgm_abnormal);
 
-		ResourceManager::StartSound(bgm_normal, TRUE);
-		ResourceManager::StartSound(bgm_noise, TRUE);
+		ResourceManager::StartSound(bgm_normal);
+		ResourceManager::StartSound(bgm_noise);
 	}
 	else
 	{
@@ -394,9 +394,6 @@ void GameMain::UpdateGameMain()
 	{
 		pause_after_flg = false;
 	}
-	//BGM音量更新
-	ResourceManager::SetSoundVolume(bgm_normal, 255 - (int)(camera->GetCameraLocation().x / 100));
-	ResourceManager::SetSoundVolume(bgm_noise, (int)(camera->GetCameraLocation().x / 100));
 
 
 	tutorial_text.Update(object_manager->GetPlayerLocation(), stage_height);
@@ -418,7 +415,7 @@ void GameMain::UpdateGameMain()
 		object_manager->CreateObject(new Stage(1), { 120,560 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		object_manager->CreateObject(new Stage(1), { 120,600 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		object_manager->CreateObject(new Stage(1), { 120,640 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		ResourceManager::StartSound(bgm_abnormal, TRUE);
+		ResourceManager::StartSound(bgm_abnormal);
 		boss_blind_timer = 10;
 		boss_blind_flg = false;
 		create_once = true;
@@ -461,10 +458,6 @@ void GameMain::DrawGameMain()const
 
 void GameMain::UpdatePause()
 {
-	//BGM音量更新
-	ResourceManager::SetSoundVolume(bgm_normal, 155 - (int)(camera->GetCameraLocation().x / 100));
-	ResourceManager::SetSoundVolume(bgm_noise, (int)(camera->GetCameraLocation().x / 100) - 50);
-	ResourceManager::SetSoundVolume(bgm_abnormal, 100);
 	cursorOld = cursor;
 
 	if (PadInput::TipLStick(STICKL_X) < -0.5f && move_cursor_once == false)
@@ -711,7 +704,7 @@ void GameMain::UpdateGameClear()
 		ResourceManager::StopSound(bgm_normal);
 		ResourceManager::StopSound(bgm_noise);
 		ResourceManager::StopSound(bgm_abnormal);
-		ResourceManager::StartSound(game_clear_bgm, FALSE);
+		ResourceManager::StartSound(game_clear_bgm);
 		back_ground->SetIsClear(true);
 		set_sound_once = true;
 	}
@@ -767,7 +760,7 @@ void GameMain::UpdateGameOver()
 		ResourceManager::StopSound(bgm_normal);
 		ResourceManager::StopSound(bgm_noise);
 		ResourceManager::StopSound(bgm_abnormal);
-		ResourceManager::StartSound(bgm_title, TRUE);
+		ResourceManager::StartSound(bgm_title);
 		set_sound_once = true;
 	}
 
@@ -799,8 +792,8 @@ void GameMain::UpdateGameOver()
 			//BGMの再生
 			if (now_stage == 0)
 			{
-				ResourceManager::StartSound(bgm_normal, TRUE);
-				ResourceManager::StartSound(bgm_noise, TRUE);
+				ResourceManager::StartSound(bgm_normal);
+				ResourceManager::StartSound(bgm_noise);
 			}
 			break;
 		case 1:

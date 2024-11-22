@@ -87,9 +87,6 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 	change_wood = ResourceManager::SetSound("Resource/Sounds/Effect/change_grass.wav");
 	change_water = ResourceManager::SetSound("Resource/Sounds/Effect/change_water.wav");
 	checkpoint_se = ResourceManager::SetSound("Resource/Sounds/System/check_point.wav");
-	ResourceManager::SetSoundVolume(change_fire,100);
-	ResourceManager::SetSoundVolume(change_wood,100);
-	ResourceManager::SetSoundVolume(change_water,100);
 }
 
 void Stage::Update(ObjectManager* _manager)

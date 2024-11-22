@@ -374,8 +374,8 @@ void EnemyFrog::Hit(Object* _object)
 		{
 			//不利の場合
 		case -1:
-			//スタン状態でないなら実行
-			if (frog_state != FrogState::FAINT)
+			//スタン状態か死亡状態でないなら実行
+			if (frog_state != FrogState::FAINT && frog_state != FrogState::DEATH)
 			{
 				//プレイヤーが左にいるなら右にノックバック
 				if (this->location.x > _object->GetLocation().x)

@@ -36,7 +36,7 @@ void BackGround::Draw(Vector2D _camera_location)const
 {
 	Vector2D shift_location = { -_camera_location.x / (stage_erea.x / (bg_erea.x / 12)) ,-_camera_location.y / (stage_erea.y / (bg_erea.y / 10)) };
 	int r = 0, g = 0, b = 0;
-	int bg_color = (_camera_location.x / 80);
+	int bg_color = /*(_camera_location.x / 80)*/0;	//背景のバグ演出を一旦消す
 
 
 	for (int i = 0; i < 50; i++)
@@ -104,24 +104,24 @@ void BackGround::Draw(Vector2D _camera_location)const
 	//DrawGraph(0, 0, bg_handle, TRUE);
 	//SetDrawScreen(DX_SCREEN_BACK);
 
-	for (int i = 0; i < 50; i++)
-	{
-		if (GetRand(bg_color) > 100)
-		{
-			if (GetRand(1) == 1)
-			{
-				int rand = GetRand(35);
-				DrawFormatStringToHandle(rand * 40, i * 40,GetColor(GetRand(1) * 100, GetRand(1) * 100, GetRand(1) * 100),font_handle[1],"%d",GetRand(9));
-			}
-			else
-			{
-				int rand = GetRand(35);
-				DrawBox(rand * 40, i * 40,
-					rand * 40 + 40, i * 40 + 40,
-					GetColor(GetRand(1) * 100, GetRand(1) * 100, GetRand(1) * 100), TRUE);
-			}
-		}
-	}
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	if (GetRand(bg_color) > 100)
+	//	{
+	//		if (GetRand(1) == 1)
+	//		{
+	//			int rand = GetRand(35);
+	//			DrawFormatStringToHandle(rand * 40, i * 40,GetColor(GetRand(1) * 100, GetRand(1) * 100, GetRand(1) * 100),font_handle[1],"%d",GetRand(9));
+	//		}
+	//		else
+	//		{
+	//			int rand = GetRand(35);
+	//			DrawBox(rand * 40, i * 40,
+	//				rand * 40 + 40, i * 40 + 40,
+	//				GetColor(GetRand(1) * 100, GetRand(1) * 100, GetRand(1) * 100), TRUE);
+	//		}
+	//	}
+	//}
 
 #ifdef _DEBUG
 	DrawStringF(shift_location.x, 300.0f, "左端", 0x00ff00);

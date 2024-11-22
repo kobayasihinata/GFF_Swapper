@@ -4,6 +4,34 @@
 #include "Base/ColorData.h"
 #include "../Scene/Camera.h"
 
+#define PLAYER_STATE_NUM 8	//プレイヤーの状態の数
+
+//画像のパス一覧(playerState順に並べる)
+static char player_imagepath[PLAYER_STATE_NUM][256] =
+{
+	"Resource/Images/sozai/player_wait_R.PNG",
+	"Resource/Images/sozai/player_wait_L.PNG",
+	"Resource/Images/sozai/player_run_R.PNG",
+	"Resource/Images/sozai/player_run_L.PNG",
+	"Resource/Images/sozai/player_wait_R.PNG",
+	"Resource/Images/sozai/player_wait_L.PNG",
+	"Resource/Images/sozai/player_damage_R.PNG",
+	"Resource/Images/sozai/player_damage_L.PNG",
+};
+
+//アニメーション画像枚数、横枚数、縦枚数、横大きさ、縦大きさ、アニメーション回転速度(0はアニメーションではない事を示す)
+static int player_anim_image_num[PLAYER_STATE_NUM][6]
+{
+	{12,4,3,85,100,5},
+	{12,4,3,85,100,5},
+	{12,4,3,100,100,5},
+	{12,4,3,100,100,5},
+	{12,4,3,85,100,0},
+	{12,4,3,85,100,0},
+	{3,3,1,100,100,0},
+	{3,3,1,100,100,0},
+};
+
 class Player :
 	public Object
 {
@@ -18,7 +46,19 @@ public:
 
 	enum playerState
 	{
-		idle,
+		IDLE_RIGHT = 0, 
+		IDLE_LEFT,
+		MOVE_RIGHT,
+		MOVE_LEFT,
+		JUMP_RIGHT,
+		JUMP_LEFT,
+		DAMAGE_RIGHT,
+		DAMAGE_LEFT,
+	};
+
+	enum oldPlayerState
+	{
+		idle=0,
 		moving,
 		jump
 	};
@@ -56,14 +96,17 @@ private:
 	
 	float move[4] = { 0,0,0,0 };
 
-	int pState;//待機、移動、ジャンプ
-	int pStateOld;//待機、移動、ジャンプ
+	playerState p_state;	//プレイヤーの状態管理
+
+	int pState;
+	int pStateOld;
 	bool moveFrontFlg;//向いてる方向
 	bool animFlg;
 	float angle[4];//両手両足
 
 	float circleAng;//カーソルの回転
 
+	int player_image[PLAYER_STATE_NUM];	//プレイヤー画像の格納場所
 	int landing_se;		//着地SE
 	int walk_se[4];		//歩行SE格納
 	int jump_se;		//ジャンプSE格納
@@ -102,10 +145,13 @@ public:
 
 	float GetLength(Vector2D l1, Vector2D l2);
 
+	void LoadPlayerImage();	//プレイヤー画像の読み込み
 	void PlayerSound();		//プレイヤーの状態
 
 	void PlayerAnim();
+	void AnimStateUpdate();		//アニメーションの状態を更新する
 	void DrawPlayer()const;
+	void DrawPlayerImage()const;	//プレイヤー描画の画像版
 	void DrawPlayerFront(bool f)const;
 
 	//引数:もとになる座標、回転させたい座標、回転させたい角度
