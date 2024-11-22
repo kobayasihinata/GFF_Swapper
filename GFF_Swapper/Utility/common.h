@@ -35,10 +35,15 @@ static int ColorList[4]
     0xffffff   //白
 };
 
+#define EAST  0  //東
+#define WEST  1  //西
+#define SOUTH 2  //南
+#define NORTH 3  //北
+
 //ボスの詳細設定
 
 #define BOSS_SIZE 250
-#define BOSS_ATTACK_CD 400			//ボスの色が切り替わって攻撃するまでの間隔
+#define BOSS_ATTACK_CD 600			//ボスの色が切り替わって攻撃するまでの間隔
 
 
 #define B_WOOD_SPAWN_TIME 120		//ボス攻撃竹が生え始める時間(警告を表示する時間)

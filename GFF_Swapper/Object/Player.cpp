@@ -117,22 +117,10 @@ void Player::Update(ObjectManager* _manager)
 			_manager->SpawnEffect(location, erea, ShineEffect, 20, color);
 		}
 
-		//ステージ遷移時に座標だけ移動させる用（体力や色情報などはそのまま）
+		//ステージ遷移時のリセット処理
 		if (_manager->player_respawn_flg)
 		{
-			location = _manager->player_respawn;
-			_manager->player_respawn_flg = false;
-			vector = 0;
-			swapTimer = -1;
-			searchFlg = false;
-			_manager->SetNowCurrentObject(nullptr);
-			draw_color = color;
-		}
-		//メモリ破損の措置（ひなたへ）
-		if (local_location.y > 750)
-		{
-			location = _manager->player_respawn;
-			hp = 5;
+			PlayerReset(_manager);
 		}
 
 		if (stageHitFlg[1][bottom] != true) { //重力
@@ -222,8 +210,8 @@ void Player::Update(ObjectManager* _manager)
 					swap_once = true;
 					emoteFlg = true;
 				}
-
 			}
+
 			//硬直が終わったら色を交換
 			if (--swapTimer < 0)
 			{
@@ -293,7 +281,9 @@ void Player::Update(ObjectManager* _manager)
 		if (damageEffectFlg) {
 			if (damageEffectTime == 90) {
 
-				camera->SetImpact(10);
+				camera->SetImpact(30);
+				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
+				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
 				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
 			}
 			damageEffectTime--;
@@ -360,7 +350,7 @@ void Player::Draw()const
 	}
 	else {
 		if (damageEffectFlg) {
-			if (damageEffectTime % 10 == 0) {
+			if (damageEffectTime % 3 == 0) {
 				DrawPlayer();
 			}
 		}
@@ -586,35 +576,22 @@ void Player::Hit(Object* _object)
 
 	//ダメージ
 	if (!damageEffectFlg &&
-		CheckCollision(_object->GetLocation(), _object->GetErea()) &&
-		(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
-		//色ごとの判定
-		switch (color)
+		(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE) &&
+		CheckCompatibility(this, _object) == -1) {
+
+		damageFlg = true;
+		//ノックバック
+		//プレイヤーが右にいるなら右にノックバック
+		if (this->location.x > _object->GetLocation().x)
 		{
-		case RED:
-			if (_object->GetObjectType() == WATER || _object->GetColorData() == BLUE) {
-				damageFlg = true;
-			}
-			
-			break;
-
-		case BLUE:
-			if (_object->GetObjectType() == WOOD || _object->GetColorData() == GREEN) {
-				damageFlg = true;
-			}
-			
-			break;
-
-		case GREEN:
-			if (_object->GetObjectType() == FIRE || _object->GetColorData() == RED) {
-				damageFlg = true;
-			}
-			
-			break;
-
-		default:
-			break;
+			vector.x += 10;
 		}
+		//プレイヤーが左にいるなら左にノックバック
+		else
+		{
+			vector.x -= 10;
+		}
+		vector.y -= 10;
 	}
 
 	//ダメージゾーンを上書きする
@@ -1917,4 +1894,30 @@ Vector2D Player::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const
 	ret.y += BaseLoc.y;
 
 	return ret;
+}
+
+void Player::PlayerReset(ObjectManager* _manager)
+{
+	//座標をリスポーン地点に設定
+	location = _manager->player_respawn;
+	//移動量を0にする
+	vector = 0;
+	//色交換演出を止める
+	swapTimer = -1;
+	//色交換中かどうかをリセットする
+	searchFlg = false;
+	//プレイヤーによって選択されているオブジェクトをリセットする
+	_manager->SetNowCurrentObject(nullptr);
+	//HPを初期値に戻す
+	hp = 5;
+	//プレイヤーの色を初期色に戻す
+	color = DEFAULT_PLAYER_COLOR;
+	draw_color = color;
+	//プレイヤー再生成フラグを下ろす
+	_manager->player_respawn_flg = false;
+
+	//プレイヤースポーンエフェクトの生成
+	_manager->SpawnEffect({ _manager->player_respawn.x + PLAYER_WIDTH / 2 ,_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, _manager->GetPlayerColor());
+
+	
 }

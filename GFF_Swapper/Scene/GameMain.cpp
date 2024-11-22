@@ -16,6 +16,7 @@
 
 GameMain::GameMain(int _stage) :frame(0), stage_data{ 0 }, now_stage(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), player_object(0), boss_object(0), weather_timer(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
 {
+	old_stage = -1;	//ひとつ前のステージは存在しないため-1
 	now_stage = _stage;
 }
 
@@ -44,7 +45,7 @@ void GameMain::Initialize()
 
 	back_ground = new BackGround();
 
-	SetStage(now_stage, true);
+	SetStage(now_stage);
 
 	back_ground->Initialize({ (float)stage_width,(float)stage_height });
 
@@ -127,15 +128,15 @@ AbstractScene* GameMain::Update()
 
 		if (KeyInput::OnKey(KEY_INPUT_1))
 		{
-			SetStage(0, false);
+			SetStage(0);
 		}
 		if (KeyInput::OnKey(KEY_INPUT_2))
 		{
-			SetStage(1, false);
+			SetStage(1);
 		}
 		if (KeyInput::OnKey(KEY_INPUT_3))
 		{
-			SetStage(2, false);
+			SetStage(2);
 		}
 #endif
 	}
@@ -225,17 +226,23 @@ void GameMain::LoadStageData(int _stage)
 	}
 }
 
-void GameMain::SetStage(int _stage, bool _delete_player)
+void GameMain::SetStage(int _stage)
 {
+	bool first_flg = false;	//ゲームメインに最初に入った時の呼び出しかを格納
 	boss_blind_flg = false;
-	player_flg = false;
 
-	//すべてのオブジェクトを削除
-	object_manager->DeleteAllObject(_delete_player);
+	//プレイヤー以外のすべてのオブジェクトを削除
+	object_manager->DeleteAllObject(false);
 
-	//プレイヤーを消したか判断
-	if (!_delete_player)player_flg = true;
+	//ひとつ前のステージがない(ゲームメインに最初に入った時の呼び出し)なら、プレイヤーを生成する
+	if (old_stage == -1)
+	{
+		object_manager->CreatePlayer(new Player, object_manager->player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, DEFAULT_PLAYER_COLOR);
+		first_flg = true;
+	}
 
+	//現在のステージの更新
+	old_stage = now_stage;
 	now_stage = _stage;
 
 	//背景クラスのステージも変更
@@ -244,9 +251,7 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 	//ファイルの読込
 	LoadStageData(now_stage);
 
-	//デフォルトのプレイヤーリスポーン地点の設定
-	object_manager->player_respawn = { (float)100,(float)stage_height - 200 };
-
+	//ステージを生成するための構造体
 	SpawnData _d;
 
 	for (int i = stage_height_num - 1; i >= 0; i--)
@@ -286,8 +291,12 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 				object_manager->CreateObject(new Stage(stage_data[i][j], 0 , stage_data[i][j]), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j]);
 				break;
 			case PLAYER_BLOCK:
-				//プレイヤーリスポーン地点の設定
-				object_manager->player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
+				//新しいステージに遷移した、もしくはゲームメインに入って最初に生成されたステージなら
+				if (old_stage != now_stage || first_flg)
+				{
+					//プレイヤーリスポーン地点の設定
+					object_manager->player_respawn = { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT };
+				}
 				break;
 			case ENEMY_DEER_RED:
 			case ENEMY_DEER_GREEN:
@@ -324,21 +333,8 @@ void GameMain::SetStage(int _stage, bool _delete_player)
 		}
 	}
 
-	//プレイヤーが居るなら
-	if (player_flg)
-	{
-		//リスポーンフラグを立てる
-		object_manager->player_respawn_flg = true;
-	}
-	//プレイヤーがいないなら
-	else
-	{
-		//プレイヤーの生成
-		object_manager->CreatePlayer(new Player, object_manager->player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, DEFAULT_PLAYER_COLOR);
-	}
-
-	//プレイヤースポーンエフェクトの生成
-	object_manager->SpawnEffect({ object_manager->player_respawn.x + PLAYER_WIDTH / 2 ,object_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, object_manager->GetPlayerColor());
+	//リスポーンフラグを立てる
+	object_manager->player_respawn_flg = true;
 
 	//周辺ステージデータの格納
 	SetStageBlockAround();
@@ -791,8 +787,7 @@ void GameMain::UpdateGameOver()
 		case 0:
 			ResourceManager::StartSound(decision_se);
 			set_sound_once = false;
-			object_manager->CreatePlayer(new Player, object_manager->player_respawn, { PLAYER_WIDTH,PLAYER_HEIGHT }, DEFAULT_PLAYER_COLOR);
-			if (now_stage == 2)SetStage(now_stage, false);
+			SetStage(now_stage);
 			gm_state = GameMainState::S_GameMain;
 			pause_after_flg = true;
 			ResourceManager::StopSound(bgm_title);

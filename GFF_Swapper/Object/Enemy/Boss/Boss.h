@@ -10,12 +10,13 @@
 #include "BossAttackFire.h"
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"
-static float WOOD_SPAWN[5][3]{
+static float WOOD_SPAWN[6][3]{
 	{80,120,160},
-	{315,355,395},
 	{570,610,650},
+	{1080,1120,1160},
+	{315,355,395},
 	{825,865,905},
-	{1080,1120,1160}
+	{-825,-865,-905},
 };
 enum class BossState {
 	MOVE = 0,
@@ -44,10 +45,13 @@ private:
 	float barrier_rad[3];	//バリアの半径
 	int barrier_num;		//バリアの数
 
-	int wood_count;			//木のカウント
+	int wood_count;			//木攻撃の数カウント
+	int fire_count;			//火攻撃の数カウント
 	int wing_color;
 	int part_color[3];
 
+	int attack_count;				//何回攻撃したか測定
+	bool stop_flg;					//ボスの動作を止めておくか判断
 	bool damage_flg;				//ダメージを受けたとき
 	int damage_effect_time = 60;	//ダメージエフェクトの持続時間
 	bool damage_effect_flg = false; // ダメージエフェクトのフラグ

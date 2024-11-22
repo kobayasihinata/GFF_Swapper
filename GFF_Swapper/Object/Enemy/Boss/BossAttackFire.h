@@ -11,11 +11,12 @@ private:
 	bool hitFlg;
 	int boundCnt;
 	bool player_hit;		//プレイヤーに当たったか判断
+	int angle;		//弾の向き 0~3の東西南北
 	int start_se;	//攻撃開始SE
 	int end_se;		//攻撃終了SE
 
 public:
-	BossAttackFire(Vector2D _parent_center_location);
+	BossAttackFire(Vector2D _parent_center_location, int _angle = -1);
 	~BossAttackFire();
 
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
@@ -27,4 +28,5 @@ public:
 	void Hit(Object* _object)override;
 	bool SearchColor(Object* ob) override;
 
+	void SetAngle(ObjectManager* _manager);
 };

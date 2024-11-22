@@ -49,7 +49,8 @@ private:
     BackGround* back_ground;                        //背景描画用
     TutorialText tutorial_text;
 
-    int now_stage;          //現在のステージ数
+    int old_stage;          //ひとつ前のステージ
+    int now_stage;          //現在のステージ
     int stage_width_num;    //ステージの横のブロック数
     int stage_height_num;   //ステージの縦のブロック数
     int stage_width;        //ステージの横の大きさ
@@ -115,8 +116,8 @@ public:
     //ステージデータの読込
     void LoadStageData(int _stage);
 
-    //ステージの生成 _delete_player=プレイヤーをリセットするか
-    void SetStage(int _stage,bool _delete_player);
+    //ステージの生成
+    void SetStage(int _stage);
 
     //現在のステージの取得
     int GetNowStage()const { return now_stage; }

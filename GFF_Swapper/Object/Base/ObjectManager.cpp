@@ -69,6 +69,10 @@ void ObjectManager::Update(GameMain* _g)
 	//更新処理
 	InScreenUpdate();
 
+	//プレイヤー更新
+	PlayerUpdate(_g);
+
+
 	//画面内のオブジェクトを更新する処理
 	if (!GetSearchFlg() || (GetSearchFlg()&& frame % 10 == 0))
 	{
@@ -100,11 +104,8 @@ void ObjectManager::Update(GameMain* _g)
 		HitCheck();
 
 		//ボスの更新
-		if(boss_object != nullptr)BossUpdate();
+		if (boss_object != nullptr)BossUpdate();
 	}
-
-	//プレイヤー更新
-	PlayerUpdate(_g);
 
 	//管理クラスの更新
 	effect_spawner->Update(this);
@@ -121,7 +122,7 @@ void ObjectManager::Update(GameMain* _g)
 	//ステージの変更があるなら変更
 	if (change_stage != -1)
 	{
-		_g->SetStage(change_stage, false);
+		_g->SetStage(change_stage);
 		change_stage = -1;
 	}
 }

@@ -1,15 +1,29 @@
 #pragma once
 #include "../../Base/Object.h"
+#include "../../../Utility/common.h"
 #include "BossAttackFire.h"
 #include "BossAttackWood.h"
 #include "BossAttackWater.h"
+#include "../../../Scene/Camera.h"
+
+#define CANNON_STOP 100  //プレイヤーがこの数値より近いところにいるなら、弾を止める
+
+//弾の発射間隔(フレーム)赤緑青の順番
+static int cannon_cooldown[3]
+{
+	120,
+	300,
+	90
+};
 
 class Cannon :
     public Object
 {
 private:
+	class Camera* camera;	//カメラ
     int cannon_type;        //打ち出す弾の種類 0=赤 1=緑 2=青
-    int cannon_angle;       //打ち出す弾の向き 4方向
+    int cannon_angle;       //打ち出す弾の向き 4方向　東西南北
+	bool cannon_stop;		//弾を撃つか判断
 public:
 	/// <summary>
 	/// コンストラクタ

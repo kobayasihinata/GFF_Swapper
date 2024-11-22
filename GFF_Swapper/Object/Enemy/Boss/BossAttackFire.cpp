@@ -2,9 +2,10 @@
 #include "../../../Scene/GameMain.h"
 #include "../../../Utility/ResourceManager.h"
 
-BossAttackFire::BossAttackFire(Vector2D _parent_center_location)
+BossAttackFire::BossAttackFire(Vector2D _parent_center_location, int _angle)
 {
 	this->parent_center_location = _parent_center_location;
+	angle = _angle;
 	camera = Camera::Get();
 	type = FIRE;
 	can_swap = FALSE;
@@ -44,14 +45,10 @@ void BossAttackFire::Update(ObjectManager* _manager)
 {
 	__super::Update(_manager);
 
+	//一回だけ移動方向計算
 	if (!flg) {
 
-		//プレイヤーとボスの座標からベクトルを計算
-		Vector2D player = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2), 
-							_manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
-		float rad = atan2f(player.y - parent_center_location.y, player.x - parent_center_location.x);
-		velocity.x = 5 * cosf(rad);
-		velocity.y = 5 * sinf(rad);
+		SetAngle(_manager);
 
 		flg = true;
 	}
@@ -101,13 +98,54 @@ void BossAttackFire::Draw() const
 
 void BossAttackFire::Hit(Object* _object)
 {
-	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WOOD) && _object->GetColorData() != WHITE) {
+	//草ダメージゾーンに当たったら色だけ変える
+	if (_object->GetObjectType() == WOOD && !_object->GetCanSwap())
+	{
+		_object->SetColorData(color);
+		return;
+	}
+	//地面ブロックか木に当たったら色を上書きしてフラグを立てる
+	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WOOD) && _object->GetColorData() != WHITE && !_object->GetIsBossAttack()) {
 		_object->SetCanSwap(TRUE);
 		_object->SetColorData(color);
+		hitFlg = true;
 	}
 }
 
 bool BossAttackFire::SearchColor(Object* ob)
 {
 	return false;
+}
+
+void BossAttackFire::SetAngle(ObjectManager* _manager)
+{
+	switch (angle)
+	{
+		//東
+	case EAST:
+		velocity = { 5,0 };
+		break;
+		//西
+	case WEST:
+		velocity = { -5,0 };
+		break;
+		//南
+	case SOUTH:
+		velocity = { 0,5 };
+		break;
+		//北
+	case NORTH:
+		velocity = { 0,-5 };
+		break;
+		//それ以外
+	default:
+		//プレイヤーとボスの座標からベクトルを計算
+		Vector2D player = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2),
+							_manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
+		float rad = atan2f(player.y - parent_center_location.y, player.x - parent_center_location.x);
+		velocity.x = 5 * cosf(rad);
+		velocity.y = 5 * sinf(rad);
+		break;
+	}
+
 }
