@@ -36,7 +36,8 @@ enum BlockList	{
 	TUTOSTAGE_TRANSITION,
 	FIRSTSTAGE_TRANSITION,
 	BOSSSTAGE_TRANSITION,
-	TUTORIAL_RANGE,
+	TUTORIAL_RANGE_1,
+	TUTORIAL_RANGE_2,
 	CANNON_FIRE,
 	CANNON_WOOD,
 	CANNON_WATER,
@@ -57,7 +58,7 @@ static int color_data[9]
 };
 
 //Edit表示用文字色データ
-static int text_color[29]
+static int text_color[30]
 {
 	0xffffff,	//無
 	0x000000,	//白ブロック
@@ -89,6 +90,8 @@ static int text_color[29]
 	0x000000,	//ボスステージ遷移
 
 	0xff00ff,	//チュートリアル開始範囲
+	0xffffff,
+
 	0xff0000,	//砲台赤
 	0x00ff00,	//砲台緑
 	0x0000ff,	//砲台青

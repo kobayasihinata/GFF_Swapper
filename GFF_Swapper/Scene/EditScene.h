@@ -5,7 +5,7 @@
 #include "../Object/Stage.h"
 #include "../Utility/KeyInput.h"
 
-#define OBJECT_TYPE_NUM 28       //配置できるオブジェクトの種類数
+#define OBJECT_TYPE_NUM 29       //配置できるオブジェクトの種類数
 #define UI_OBJECT_TYPE_NUM 12     //配置できるオブジェクトの項目数
 #define WIDTH_BUTTON_POS_X 100   //横幅調節ボタンのX位置
 #define WIDTH_BUTTON_POS_Y 40    //横幅調節ボタンのY位置
@@ -54,7 +54,7 @@ static int can_select_type[UI_OBJECT_TYPE_NUM][2] =
     {1,3},
     {0,1},
     {1,3},
-    {0,1},
+    {1,2},
     {1,3},
 };
 static char block_type_string[UI_OBJECT_TYPE_NUM][5][256] =
@@ -69,7 +69,7 @@ static char block_type_string[UI_OBJECT_TYPE_NUM][5][256] =
     {"r_f","g_f","b_f"," "," ",},
     {"boss"," "," "," "," "},
     {"tuto","1st","boss"," "," "},
-    {"range"," "," "," "," "},
+    {"tuto1","tuto2"," "," "," "},
     {"fire","wood","water"," "," "},
 };
 
@@ -104,7 +104,8 @@ static int draw_block_color[OBJECT_TYPE_NUM]
     0xffffff,   //チュートリアル遷移
     0xffffff,   //ステージ１遷移
     0xffffff,   //ボス遷移
-    0xff00ff,	//チュートリアル開始範囲
+    0xff00ff,	//チュートリアル開始範囲1
+    0xffffff,   //チュートリアル開始範囲2
 
     0xff0000,	//ボス砲台
     0x00ff00,	//ボス砲台

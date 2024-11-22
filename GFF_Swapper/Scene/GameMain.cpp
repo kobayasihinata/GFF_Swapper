@@ -317,8 +317,10 @@ void GameMain::SetStage(int _stage)
 				object_manager->CreateBoss(new Boss, { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 250,250 }, ColorList[stage_data[i][j] - 20]);
 				break;
 				//チュートリアル開始範囲
-			case TUTORIAL_RANGE:
-				object_manager->CreateObject(new Tutorial, {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {50, 250}, stage_data[i][j]);
+			case TUTORIAL_RANGE_1:
+			case TUTORIAL_RANGE_2:
+				object_manager->CreateObject(new Tutorial(stage_data[i][j]), {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {50, 250}, stage_data[i][j]);
+				break;
 			case CANNON_FIRE:
 			case CANNON_WOOD:
 			case CANNON_WATER:
