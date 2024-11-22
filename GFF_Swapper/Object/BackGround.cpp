@@ -41,7 +41,7 @@ void BackGround::Draw(Vector2D _camera_location)const
 
 	for (int i = 0; i < 50; i++)
 	{
-		if (now_stage == 2 && is_clear == false)
+		if (now_stage == STAGE_NUM-1 && is_clear == false)
 		{
 			r = 0;
 			g = 0;
@@ -79,7 +79,8 @@ void BackGround::Draw(Vector2D _camera_location)const
 			GetColor(r, g, b), true);
 	}
 
-	if (now_stage != 2)
+	//ボスエリア以外の背景
+	if (now_stage != STAGE_NUM-1)
 	{
 		//後でランダムな形で生成するようにする
 		DrawMountain({ shift_location.x - 200, shift_location.y - 50 }, { 300,300 }, 0.1f,bg_color);

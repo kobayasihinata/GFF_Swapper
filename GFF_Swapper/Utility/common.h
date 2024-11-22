@@ -24,7 +24,7 @@
 
 #define FADEIN_TIME 120				//ゲームメインに遷移して来た時のフェードイン演出の時間
 
-#define STAGE_NUM 3					//ステージ数
+#define STAGE_NUM 4					//ステージ数
 
 //色を数字で取得する
 static int ColorList[4]
