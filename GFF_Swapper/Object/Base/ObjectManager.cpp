@@ -125,12 +125,6 @@ void ObjectManager::Update(GameMain* _g)
 		_g->SetStage(change_stage);
 		change_stage = -1;
 	}
-
-	//ボスステージに変更
-	if (camera->GetStageSize().x - 100 < player_object->GetLocation().x && _g->GetNowStage() == 2)
-	{
-		_g->SetStage(3);
-	}
 }
 
 void ObjectManager::Draw()const
@@ -341,9 +335,6 @@ void ObjectManager::PlayerUpdate(GameMain* _g)
 		//プレイヤーが落下したときに死亡判定とする
 		if (player_object->GetLocation().y > camera->GetStageSize().y + 100)
 		{
-			//ステージとプレイヤーをリセット
-			//SetStage(now_stage, true);
-
 			change_state = GameMainState::GameOver;
 		}
 	}
