@@ -125,6 +125,12 @@ void ObjectManager::Update(GameMain* _g)
 		_g->SetStage(change_stage);
 		change_stage = -1;
 	}
+
+	//ボスステージに変更
+	if (camera->GetStageSize().x - 100 < player_object->GetLocation().x && _g->GetNowStage() == 2)
+	{
+		_g->SetStage(3);
+	}
 }
 
 void ObjectManager::Draw()const
