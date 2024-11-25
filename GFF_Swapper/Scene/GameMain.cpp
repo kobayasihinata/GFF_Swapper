@@ -287,7 +287,8 @@ void GameMain::SetStage(int _stage)
 				//object_manager->CreateObject(new Stage(stage_data[i][j],stage_height), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { BOX_WIDTH ,BOX_HEIGHT }, stage_data[i][j], block_around_data);
 				object_manager->CreateObject(_d);
 				break;
-			case TUTOSTAGE_TRANSITION:
+			case TUTOSTAGE_ONE_TRANSITION:
+			case TUTOSTAGE_TWO_TRANSITION:
 			case FIRSTSTAGE_TRANSITION:
 			case BOSSSTAGE_TRANSITION:
 				//遷移ブロックを生成
@@ -331,7 +332,7 @@ void GameMain::SetStage(int _stage)
 			case CANNON_FIRE:
 			case CANNON_WOOD:
 			case CANNON_WATER:
-				object_manager->CreateObject(new Cannon(stage_data[i][j] - 25, 0), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 40, 40 }, stage_data[i][j]);
+				object_manager->CreateObject(new Cannon(stage_data[i][j] - CANNON_FIRE, 0), { (float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT }, { 40, 40 }, stage_data[i][j]);
 			default:
 				break;
 			}

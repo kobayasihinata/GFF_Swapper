@@ -8,7 +8,7 @@
 Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4)
 {
 	block_type = _type;
-	next_stage = _next_stage - 21;
+	next_stage = _next_stage - TUTOSTAGE_ONE_TRANSITION;
 
 	//炎
 	if (_type == RED_BLOCK || _type == FIRE_BLOCK)
@@ -26,7 +26,7 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 		type = WATER;
 	}
 	//ステージ変更ブロック
-	else if (_type == BOSSSTAGE_TRANSITION || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION)
+	else if (_type == BOSSSTAGE_TRANSITION || _type == TUTOSTAGE_ONE_TRANSITION || _type == TUTOSTAGE_TWO_TRANSITION || _type == FIRSTSTAGE_TRANSITION)
 	{
 		type = CHANGESTAGE;
 	}
@@ -41,7 +41,7 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 		type = BLOCK;
 	}
 	//すり抜けるブロック
-	if (_type == PLAYER_RESPAWN_BLOCK || _type == TUTOSTAGE_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
+	if (_type == PLAYER_RESPAWN_BLOCK || _type == TUTOSTAGE_ONE_TRANSITION || _type == TUTOSTAGE_TWO_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
 	{
 		can_hit = FALSE;
 	}
@@ -151,7 +151,7 @@ void Stage::Update(ObjectManager* _manager)
 	}
 
 	//ステージ遷移ブロックに触れたら遷移
-	if (hit_flg == true && (block_type == TUTOSTAGE_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION))
+	if (hit_flg == true && (block_type == TUTOSTAGE_ONE_TRANSITION || block_type == TUTOSTAGE_TWO_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION))
 	{
 		_manager->change_stage = next_stage;
 	}
@@ -277,7 +277,8 @@ void Stage::Draw()const
 			DrawBoxAA(local_location.x, local_location.y + erea.y - 4, local_location.x + erea.x, local_location.y + erea.y, respawn_color, TRUE);
 			break;
 			//ステージ遷移ブロック
-		case TUTOSTAGE_TRANSITION:
+		case TUTOSTAGE_ONE_TRANSITION:
+		case TUTOSTAGE_TWO_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
 		case BOSSSTAGE_TRANSITION:
 			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(GetRand(255), GetRand(255), GetRand(255)), true);
@@ -340,7 +341,8 @@ void Stage::Draw()const
 			DrawStringF(local_location.x, local_location.y, "boss", text_color[block_type]);
 			break;
 			//ステージ遷移ブロック
-		case TUTOSTAGE_TRANSITION:
+		case TUTOSTAGE_ONE_TRANSITION:
+		case TUTOSTAGE_TWO_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
 		case BOSSSTAGE_TRANSITION:
 			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%s", stage_string[next_stage]);

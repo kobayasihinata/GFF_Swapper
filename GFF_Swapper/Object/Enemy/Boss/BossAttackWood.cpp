@@ -105,15 +105,22 @@ void BossAttackWood::Draw() const
 
 void BossAttackWood::Hit(Object* _object)
 {
-	//水ダメージゾーンに当たったら色だけ変える
-	if (_object->GetObjectType() == WATER && !_object->GetCanSwap())
+	//他のボス攻撃には干渉しない
+	if (!_object->GetIsBossAttack())
 	{
-		_object->SetColorData(color);
-		return;
-	}
-	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WATER) && _object->GetColorData() != WHITE) {
-		_object->SetCanSwap(TRUE);
-		_object->SetColorData(color);
+		//水ダメージゾーンに当たったら色だけ変える
+		if (_object->GetObjectType() == WATER &&
+			!_object->GetCanSwap())
+		{
+			_object->SetColorData(color);
+			return;
+		}
+		if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WATER) &&
+			_object->GetColorData() != WHITE &&
+			_object->GetLocation().y < start_location_y) {
+			_object->SetCanSwap(TRUE);
+			_object->SetColorData(color);
+		}
 	}
 }
 

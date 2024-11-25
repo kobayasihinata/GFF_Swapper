@@ -98,17 +98,22 @@ void BossAttackFire::Draw() const
 
 void BossAttackFire::Hit(Object* _object)
 {
-	//草ダメージゾーンに当たったら色だけ変える
-	if (_object->GetObjectType() == WOOD && !_object->GetCanSwap())
+	//他のボス攻撃には干渉しない
+	if (!_object->GetIsBossAttack())
 	{
-		_object->SetColorData(color);
-		return;
-	}
-	//地面ブロックか木に当たったら色を上書きしてフラグを立てる
-	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WOOD) && _object->GetColorData() != WHITE && !_object->GetIsBossAttack()) {
-		_object->SetCanSwap(TRUE);
-		_object->SetColorData(color);
-		hitFlg = true;
+		//草ダメージゾーンに当たったら色だけ変える
+		if (_object->GetObjectType() == WOOD &&
+			!_object->GetCanSwap())
+		{
+			_object->SetColorData(color);
+			return;
+		}
+		//地面ブロックか木に当たったら色を上書きしてフラグを立てる
+		if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WOOD) && _object->GetColorData() != WHITE && !_object->GetIsBossAttack()) {
+			_object->SetCanSwap(TRUE);
+			_object->SetColorData(color);
+			hitFlg = true;
+		}
 	}
 }
 

@@ -33,7 +33,8 @@ enum BlockList	{
 	ENEMY_FROG_GREEN,	
 	ENEMY_FROG_BLUE	,
 	ENEMY_BOSS,
-	TUTOSTAGE_TRANSITION,
+	TUTOSTAGE_ONE_TRANSITION,
+	TUTOSTAGE_TWO_TRANSITION,
 	FIRSTSTAGE_TRANSITION,
 	BOSSSTAGE_TRANSITION,
 	TUTORIAL_RANGE_1,
@@ -86,21 +87,22 @@ static int text_color[30]
 
 	0xffffff,	//ボス
 	0x000000,	//チュートリアルステージ遷移
+	0x000000,	//チュートリアルステージ遷移
 	0x000000,	//１ステージ遷移
 	0x000000,	//ボスステージ遷移
 
 	0xff00ff,	//チュートリアル開始範囲
 	0xffffff,
-
 	0xff0000,	//砲台赤
 	0x00ff00,	//砲台緑
 	0x0000ff,	//砲台青
 
 };
 
-static char stage_string[3][256] =
+static char stage_string[4][256] =
 {
-	"tuto",
+	"tuto1",
+	"tuto2",
 	"1st",
 	"boss"
 };

@@ -130,16 +130,21 @@ void BossAttackWater::Draw() const
 
 void BossAttackWater::Hit(Object* _object)
 {
-	//火ダメージゾーンに当たったら色だけ変える
-	if (_object->GetObjectType() == FIRE && !_object->GetCanSwap())
+	//他のボス攻撃には干渉しない
+	if (!_object->GetIsBossAttack())
 	{
-		_object->SetColorData(color);
-		return;
-	}
-	if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == FIRE) && _object->GetColorData() != WHITE && _object->GetIsBossAttack() == FALSE) {
-		_object->SetCanSwap(TRUE);
-		_object->SetColorData(color);
-		hitFlg = true;
+		//火ダメージゾーンに当たったら色だけ変える
+		if (_object->GetObjectType() == FIRE &&
+			!_object->GetCanSwap())
+		{
+			_object->SetColorData(color);
+			return;
+		}
+		if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == FIRE) && _object->GetColorData() != WHITE && _object->GetIsBossAttack() == FALSE) {
+			_object->SetCanSwap(TRUE);
+			_object->SetColorData(color);
+			hitFlg = true;
+		}
 	}
 }
 
