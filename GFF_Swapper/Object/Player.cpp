@@ -627,7 +627,7 @@ void Player::Hit(Object* _object)
 	}
 
 	//不利な属性のブロックかダメージゾーンと当たった時の処理
-	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == FIRE) && CheckCompatibility(this, _object) == -1)
+	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER) && CheckCompatibility(this, _object) == -1)
 	{
 		damageFlg = true;
 	}
