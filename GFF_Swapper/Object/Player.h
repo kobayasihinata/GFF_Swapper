@@ -63,8 +63,8 @@ public:
 		jump
 	};
 private:
-	class Camera* camera;
-	Vector2D vector; //プレイヤーのベクトル
+	class Camera* camera;		//カメラ情報
+	Vector2D velocity;			//プレイヤーのベクトル
 	bool stageHitFlg[2][4]; //プレイヤーとステージの当たり判定
 	//0の行はステージのブロック一つ一つに対しての判定
 	//1の行は1フレームでステージ全体との判定

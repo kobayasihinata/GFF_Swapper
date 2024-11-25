@@ -67,7 +67,7 @@ Boss::Boss() :
 	wing_color = 0;
 
 	change_color_timer = 0.0f;
-	next_color = 0;
+	next_color = RED;
 	change_rand = 0;
 
 	boss_color = BOSS_RED;
@@ -340,16 +340,29 @@ void Boss::Draw() const
 		int delay1 = cnt + 5;
 		int delay2 = cnt + 10;
 		int delay3 = cnt + 15;
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*10), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*10), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*10), 100, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*10), 100, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*10),      6, next_color,	false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*10)-2,    6, 0xffffff,	false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*10),   6, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*10)-2, 6, 0xffffff, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*10),   6, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*10)-2, 6, 0xffffff, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*10),   6, next_color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*10)-2, 6, 0xffffff, false);
 	}
 	else
 	{
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-260)*20, 100, color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-250)*20, 100, color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-240)*20, 100, color, false);
+		//攻撃の強さによって出る線が変わる
+		for (int i = 0; i < attack_count / 4 + 1; i++)
+		{
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260-(i*10)) * 25, 6, color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25 - 2, 6, 0xffffff, false);
+		}
+		/*DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-260)*20    , 6, color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-260)*20 - 2, 6, 0xffffff, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-250)*20,     6, color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-250)*20 - 2, 6, 0xffffff, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-240)*20,     6, color, false);
+		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-240)*20 - 2, 6, 0xffffff, false);*/
 
 	}
 

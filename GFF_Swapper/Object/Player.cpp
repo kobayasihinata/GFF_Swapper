@@ -15,8 +15,8 @@ Player::Player()
 	can_swap = TRUE;	//プレイヤーのcan_swapは真でも偽でも大丈夫
 	can_hit = TRUE;
 
-	vector = { 0,0 };
-	saveVec = vector;
+	velocity = { 0,0 };
+	saveVec = velocity;
 
 	for (int i = 0; i < 4; i++) {
 		stageHitFlg[1][i] = false;
@@ -115,7 +115,7 @@ void Player::Update(ObjectManager* _manager)
 		}
 
 		//移動エフェクト
-		if (vector.x != 0 || vector.y != 0)
+		if (velocity.x != 0 || velocity.y != 0)
 		{
 			_manager->SpawnEffect(location, erea, ShineEffect, 20, color);
 		}
@@ -131,25 +131,25 @@ void Player::Update(ObjectManager* _manager)
 			{
 			case 0:
 				if (searchFlg) {
-					vector.y += 1.f * 0.02f;
+					velocity.y += 1.f * 0.02f;
 				}
 				else {
-					vector.y += 1.f;
+					velocity.y += 1.f;
 				}
-				if (vector.y > 16.f) {
-					vector.y = 16.f;
+				if (velocity.y > 16.f) {
+					velocity.y = 16.f;
 				}
 				break;
 
 			case 1:
 				if (searchFlg) {
-					vector.y += 0.5f * 0.02f;
+					velocity.y += 0.5f * 0.02f;
 				}
 				else {
-					vector.y += 0.5f;
+					velocity.y += 0.5f;
 				}
-				if (vector.y > 8.f) {
-					vector.y = 8.f;
+				if (velocity.y > 8.f) {
+					velocity.y = 8.f;
 				}
 				break;
 
@@ -167,7 +167,7 @@ void Player::Update(ObjectManager* _manager)
 				ResourceManager::StartSound(landing_se);
 				effect_once = true;
 			}
-			vector.y = 0.f;
+			velocity.y = 0.f;
 		}
 
 		if (objNum <= 0) {
@@ -245,16 +245,16 @@ void Player::Update(ObjectManager* _manager)
 		AnimStateUpdate();	//アニメーションの状態更新
 
 		//加速度が早すぎる場合移動しない
-		if (fabsf(vector.x) > 50)vector.x = 0;
-		if (fabsf(vector.y) > 50)vector.y = 0;
+		if (fabsf(velocity.x) > 50)velocity.x = 0;
+		if (fabsf(velocity.y) > 50)velocity.y = 0;
 
 		if (searchFlg) {
-			location.x += vector.x * 0.02f;
-			location.y += vector.y * 0.02f;
+			location.x += velocity.x * 0.02f;
+			location.y += velocity.y * 0.02f;
 		}
 		else {
-			location.x += vector.x;
-			location.y += vector.y;
+			location.x += velocity.x;
+			location.y += velocity.y;
 		}
 
 		//交換中だけ対象のオブジェクトの見た目を白くする
@@ -306,8 +306,8 @@ void Player::Update(ObjectManager* _manager)
 
 		if (hp <= 0) {
 			damageEffectFlg = false;
-			vector.x = 0.f;
-			vector.y = 0.f;
+			velocity.x = 0.f;
+			velocity.y = 0.f;
 		}
 
 		for (int i = 0; i < 4; i++) {
@@ -446,12 +446,7 @@ void Player::Hit(Object* _object)
 	if (
 			(
 				(_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE)||
-				(_object->GetCanSwap() == TRUE && 
-				(
-					(_object->GetObjectType() == FIRE && this->color == RED) ||
-					(_object->GetObjectType() == WOOD && this->color == GREEN)||
-					(_object->GetObjectType() == WATER && this->color == BLUE)
-				)
+				(_object->GetCanSwap() == TRUE && _object->CheckCompatibility(this,_object) == 0
 			)
 		)
 	{
@@ -496,7 +491,7 @@ void Player::Hit(Object* _object)
 		if (stageHitFlg[0][top]) {//上方向に埋まっていたら
 			float t = (_object->GetLocation().y + _object->GetErea().y) - location.y;
 			if (t != 0) {
-				vector.y = 0.f;
+				velocity.y = 0.f;
 				move[top] = t;
 			}
 		}
@@ -555,7 +550,7 @@ void Player::Hit(Object* _object)
 		if (stageHitFlg[0][left]) {//左方向に埋まっていたら
 			float t = (_object->GetLocation().x + _object->GetErea().x) - location.x;
 			if (t != 0) {
-				vector.x = 0.f;
+				velocity.x = 0.f;
 				move[left] = t;
 			}
 		}
@@ -564,7 +559,7 @@ void Player::Hit(Object* _object)
 		if (stageHitFlg[0][right]) {//右方向に埋まっていたら
 			float t = _object->GetLocation().x - (location.x + erea.x);
 			if (t != 0) {
-				vector.x = 0.f;
+				velocity.x = 0.f;
 				move[right] = t;
 			}
 		}
@@ -603,19 +598,19 @@ void Player::Hit(Object* _object)
 				//プレイヤーが右にいるなら右にノックバック
 				if (this->location.x > _object->GetLocation().x)
 				{
-					vector.x += 10;
+					velocity.x += 10;
 				}
 				//プレイヤーが左にいるなら左にノックバック
 				else
 				{
-					vector.x -= 10;
+					velocity.x -= 10;
 				}
-				vector.y -= 10;
+				velocity.y -= 10;
 			}
 			break;
 			//あいこの場合
 		case 0:
-			vector.x = (vector.x*1.2f) * -1;
+			velocity.x = (velocity.x*1.2f) * -1;
 			break;
 			//有利の場合
 		case 1:
@@ -663,7 +658,7 @@ void Player::Hit(Object* _object)
 	//ボスの木攻撃に当たった時、プレイヤーを跳ねさせる
 	if (_object->GetObjectType() == BLOCK && _object->GetIsBossAttack() == TRUE && _object->GetLocation().y > this->location.y)
 	{
-		vector.y = -20;
+		velocity.y = -20;
 	}
 
 	//チュートリアル
@@ -681,12 +676,12 @@ void Player::MoveActor()
 		{
 		case 0:
 			if (stageHitFlg[1][bottom]) {
-				vector.y = -23.f;
+				velocity.y = -23.f;
 			}
 			break;
 
 		case 1:
-			vector.y = -23.f;
+			velocity.y = -23.f;
 
 			break;
 
@@ -701,46 +696,46 @@ void Player::MoveActor()
 	if (!searchFlg) {
 		//サーチ状態の時のベクトルを代入
 		if (oldSearchFlg) {
-			vector = saveVec;
+			velocity = saveVec;
 		}
 
 		if (PadInput::TipLStick(STICKL_X) > 0.1f) {
 			stick = PadInput::TipLStick(STICKL_X);
-			vector.x += stick * 1.f;
-			if (vector.x > 7.5f) {
-				vector.x = 7.5f;
+			velocity.x += stick * 1.f;
+			if (velocity.x > 7.5f) {
+				velocity.x = 7.5f;
 			}
 			pState = moving;
 			moveFrontFlg = true;
 		}
 		else if (PadInput::TipLStick(STICKL_X) < -0.1f) {
 			stick = PadInput::TipLStick(STICKL_X);
-			vector.x += stick * 1.f;
-			if (vector.x < -7.5f) {
-				vector.x = -7.5f;
+			velocity.x += stick * 1.f;
+			if (velocity.x < -7.5f) {
+				velocity.x = -7.5f;
 			}
 			pState = moving;
 			moveFrontFlg = false;
 		}
 		else {
-			if (vector.x > 0.1f) {
-				vector.x += -0.2f;
+			if (velocity.x > 0.1f) {
+				velocity.x += -0.2f;
 			}
-			else if (vector.x < 0.1f) {
-				vector.x += 0.2f;
+			else if (velocity.x < 0.1f) {
+				velocity.x += 0.2f;
 			}
 
 			pState = moving;
 
-			if (vector.x > -0.4f && vector.x < 0.4f) {
-				vector.x = 0.f;
+			if (velocity.x > -0.4f && velocity.x < 0.4f) {
+				velocity.x = 0.f;
 				pState = idle;
 			}
 		}
 	}
 	else {
 		if (!oldSearchFlg) {
-			saveVec = vector;
+			saveVec = velocity;
 		}
 	}
 
@@ -1402,7 +1397,7 @@ void Player::PlayerSound()
 	if (searchFlg == FALSE || (searchFlg == TRUE && frame % 10 == 0))
 	{
 		//プレイヤー歩行
-		if (stageHitFlg[1][bottom] == true && vector.x != 0 && frame % 15 == 0)
+		if (stageHitFlg[1][bottom] == true && velocity.x != 0 && frame % 15 == 0)
 		{
 			ResourceManager::StartSound(walk_se[now_riding]);
 		}
@@ -1432,7 +1427,7 @@ void Player::PlayerAnim()
 
 	case moving:
 		float speed;
-		speed = abs(vector.x) * 0.3f;
+		speed = abs(velocity.x) * 0.3f;
 		if (searchFlg) {
 			speed = speed * 0.02f;
 		}
@@ -1507,7 +1502,7 @@ void Player::AnimStateUpdate()
 		else
 		{
 			//idle状態判定
-			if (vector.x > -0.4f && vector.x < 0.4f) 
+			if (velocity.x > -0.4f && velocity.x < 0.4f) 
 			{
 				p_state = playerState::IDLE_RIGHT;
 		
@@ -1535,7 +1530,7 @@ void Player::AnimStateUpdate()
 		else
 		{
 			//idle状態判定
-			if (vector.x > -0.4f && vector.x < 0.4f)
+			if (velocity.x > -0.4f && velocity.x < 0.4f)
 			{
 				p_state = playerState::IDLE_LEFT;
 
@@ -2020,7 +2015,7 @@ void Player::PlayerReset(ObjectManager* _manager)
 	//座標をリスポーン地点に設定
 	location = _manager->player_respawn;
 	//移動量を0にする
-	vector = 0;
+	velocity = 0;
 	//色交換演出を止める
 	swapTimer = -1;
 	//色交換中かどうかをリセットする
