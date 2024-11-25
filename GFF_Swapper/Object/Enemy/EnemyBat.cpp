@@ -463,7 +463,7 @@ void EnemyBat::Hit(Object* _object)
 				//プレイヤーが上にいるなら下にノックバック
 				if (this->location.y > _object->GetLocation().y)
 				{
-					vector.y = 20;
+					vector.y = 40;
 				}
 				//プレイヤーが下にいるなら上にノックバック
 				else
@@ -476,26 +476,28 @@ void EnemyBat::Hit(Object* _object)
 			break;
 			//あいこの場合
 		case 0:
-			//プレイヤーが左にいるなら右にノックバック
-			if (this->location.x > _object->GetLocation().x)
-			{
-				vector.x = 10;
-			}
-			//プレイヤーが右にいるなら左にノックバック
-			else
-			{
-				vector.x = -10;
-			}
-			//プレイヤーが上にいるなら下にノックバック
-			if (this->location.y > _object->GetLocation().y)
-			{
-				vector.y = 10;
-			}
-			//プレイヤーが下にいるなら上にノックバック
-			else
-			{
-				vector.y = -10;
-			}
+			////プレイヤーが左にいるなら右にノックバック
+			//if (this->location.x > _object->GetLocation().x)
+			//{
+			//	vector.x = -10;
+			//}
+			////プレイヤーが右にいるなら左にノックバック
+			//else
+			//{
+			//	vector.x = -10;
+			//}
+			////プレイヤーが上にいるなら下にノックバック(プレイヤーを壁内に追いやらないように強め)
+			//if (this->location.y > _object->GetLocation().y)
+			//{
+			//	vector.y = -20;
+			//}
+			////プレイヤーが下にいるなら上にノックバック
+			//else
+			//{
+			//	vector.y = -20;
+			//}
+			vector.x = -10;
+			vector.y = -20;
 			break;
 			//有利の場合
 		case 1:

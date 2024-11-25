@@ -46,17 +46,17 @@ Player::Player()
 	damageFlg = false;
 	damageOldFlg = false;
 	hp = 5;
+	damageEffectTime = 90;
+	damageEffectFlg = false;
 	state = 0;
 	stateFlg = false;
 	fps = 0;
-	oldObjNum = 0;
 	for (int i = 0; i < 4; i++)
 	{
 		angle[i] = 0.f;
 	}
-	p_state = playerState::MOVE_RIGHT;
-	pState = idle;
-	pStateOld = idle;
+	p_state = PlayerState::MOVE_RIGHT;
+	pStateOld = PlayerState::MOVE_RIGHT;
 	moveFrontFlg = true;
 	animFlg = false;	
 	circleAng = 0.f;
@@ -236,7 +236,7 @@ void Player::Update(ObjectManager* _manager)
 			}
 		}
 
-		pStateOld = pState;
+		pStateOld = p_state;
 		if (hp > 0) {
 			MoveActor();
 		}
@@ -427,6 +427,7 @@ void Player::Draw()const
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
 #ifdef _DEBUG
+	DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);
 	DebugInfomation::Add("x", location.x);
 	DebugInfomation::Add("swap_timer", swapTimer);
 	DebugInfomation::Add("y", location.y);
@@ -441,6 +442,46 @@ void Player::Finalize()
 void Player::Hit(Object* _object)
 {
 	__super::Hit(_object);
+
+	//敵と当たった時の処理
+	if (_object->GetObjectType() == ENEMY)
+	{
+		//プレイヤーとの属性相性で処理を変える
+		switch (CheckCompatibility(this, _object))
+		{
+			//不利の場合
+		case -1:
+			//ダメージ
+			if (!damageEffectFlg &&
+				(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
+
+				damageFlg = true;
+				//ノックバック
+				//プレイヤーが右にいるなら右にノックバック
+				if (this->location.x > _object->GetLocation().x)
+				{
+					velocity.x += 10;
+				}
+				//プレイヤーが左にいるなら左にノックバック
+				else
+				{
+					velocity.x -= 10;
+				}
+				velocity.y -= 10;
+			}
+			break;
+			//あいこの場合
+		case 0:
+			velocity.x = (velocity.x * 1.2f) * -1;
+			break;
+			//有利の場合
+		case 1:
+			break;
+			//それ以外
+		default:
+			break;
+		}
+	}
 
 	//ブロックと当たった時の処理
 	if (
@@ -581,46 +622,6 @@ void Player::Hit(Object* _object)
 
 	}
 
-	//敵と当たった時の処理
-	if (_object->GetObjectType() == ENEMY)
-	{
-		//プレイヤーとの属性相性で処理を変える
-		switch (CheckCompatibility(this, _object))
-		{
-			//不利の場合
-		case -1:
-			//ダメージ
-			if (!damageEffectFlg &&
-				(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
-
-				damageFlg = true;
-				//ノックバック
-				//プレイヤーが右にいるなら右にノックバック
-				if (this->location.x > _object->GetLocation().x)
-				{
-					velocity.x += 10;
-				}
-				//プレイヤーが左にいるなら左にノックバック
-				else
-				{
-					velocity.x -= 10;
-				}
-				velocity.y -= 10;
-			}
-			break;
-			//あいこの場合
-		case 0:
-			velocity.x = (velocity.x*1.2f) * -1;
-			break;
-			//有利の場合
-		case 1:
-			break;
-			//それ以外
-		default:
-			break;
-		}
-	}
-
 	//不利な属性のブロックかダメージゾーンと当たった時の処理
 	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER) && CheckCompatibility(this, _object) == -1)
 	{
@@ -705,7 +706,6 @@ void Player::MoveActor()
 			if (velocity.x > 7.5f) {
 				velocity.x = 7.5f;
 			}
-			pState = moving;
 			moveFrontFlg = true;
 		}
 		else if (PadInput::TipLStick(STICKL_X) < -0.1f) {
@@ -714,7 +714,6 @@ void Player::MoveActor()
 			if (velocity.x < -7.5f) {
 				velocity.x = -7.5f;
 			}
-			pState = moving;
 			moveFrontFlg = false;
 		}
 		else {
@@ -725,11 +724,9 @@ void Player::MoveActor()
 				velocity.x += 0.2f;
 			}
 
-			pState = moving;
 
 			if (velocity.x > -0.4f && velocity.x < 0.4f) {
 				velocity.x = 0.f;
-				pState = idle;
 			}
 		}
 	}
@@ -739,9 +736,9 @@ void Player::MoveActor()
 		}
 	}
 
-	if (stageHitFlg[1][bottom] != true) {
-		pState = jump;
-	}
+	//if (stageHitFlg[1][bottom] != true) {
+	//	pState = jump;
+	//}
 }
 
 bool Player::SearchColor(Object* ob)
@@ -1356,7 +1353,6 @@ void Player::SelectObject()
 		}
 		objSelectNumTmp = n;
 		searchedObj = searchedObjAll[objSelectNumTmp];
-		oldObjNum = 0;
 	}
 	else {
 		searchedObj = nullptr;
@@ -1416,23 +1412,25 @@ void Player::PlayerSound()
 
 void Player::PlayerAnim()
 {
-	switch (pState)
+	switch (p_state)
 	{
-	case idle:
+	case PlayerState::IDLE_LEFT:
+	case PlayerState::IDLE_RIGHT:
 		angle[0] = -20.f;
 		angle[1] = 20.f;
 		angle[2] = 20.f;
 		angle[3] = -20.f;
 		break;
 
-	case moving:
+	case PlayerState::MOVE_LEFT:
+	case PlayerState::MOVE_RIGHT:
 		float speed;
 		speed = abs(velocity.x) * 0.3f;
 		if (searchFlg) {
 			speed = speed * 0.02f;
 		}
 
-		if (pState != pStateOld) {
+		if (p_state != pStateOld) {
 			angle[0] = -20.f;
 			angle[1] = 20.f;
 			angle[2] = 20.f;
@@ -1462,7 +1460,8 @@ void Player::PlayerAnim()
 
 		break;
 
-	case jump:
+	case PlayerState::JUMP_LEFT:
+	case PlayerState::JUMP_RIGHT:
 		if (moveFrontFlg == true) {
 			angle[0] = -60.f;
 			angle[1] = -60.f;
@@ -1491,25 +1490,25 @@ void Player::AnimStateUpdate()
 		//ダメージを受けていたらダメージアニメーション
 		if (damageEffectFlg)
 		{
-			p_state = playerState::DAMAGE_RIGHT;
+			p_state = PlayerState::DAMAGE_RIGHT;
 			return;
 		}
 		//ジャンプ更新
 		if (!stageHitFlg[1][bottom]) 
 		{
-			p_state = playerState::JUMP_RIGHT;
+			p_state = PlayerState::JUMP_RIGHT;
 		}
 		else
 		{
 			//idle状態判定
 			if (velocity.x > -0.4f && velocity.x < 0.4f) 
 			{
-				p_state = playerState::IDLE_RIGHT;
+				p_state = PlayerState::IDLE_RIGHT;
 		
 			}
 			else
 			{
-				p_state = playerState::MOVE_RIGHT;
+				p_state = PlayerState::MOVE_RIGHT;
 			}
 		}
 	}
@@ -1519,25 +1518,25 @@ void Player::AnimStateUpdate()
 		//ダメージを受けていたらダメージアニメーション
 		if (damageEffectFlg)
 		{
-			p_state = playerState::DAMAGE_LEFT;
+			p_state = PlayerState::DAMAGE_LEFT;
 			return;
 		}
 		//ジャンプ更新
 		if (!stageHitFlg[1][bottom])
 		{
-			p_state = playerState::JUMP_LEFT;
+			p_state = PlayerState::JUMP_LEFT;
 		}
 		else
 		{
 			//idle状態判定
 			if (velocity.x > -0.4f && velocity.x < 0.4f)
 			{
-				p_state = playerState::IDLE_LEFT;
+				p_state = PlayerState::IDLE_LEFT;
 
 			}
 			else
 			{
-				p_state = playerState::MOVE_LEFT;
+				p_state = PlayerState::MOVE_LEFT;
 			}
 		}
 	}
@@ -1774,7 +1773,7 @@ void Player::DrawPlayer() const
 
 void Player::DrawPlayerImage()const
 {
-	ResourceManager::DrawPlayerAnimGraph(local_location, player_image[p_state], color);
+	ResourceManager::DrawPlayerAnimGraph({ local_location.x -10,local_location.y }, player_image[p_state], color);
 }
 
 void Player::DrawPlayerFront(bool f) const

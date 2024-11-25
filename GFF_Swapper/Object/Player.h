@@ -44,7 +44,8 @@ public:
 		right
 	};
 
-	enum playerState
+	//プレイヤーの状態一覧
+	enum PlayerState
 	{
 		IDLE_RIGHT = 0, 
 		IDLE_LEFT,
@@ -56,49 +57,39 @@ public:
 		DAMAGE_LEFT,
 	};
 
-	enum oldPlayerState
-	{
-		idle=0,
-		moving,
-		jump
-	};
 private:
-	class Camera* camera;		//カメラ情報
-	Vector2D velocity;			//プレイヤーのベクトル
-	bool stageHitFlg[2][4]; //プレイヤーとステージの当たり判定
+	class Camera* camera;				 //カメラ情報
+	Vector2D velocity;					 //プレイヤーのベクトル
+	bool stageHitFlg[2][4];				 //プレイヤーとステージの当たり判定
 	//0の行はステージのブロック一つ一つに対しての判定
 	//1の行は1フレームでステージ全体との判定
 
-	Object* searchedObj; //一番近い色を交換できるオブジェクト
-	int oldObjNum;
-	Object* searchedObjAll[OBJECT_NUM]; //画面内の色交換できるオブジェクト
-	int objNum;//オブジェクトの添え字
-	int objSelectNumTmp;//オブジェクトの添え字
-	bool searchedObjFlg;//画面内に交換できるオブジェクトがあるかどうか
-	bool swap_once;		//一回だけ色を交換する
+	Object* searchedObj;				 //一番近い色を交換できるオブジェクト
+	Object* searchedObjAll[OBJECT_NUM];  //画面内の色交換できるオブジェクト
+	int objNum;						     //オブジェクトの添え字
+	int objSelectNumTmp;				 //オブジェクトの添え字
+	bool searchedObjFlg;				 //画面内に交換できるオブジェクトがあるかどうか
+	bool swap_once;						 //一回だけ色を交換する
 	int posRelation[19][32];
 	bool oldStick[4];
-	int swapTimer;		//交換エフェクトの時間測定
-	bool oldSearchFlg;
-	Vector2D saveVec; //ベクトルの一時保存用
-
-	bool damageFlg; //ダメージを受けたとき
-	bool damageOldFlg; //ダメージを受けたとき
-	int hp;
-	int damageEffectTime = 60;
-	bool damageEffectFlg = false;
-	bool effect_once;	//エフェクトを一回だけ出す用
-
-	int state; //水中とか火の中とかの状態を管理
-	bool stateFlg; //一フレーム内かを判定
+	int swapTimer;						 //交換エフェクトの時間測定
+	bool oldSearchFlg;					 //１フレーム前のフラグの状態
+	Vector2D saveVec;					 //ベクトルの一時保存用
+	bool damageFlg;						 //ダメージを受けたとき
+	bool damageOldFlg;					 //ダメージを受けたとき(1フレーム前)
+	int hp;								 //体力
+	int damageEffectTime;				 //ダメージエフェクトが出ている時間
+	bool damageEffectFlg;				 //ダメージエフェクト中か判断
+	bool effect_once;					 //エフェクトを一回だけ出す用
+	int state;							 //水中とか火の中とかの状態を管理
+	bool stateFlg;						 //一フレーム内かを判定
 
 	int fps;
 	
-	float move[4] = { 0,0,0,0 };
+	float move[4] = { 0,0,0,0 };		 //プレイヤーが当たり判定に被らないようにする時の各方向の移動量
 
-	playerState p_state;	//プレイヤーの状態管理
+	PlayerState p_state;	//プレイヤーの状態管理
 
-	int pState;
 	int pStateOld;
 	bool moveFrontFlg;//向いてる方向
 	bool animFlg;

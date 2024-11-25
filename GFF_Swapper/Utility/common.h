@@ -4,7 +4,7 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-#define PLAYER_WIDTH 60
+#define PLAYER_WIDTH 70
 #define PLAYER_HEIGHT 100
 
 #define OBJECT_NUM	10000		//１ステージに存在できるプレイヤー、ブロック、敵の合計数

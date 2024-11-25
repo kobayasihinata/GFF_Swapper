@@ -357,13 +357,6 @@ void Boss::Draw() const
 			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260-(i*10)) * 25, 6, color, false);
 			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25 - 2, 6, 0xffffff, false);
 		}
-		/*DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-260)*20    , 6, color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-260)*20 - 2, 6, 0xffffff, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-250)*20,     6, color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-250)*20 - 2, 6, 0xffffff, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-240)*20,     6, color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt-240)*20 - 2, 6, 0xffffff, false);*/
-
 	}
 
 	//火攻撃のターゲット線＆照準

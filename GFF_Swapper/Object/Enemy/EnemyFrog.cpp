@@ -212,6 +212,55 @@ void EnemyFrog::Hit(Object* _object)
 {
 	__super::Hit(_object);
 
+	//プレイヤーと当たった時の処理
+	if (_object->GetObjectType() == PLAYER)
+	{
+		//プレイヤーとの属性相性で処理を変える
+		switch (CheckCompatibility(this, _object))
+		{
+			//不利の場合
+		case -1:
+			//スタン状態か死亡状態でないなら実行
+			if (frog_state != FrogState::FAINT && frog_state != FrogState::DEATH)
+			{
+				//プレイヤーが左にいるなら右にノックバック
+				if (this->location.x > _object->GetLocation().x)
+				{
+					velocity.x = 10;
+				}
+				//プレイヤーが右にいるなら左にノックバック
+				else
+				{
+					velocity.x = -10;
+				}
+				velocity.y = -5;
+				//スタン状態になる
+				frog_state = FrogState::FAINT;
+			}
+			break;
+			//あいこの場合
+		case 0:
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x = 10;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				velocity.x = -10;
+			}
+			velocity.y = -10;
+			break;
+			//有利の場合
+		case 1:
+			break;
+			//それ以外
+		default:
+			break;
+		}
+	}
+
 	//ブロックと当たった時の処理
 	if ((_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE)
 	{
@@ -265,6 +314,7 @@ void EnemyFrog::Hit(Object* _object)
 		if (stageHitFlg[0][bottom]) {//下方向に埋まっていたら
 			float t = _object->GetLocation().y - (location.y + erea.y);
 			if (t != 0) {
+				velocity.y = 0.f;
 				move[bottom] = t;
 			}
 		}
@@ -364,54 +414,6 @@ void EnemyFrog::Hit(Object* _object)
 		(this->color == RED && _object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE))
 	{
 		_object->SetColorData(color);
-	}
-
-	//プレイヤーと当たった時の処理
-	if (_object->GetObjectType() == PLAYER)
-	{
-		//プレイヤーとの属性相性で処理を変える
-		switch (CheckCompatibility(this, _object))
-		{
-			//不利の場合
-		case -1:
-			//スタン状態か死亡状態でないなら実行
-			if (frog_state != FrogState::FAINT && frog_state != FrogState::DEATH)
-			{
-				//プレイヤーが左にいるなら右にノックバック
-				if (this->location.x > _object->GetLocation().x)
-				{
-					velocity.x = 10;
-				}
-				//プレイヤーが右にいるなら左にノックバック
-				else
-				{
-					velocity.x = -10;
-				}
-				velocity.y = -5;
-				//スタン状態になる
-				frog_state = FrogState::FAINT;
-			}
-			break;
-			//あいこの場合
-		case 0:
-			//プレイヤーが左にいるなら右にノックバック
-			if (this->location.x > _object->GetLocation().x)
-			{
-				velocity.x += 10;
-			}
-			//プレイヤーが右にいるなら左にノックバック
-			else
-			{
-				velocity.x -= 10;
-			}
-			break;
-			//有利の場合
-		case 1:
-			break;
-			//それ以外
-		default:
-			break;
-		}
 	}
 
 	//エネミーと当たった時の処理
