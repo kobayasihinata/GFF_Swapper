@@ -703,25 +703,25 @@ void Player::MoveActor()
 		if (PadInput::TipLStick(STICKL_X) > 0.1f) {
 			stick = PadInput::TipLStick(STICKL_X);
 			velocity.x += stick * 1.f;
-			if (velocity.x > 7.5f) {
-				velocity.x = 7.5f;
+			if (velocity.x > 6.5f) {
+				velocity.x = 6.5f;
 			}
 			moveFrontFlg = true;
 		}
 		else if (PadInput::TipLStick(STICKL_X) < -0.1f) {
 			stick = PadInput::TipLStick(STICKL_X);
 			velocity.x += stick * 1.f;
-			if (velocity.x < -7.5f) {
-				velocity.x = -7.5f;
+			if (velocity.x < -6.5f) {
+				velocity.x = -6.5f;
 			}
 			moveFrontFlg = false;
 		}
 		else {
 			if (velocity.x > 0.1f) {
-				velocity.x += -0.2f;
+				velocity.x += -0.3f;
 			}
 			else if (velocity.x < 0.1f) {
-				velocity.x += 0.2f;
+				velocity.x += 0.3f;
 			}
 
 
@@ -864,10 +864,6 @@ void Player::SelectObject()
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
-									/*if (next_color != current_color) {
-										snum[0] = posRelation[y - h][j];
-										break;
-									}*/
 									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
@@ -892,10 +888,6 @@ void Player::SelectObject()
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
-									/*if (next_color != current_color) {
-										snum[0] = posRelation[y + h][j];
-										break;
-									}*/
 									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
@@ -961,10 +953,6 @@ void Player::SelectObject()
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
 
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
-							/*if (next_color != current_color) {
-								snum[0] = posRelation[y][j];
-								break;
-							}*/
 							int next_type = searchedObjAll[posRelation[y][j]]->GetObjectType();
 							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
@@ -995,10 +983,6 @@ void Player::SelectObject()
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
-									/*if (next_color != current_color) {
-										snum[0] = posRelation[y - h][j];
-										break;
-									}*/
 									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
@@ -1022,10 +1006,6 @@ void Player::SelectObject()
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
-									/*if (next_color != current_color) {
-										snum[0] = posRelation[y + h][j];
-										break;
-									}*/
 									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
@@ -1101,10 +1081,6 @@ void Player::SelectObject()
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
-							/*if (next_color != current_color) {
-								tutirial_num = posRelation[j][x];
-								break;
-							}*/
 							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
 							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
@@ -1134,10 +1110,6 @@ void Player::SelectObject()
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
-									/*if (next_color != current_color) {
-										tutirial_num = posRelation[j][x - w];
-										break;
-									}*/
 									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
@@ -1160,10 +1132,6 @@ void Player::SelectObject()
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
-									/*if (next_color != current_color) {
-										tutirial_num = posRelation[j][x + w];
-										break;
-									}*/
 									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
@@ -1223,11 +1191,11 @@ void Player::SelectObject()
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
-							/*if (next_color != current_color) {
+							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
+							if (next_type == BOSS) {
 								tutirial_num = posRelation[j][x];
 								break;
-							}*/
-							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
+							}
 							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								tutirial_num = posRelation[j][x];
@@ -1257,11 +1225,11 @@ void Player::SelectObject()
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
-									/*if (next_color != current_color) {
+									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
+									if (next_type == BOSS) {
 										tutirial_num = posRelation[j][x - w];
 										break;
-									}*/
-									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
+									}
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x - w];
@@ -1283,11 +1251,11 @@ void Player::SelectObject()
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
-									/*if (next_color != current_color) {
+									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
+									if (next_type == BOSS) {
 										tutirial_num = posRelation[j][x + w];
 										break;
-									}*/
-									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
+									}
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x + w];
