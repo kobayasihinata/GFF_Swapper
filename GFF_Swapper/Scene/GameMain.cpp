@@ -13,6 +13,7 @@
 #include "Title.h"
 #include "End.h"
 #include "Help.h"
+#include "Option.h"
 
 GameMain::GameMain(int _stage) :frame(0), stage_data{ 0 }, now_stage(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), player_object(0), boss_object(0), weather_timer(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
 {
@@ -27,6 +28,8 @@ GameMain::~GameMain()
 
 void GameMain::Initialize()
 {
+	__super::Initialize();
+
 	//カメラの取得
 	camera = Camera::Get();
 

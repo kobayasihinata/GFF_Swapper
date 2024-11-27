@@ -1,12 +1,16 @@
 #pragma once
 class AbstractScene
 {
+protected:
+	AbstractScene* old_scene = nullptr;   //ひとつ前のシーン情報格納
+	bool init_flg = false;				  //イニシャライズが既に呼ばれているか（途中からシーンを始めるべきか）
 public:
+
 	//デストラクタ
 	virtual ~AbstractScene() {};
 
 	//イニシャライズ
-	virtual void Initialize()=0;
+	virtual void Initialize() { init_flg = true; }
 
 	//ファイナライズ
 	virtual void Finalize() = 0;
@@ -17,4 +21,9 @@ public:
 	//描画に関することを実装
 	virtual void Draw() const = 0;
 
+	//ひとつ前のシーンの情報取得
+	AbstractScene* GetOldScene()const { return old_scene; }
+
+	//イニシャライズを一回呼んだか取得
+	bool GetInitFlg()const { return init_flg; }
 };

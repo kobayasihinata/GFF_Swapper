@@ -8,9 +8,9 @@ AnimData ResourceManager::div_image_data[DIV_IMAGE_NUM];
 int ResourceManager::image_data[IMAGE_NUM];
 SoundData ResourceManager::sound_data[SOUND_NUM];
 int ResourceManager::sound_freq = 50000;
-int ResourceManager::se_volume;
-int ResourceManager::bgm_volume;
-int ResourceManager::master_volume;
+int ResourceManager::se_volume = 255;			//デフォルトの音量はMAXで
+int ResourceManager::bgm_volume = 255;			//デフォルトの音量はMAXで
+int ResourceManager::master_volume = 255;		//デフォルトの音量はMAXで
 
 int ResourceManager::anim;			
 FireAnim ResourceManager::fire_anim[ANIM_BLOCK_NUM];
@@ -422,6 +422,7 @@ void ResourceManager::DrawPlayerAnimGraph(Vector2D location, int _handle, int _c
 
 void ResourceManager::StartSound(int _num)
 {
+	ChangeVolumeSoundMem(master_volume, sound_data[_num].sound_handle);
 	//再生
 	if (sound_data[_num].bgm_or_se)
 	{
@@ -436,6 +437,11 @@ void ResourceManager::StartSound(int _num)
 void ResourceManager::StopSound(int _num)
 {
 	StopSoundMem(sound_data[_num].sound_handle);
+}
+
+int ResourceManager::GetSoundVolume()
+{
+	return master_volume;
 }
 
 void ResourceManager::SetSoundVolume(int _volume)

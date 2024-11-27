@@ -51,9 +51,10 @@ struct AnimData {
 //音源データ格納用
 struct SoundData {
 	char* sound_filepath;		//音源パス格納用
-	int sound_handle;				//音源格納用
+	int sound_handle;			//音源格納用
 	bool bgm_or_se;				//BGMかSEか false = BGM  true = SE
 };
+
 class ResourceManager
 {
 private:
@@ -120,6 +121,9 @@ public:
 
 	//音源再生終了
 	static void StopSound(int _num);
+
+	//全体音量取得　_volume=0～255
+	static int GetSoundVolume();
 
 	//全体音量調整　_volume=0～255
 	static void SetSoundVolume(int _volume);
