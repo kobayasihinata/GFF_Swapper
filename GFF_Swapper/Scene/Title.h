@@ -8,21 +8,19 @@
 #define BG_BLOCK_WIDTH_NUM 32   //ブロックの横の数
 #define BG_BLOCK_HEIGHT_NUM 18   //ブロックの横の数
 
-#define MENU_NUM 4              //タイトルから遷移できるシーンの数
+#define MENU_NUM 3              //タイトルから遷移できるシーンの数
 
 enum class TITLE_MENU
 {
-    GAME_START = 0,
-    HELP,
-    OPTION,
+    OPTION = 0,
+    GAME_START,
     GAME_END
 };
 
 static char menu_string[MENU_NUM][256] =
 {
-    "PLAY",
-    "HELP",
     "OPTION",
+    "PLAY",
     "END"
 };
 

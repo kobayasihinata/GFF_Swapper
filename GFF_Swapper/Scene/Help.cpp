@@ -19,6 +19,8 @@ Help::~Help()
 
 void Help::Initialize()
 {
+	__super::Initialize();
+
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 	decision_se = ResourceManager::SetSound("Resource/Sounds/System/decision.wav");
 }

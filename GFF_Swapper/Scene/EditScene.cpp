@@ -20,6 +20,8 @@ EditScene::~EditScene()
 
 void EditScene::Initialize()
 {
+	__super::Initialize();
+
 	tool_location.x = 100;
 	tool_location.y = 0;
 	tool_size.x = (UI_OBJECT_TYPE_NUM * 50) + 210;

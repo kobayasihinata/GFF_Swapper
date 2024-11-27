@@ -66,6 +66,8 @@ End::~End()
 
 void End::Initialize()
 {
+	__super::Initialize();
+
 	for (int i = 0; i < 7; i++)
 	{
 		logo_location[i] = { 0,0 };
