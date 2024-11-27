@@ -43,6 +43,8 @@ void GameMain::Initialize()
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 	decision_se = ResourceManager::SetSound("Resource/Sounds/System/decision.wav");
 
+	manual_img = ResourceManager::SetGraph("Resource/images/sozai/manual.png");
+
 	back_ground = new BackGround();
 
 	SetStage(now_stage);

@@ -133,6 +133,7 @@ void EnemyBat::Update(ObjectManager* _manager)
 		stageHitFlg[0][i] = false;
 		stageHitFlg[1][i] = false;
 	}
+
 }
 
 void EnemyBat::Draw() const

@@ -84,6 +84,7 @@ private:
     int bgm_abnormal;          //異常BGM
     int game_clear_bgm;
 
+    int manual_img;
 
     int cursor_se;  //カーソルSE 
     int decision_se;    //決定SE
