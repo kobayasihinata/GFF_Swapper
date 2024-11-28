@@ -10,7 +10,26 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Title::Title() :frame(0), menu_location{ 0,0 }, menu_size{ 0,0 }, player_location{ 0,0 }, player_color(0xff0000),cursor_location{ 0,0 }, draw_stick_location{ 0,0 }, draw_stick_shift{ 0,0 }, anim_start{ 0,0 }, current_menu(0), swap_anim_flg(false), swap_anim_timer(0), stick_angle(0.0f), button_draw(false),bg_handle(0), circleAng(0), rise_se(0), cursor_se(0)
+Title::Title() :
+	frame(0), 
+	menu_location{ 0,0 },
+	menu_size{ 0,0 }, 
+	player_location{ 0,0 }, 
+	player_color(0xff0000),
+	cursor_location{ 0,0 }, 
+	draw_stick_location{ 0,0 }, 
+	draw_stick_shift{ 0,0 }, 
+	anim_start{ 0,0 }, 
+	stick_location{0,0},
+	current_menu(0), 
+	swap_anim_flg(false), 
+	swap_anim_timer(0), 
+	stick_angle(0.0f), 
+	button_draw(false),
+	bg_handle(0), 
+	circleAng(0), 
+	rise_se(0), 
+	cursor_se(0)
 {
 }
 
@@ -23,7 +42,7 @@ void Title::Initialize()
 	__super::Initialize();
 
 	player_location = { (SCREEN_WIDTH / 2) - (PLAYER_WIDTH / 2), SCREEN_HEIGHT - PLAYER_HEIGHT-75 };
-
+	stick_location = { player_location.x + (PLAYER_WIDTH / 2),player_location.y + PLAYER_HEIGHT + 30 };
 	menu_location[0] = { 200,600 };
 	menu_location[1] = { 565,250 };
 	menu_location[2] = { 950,600 };
@@ -50,6 +69,7 @@ void Title::Initialize()
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
 
+	//背景の初期化
 	for (int i = 0; i < BG_BLOCK_WIDTH_NUM; i++)
 	{
 		for (int j = 0; j < BG_BLOCK_HEIGHT_NUM; j++)
@@ -93,7 +113,7 @@ AbstractScene* Title::Update()
 	}
 
 	//背景の更新
-	bgUpdate();
+	BackGroundUpdate();
 
 	//演出中もしくはエンドアニメーション中は更新しない
 	if (swap_anim_flg == false)
@@ -333,9 +353,14 @@ void Title::Draw()const
 			DrawCircleAA(draw_stick_location.x, draw_stick_location.y, 15, 100, 0x666666, FALSE);
 			DrawCircleAA(draw_stick_location.x + draw_stick_shift.x, draw_stick_location.y + draw_stick_shift.y, 12, 100, 0x666666, TRUE);
 			SetFontSize(24);
-			DrawStringF(draw_stick_location.x + 25, draw_stick_location.y - 10, "Left Stick", 0xffffff);
-			DrawStringF(draw_stick_location.x + 50, draw_stick_location.y + 20, "&", 0xffffff);
-			DrawStringF(draw_stick_location.x + 35, draw_stick_location.y + 45, "B Button", 0xffffff);
+			DrawStringF(draw_stick_location.x + 25, draw_stick_location.y - 10, "Left", 0xffffff);
+			DrawStringF(draw_stick_location.x , draw_stick_location.y + 20, "&", 0xffffff);
+			DrawStringF(draw_stick_location.x + 35, draw_stick_location.y + 45, "B ", 0xffffff);
+
+			Vector2D stick_inclination = { PadInput::TipLStick(STICKL_X) * 10,PadInput::TipLStick(STICKL_Y) * 10 };
+			//スティック描画
+			DrawCircleAA(stick_location.x, stick_location.y, 20, 20, 0xaaaaaa, false);
+			DrawCircleAA(stick_location.x + stick_inclination.x, stick_location.y - stick_inclination.y, 15, 20, 0xaaaaaa, true);
 
 			SetFontSize(16);
 			if (button_draw == false)
@@ -407,7 +432,7 @@ void Title::Draw()const
 	SetFontSize(old_size);
 }
 
-void Title::bgUpdate()
+void Title::BackGroundUpdate()
 {
 	//背景の交換
 	if (frame % 120 == 0 || PadInput::OnRelease(XINPUT_BUTTON_A))

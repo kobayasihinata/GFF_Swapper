@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object\Enemy\Boss\Cannon.h" />
+    <ClInclude Include="Scene\eNum\BackGroundStruct.h" />
     <ClInclude Include="Scene\Option.h" />
     <ClInclude Include="Utility\DebugInfomation.h" />
     <ClInclude Include="Scene\Camera.h" />

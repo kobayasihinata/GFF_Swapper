@@ -24,6 +24,6 @@ public:
 	//ひとつ前のシーンの情報取得
 	AbstractScene* GetOldScene()const { return old_scene; }
 
-	//イニシャライズを一回呼んだか取得
+	//生成済みか取得
 	bool GetInitFlg()const { return init_flg; }
 };
