@@ -12,10 +12,13 @@
 #define ITEMS_NUM (int)Items::BACK + 1 //enumの要素数
 #define RIGHT_BOX_SPACE 20      //右側の箱の画面端との間隔
 
+#define VOLUME_SETTING_HEIGHT 100  //音量調節バーの大きさ（スティックの描画含む） 
+#define VOLUME_SETTING_SPACE 20  //音量調節バー同士の間隔（スティックの描画含む） 
+
 //オプションで選択できる要素一覧
 enum class Items {
-    MASTER_VOLUME = 0,  //全体音量調整
-    BGM_VOLUME,         //BGM音量調整
+    VOLUME_SETTING = 0,  //音量調整
+    FRAME_RATE,         //BGM音量調整
     SE_VOLUME,          //SE音量調整
     BACK               //ひとつ前の画面に戻る
 
@@ -59,9 +62,12 @@ private:
     int bg_handle;                                                  //背景描画保存用
 
     //音量調節関連
+    Vector2D volume_bar_location[3];    //音量調節ボタン位置
     int volume_control_bar;         //現在の音量を位置で表す
     Vector2D stick_loc;             //スティックの描画位置
     float stick_angle;              //スティックの角度
+    float stick_radian;             //スティックの角度（ラジアン）
+    bool move_stick;                //スティックが動いているか
 
     //音源格納
     int cursor_se;                  //カーソル移動のSE
@@ -95,6 +101,10 @@ public:
 
     //マスターボリューム調整
     void ChangeMasterVolume();
+
+    //ボリューム調整描画
+    void DrawVolumeSetting()const;
+
 
     //前のシーンに戻るか判断
     AbstractScene* CheckReturnOldScene();
