@@ -130,9 +130,11 @@ private:
 	int next_stage;						//遷移先のステージ(ステージ遷移ブロック専用)
 	int ground_mapchip		;			//マップチップ位置
 
+	bool fire_on_top;					//上に火があるか判断
 	int ground_image;					//地面の画像ハンドル位置
 	int wood_image;						//草の画像ハンドル位置
 	int fire_image;						//火の画像ハンドル位置
+	int fire_image2;						//火(マグマ)の画像ハンドル位置
 	int water_image;					//水の画像ハンドル位置
 
 	int change_fire;					//色更新時のSE

@@ -63,9 +63,7 @@ private:
 	static int image_data[IMAGE_NUM];							//画像格納用
 	static SoundData sound_data[SOUND_NUM];							//音源格納用
 	static int sound_freq;										//音声の再生速度
-	static int se_volume;									    //SEの音量
-	static int bgm_volume;									    //BGMの音量
-	static int master_volume;								    //全体の音量
+	static int volume[3];										//音量 0=全体 1=BGM 2=SE
 
 	//ステージアニメーション用
 	static int anim;											//アニメーション測定
@@ -122,11 +120,11 @@ public:
 	//音源再生終了
 	static void StopSound(int _num);
 
-	//全体音量取得　_volume=0～255
-	static int GetSoundVolume();
+	//全体音量取得　_num 音量の種類 0=全体 1=BGM 2=SE
+	static int GetSoundVolume(int _num);
 
-	//全体音量調整　_volume=0～255
-	static void SetSoundVolume(int _volume);
+	//全体音量調整 _num 音量の種類 0=全体 1=BGM 2=SE  _volume=音量 0～255
+	static void SetSoundVolume(int _num, int _volume);
 
 	//音源再生速度調整
 	static void SetSoundFreq(int _num);
