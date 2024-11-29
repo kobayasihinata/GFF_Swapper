@@ -160,7 +160,7 @@ void ObjectManager::Draw()const
 	//プレイヤーが交換しようとしているなら、オブジェクトを暗く表示
 	if (player_object->GetSearchFlg())
 	{
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
 		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	}
