@@ -88,6 +88,9 @@ void Option::Initialize()
 	stick_loc = { right_box_location.x + (right_box_size.x / 2),right_box_location.y + right_box_size.y+75 };
 
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
+
+	//オプション画面のBGM再生
+	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
 }
 
 void Option::Finalize()
@@ -478,7 +481,7 @@ void Option::DrawVolumeSetting()const
 	SetFontSize(30);
 	for (int i = 0; i < 3; i++)
 	{
-		//選択されている要素がないなら、右側の箱は半透明にする
+		//選択されている要素がないなら、音量バーは半透明にする
 		if (current_bar != i)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 127);
@@ -497,10 +500,14 @@ void Option::DrawVolumeSetting()const
 			volume_bar_location[i].x  + volume_control_bar[i],
 			volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0x00ff00, true);
 
-		//選択されている外枠の下にスティックを描画する
-		if (i == current_bar)
+		//半透明に設定されていたら元に戻す
+		if (current_bar != i)
 		{
-
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		}
+		//選択されている外枠の下にスティックを描画する
+		else
+		{
 			//スティックが動いているときしか描画しない線
 			if (move_stick)
 			{
@@ -517,12 +524,6 @@ void Option::DrawVolumeSetting()const
 			DrawCircleAA(stick_loc.x + stick_inclination.x, stick_loc.y - stick_inclination.y, 15, 20, 0xaaaaaa, true);
 		}
 
-		//半透明に設定されていたら元に戻す
-		if (current_bar != i)
-		{
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-		}
-
 		//カーソルが合っているボックスを赤色で描画
 		if (i == v_cursor_num)
 		{
@@ -531,6 +532,13 @@ void Option::DrawVolumeSetting()const
 				volume_bar_location[i].y,
 				volume_bar_location[i].x + 255,
 				volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0xff0000, false);
+			//矢印
+			DrawTriangleAA(volume_bar_location[i].x - 40,
+				volume_bar_location[i].y + 5,
+				volume_bar_location[i].x - 10,
+				volume_bar_location[i].y + (VOLUME_BAR_HEIGHT / 2),
+				volume_bar_location[i].x - 40,
+				volume_bar_location[i].y + VOLUME_BAR_HEIGHT - 5, 0xff0000, true);
 		}
 		//カーソルが合っていないボックスを白色で描画
 		else
