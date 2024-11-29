@@ -12,7 +12,8 @@
 #define ITEMS_NUM (int)Items::BACK + 1 //enumの要素数
 #define RIGHT_BOX_SPACE 20      //右側の箱の画面端との間隔
 
-#define VOLUME_SETTING_HEIGHT 100  //音量調節バーの大きさ（スティックの描画含む） 
+#define VOLUME_SETTING_HEIGHT 175  //音量調節バーの大きさ（スティックの描画含む） 
+#define VOLUME_BAR_HEIGHT 50  //音量調節バーの大きさ（スティックの描画含まない） 
 #define VOLUME_SETTING_SPACE 20  //音量調節バー同士の間隔（スティックの描画含む） 
 
 //オプションで選択できる要素一覧
@@ -28,11 +29,18 @@ enum class Items {
 //描画用文字
 static char ItemString[ITEMS_NUM][256] =
 {
-    "全体音量",
-    "",
+    "音量設定",
+    "ゲーム設定",
     "",
     "戻る",
 };
+static char VolumeString[3][256] =
+{
+    "全体音量",
+    "BGM音量",
+    "SE音量",
+};
+
 //オプションの表示時の大きさ
 static Vector2D ItemsSize[ITEMS_NUM]
 {
@@ -62,15 +70,17 @@ private:
     int bg_handle;                                                  //背景描画保存用
 
     //音量調節関連
-    Vector2D volume_bar_location[3];    //音量調節ボタン位置
-    int volume_control_bar;         //現在の音量を位置で表す
-    Vector2D stick_loc;             //スティックの描画位置
-    float stick_angle;              //スティックの角度
-    float stick_radian;             //スティックの角度（ラジアン）
-    bool move_stick;                //スティックが動いているか
-
-    //音源格納
-    int cursor_se;                  //カーソル移動のSE
+    int current_bar;                  //選択されている音量バーの種類
+    int v_cursor_num;                 //カーソルが合っている音量バー
+    Vector2D volume_bar_location[3];  //音量調節ボタン位置
+    int volume_control_bar[3];        //現在の音量を位置で表す
+    Vector2D stick_loc;               //スティックの描画位置
+    float stick_angle;                //スティックの角度
+    float stick_radian;               //スティックの角度（ラジアン）
+    bool move_stick;                  //スティックが動いているか
+                                     
+    //音源格納                       
+    int cursor_se;                    //カーソル移動のSE
 
 public:
     //コンストラクタ _old_scene=ひとつ前のシーン(情報を保持する必要があるなら"this"を格納)
@@ -92,6 +102,7 @@ public:
     void Draw() const override;
 
 
+
     //縦横の位置から規則的な色を返す
     int GetColor(int i, int j);
 
@@ -99,11 +110,16 @@ public:
     void BackGroundUpdate();
 
 
-    //マスターボリューム調整
-    void ChangeMasterVolume();
 
-    //ボリューム調整描画
+    //音量調整の更新
+    void UpdateVolumeSetting();
+
+    //音量調整 _num 音量の種類 0=全体 1=BGM 2=SE 
+    void ChangeVolume(int _num);
+
+    //音量調整描画
     void DrawVolumeSetting()const;
+
 
 
     //前のシーンに戻るか判断

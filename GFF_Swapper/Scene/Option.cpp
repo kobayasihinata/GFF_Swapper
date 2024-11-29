@@ -16,8 +16,10 @@ Option::Option(AbstractScene* _old_scene):
 	cursor_num(0),
 	right_box_location{0},
 	right_box_size{0},
+	current_bar(-1),	//何も選択していない事を示す-1
+	v_cursor_num(0),
 	volume_bar_location{0},
-	volume_control_bar(0),
+	volume_control_bar{0},
 	stick_loc(0),
 	stick_angle(0.f),
 	stick_radian(0.f),
@@ -52,16 +54,19 @@ void Option::Initialize()
 	//右側の箱の位置を計算
 	right_box_location.x = item_location[0].x + ItemsSize[0].x + RIGHT_BOX_SPACE;
 	right_box_location.y = RIGHT_BOX_SPACE;
+
 	//右側の箱の大きさを計算
 	right_box_size.x = SCREEN_WIDTH - right_box_location.x - RIGHT_BOX_SPACE;
 	right_box_size.y = SCREEN_HEIGHT - right_box_location.y - RIGHT_BOX_SPACE;
 
-	//音量調節バーの位置計算
+	//音量調節バーの位置計算&音量取得
 	for (int i = 0; i < 3; i++)
 	{
 		volume_bar_location[i].x = right_box_location.x + (right_box_size.x / 2) - 127.5f;
-		volume_bar_location[i].y = (right_box_location.y + VOLUME_SETTING_HEIGHT + VOLUME_SETTING_SPACE) * i;
+		volume_bar_location[i].y = 100 + ((right_box_location.y + VOLUME_SETTING_HEIGHT + VOLUME_SETTING_SPACE) * i);
+		volume_control_bar[i] = ResourceManager::GetSoundVolume(i);
 	}
+
 	//背景の初期化
 	for (int i = 0; i < BG_BLOCK_WIDTH_NUM; i++)
 	{
@@ -80,9 +85,8 @@ void Option::Initialize()
 	}
 	bg_handle = MakeScreen(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	stick_loc = { right_box_location.x + (right_box_size.x / 2),right_box_location.y + (right_box_size.y / 2)+100 };
+	stick_loc = { right_box_location.x + (right_box_size.x / 2),right_box_location.y + right_box_size.y+75 };
 
-	volume_control_bar = ResourceManager::GetSoundVolume();
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 }
 
@@ -124,17 +128,18 @@ AbstractScene* Option::Update()
 		}
 	}
 
-	//Aボタンが押された時に選択されている要素を解除
+	//Aボタンが押された時に選択されている要素を解除(音量バー選択から一気に2段階戻るのは直すべきか)
 	if (PadInput::OnRelease(XINPUT_BUTTON_A))
 	{
-		current_item = -1;
+		if(current_bar !=-1)current_bar = -1;
+		else current_item = -1;
 	}
 
 	//選択されている要素に応じて処理を変える
 	switch (current_item)
 	{
 	case (int)Items::VOLUME_SETTING:
-		ChangeMasterVolume();
+		UpdateVolumeSetting();
 		break;
 	case (int)Items::FRAME_RATE:
 		break;
@@ -206,7 +211,7 @@ void Option::Draw() const
 //////背景描画終わり//////
 
 
-//////右側の設定項目一覧描画//////
+//////左側の設定項目一覧描画//////
 	//選択されている要素があるなら、左側の箱は半透明にする
 	if (current_item != -1)
 	{
@@ -257,10 +262,10 @@ void Option::Draw() const
 	{
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	}
-//////右側の設定項目一覧描画終わり//////
+//////左側の設定項目一覧描画終わり//////
 
 
-//////左側の設定描画//////
+//////右側の設定描画//////
 	//選択されている要素がないなら、右側の箱は半透明にする
 	if (current_item == -1)
 	{
@@ -268,7 +273,7 @@ void Option::Draw() const
 	}
 
 	//右側の箱描画(白、塗りつぶしなし)
-	DrawBox(right_box_location.x,
+	DrawBoxAA(right_box_location.x,
 			right_box_location.y,
 			right_box_location.x+right_box_size.x,
 			right_box_location.y+right_box_size.y, 0xffffff, false);
@@ -286,14 +291,11 @@ void Option::Draw() const
 	case (int)Items::BACK:
 		break;
 	default:
+		//半透明に設定されていたら元に戻す
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		break;
 	}
-	//半透明に設定されていたら元に戻す
-	if (current_item == -1)
-	{
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-	}
-//////左側の設定描画終わり//////
+//////右側の設定描画終わり//////
 }
 
 void Option::BackGroundUpdate()
@@ -354,14 +356,60 @@ void Option::BackGroundUpdate()
 	}
 }
 
-void Option::ChangeMasterVolume()
+void Option::UpdateVolumeSetting()
+{
+	//十字キー上下で選択されている要素を切り替え 他の要素が既に選択されていたら動かせないように
+	if (current_bar == -1)
+	{
+		//カーソル上移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP))
+		{
+			if (--v_cursor_num < 0)
+			{
+				v_cursor_num = 2;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+		//カーソル下移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN))
+		{
+			if (++v_cursor_num > 2)
+			{
+				v_cursor_num = 0;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+		//Bボタンが押された時に選択されている要素に切り替え
+		if (PadInput::OnButton(XINPUT_BUTTON_B))
+		{
+			current_bar = v_cursor_num;
+		}
+	}
+
+	//Aボタンが押された時に選択されている要素を解除
+	if (PadInput::OnRelease(XINPUT_BUTTON_A))
+	{
+		current_bar = -1;
+	}
+
+	//何かしらのバーが選択されているなら音量更新
+	if (current_bar != -1)
+	{
+		ChangeVolume(current_bar);
+	}
+}
+
+void Option::ChangeVolume(int _num)
 {
 
 	//スティックが一定以上傾いているなら、スティックの角度に応じて音量を変更する
 
 	//スティックが動いているかのフラグをリセット
 	move_stick = false;
-
+	//スティックの描画位置を移動
+	stick_loc.y = (volume_bar_location[_num].y + VOLUME_BAR_HEIGHT + 75);
 	//下に傾けた場合は反応しない
 	if (
 		(PadInput::TipLStick(STICKL_X) > 0.5f || 
@@ -375,28 +423,28 @@ void Option::ChangeMasterVolume()
 		//スティックの角度を求める
 		Vector2D stick_inclination = { PadInput::TipLStick(STICKL_X) * 10,PadInput::TipLStick(STICKL_Y) * 10 };
 		stick_radian = atan2f(stick_inclination.y, stick_inclination.x);
-		stick_angle = 180.f - (stick_radian * 180.f / M_PI);
+		stick_angle = (float)(180.f - (stick_radian * 180.f / M_PI));
 		DebugInfomation::Add("stick_angle", stick_angle);
 
 		//スティックの角度が40~140なら応じた数値にする
 		if (stick_angle > 40.f && stick_angle < 140.f)
 		{
 			//角度に応じて音量を変更する
-			volume_control_bar = (int)((stick_angle - 40) * 2.55f);
+			volume_control_bar[_num] = (int)((stick_angle - 40) * 2.55f);
 		}
 		//角度が40以下なら音量を0にする
 		else if (stick_angle < 40.f)
 		{
-			volume_control_bar = 0;
+			volume_control_bar[_num] = 0;
 		}
 		//角度が140以上なら音量を255(最大)にする
 		else
 		{
-			volume_control_bar = 255;
+			volume_control_bar[_num] = 255;
 		}
 
 		//音量を更新する
-		ResourceManager::SetSoundVolume(volume_control_bar);
+		ResourceManager::SetSoundVolume(_num,volume_control_bar[_num]);
 
 		//カーソル音の再生を確認するために間隔を置く
 		if (frame % 4 == 0)
@@ -410,54 +458,89 @@ void Option::ChangeMasterVolume()
 		//左右キーで音量を調整
 		if (PadInput::OnPressed(XINPUT_BUTTON_DPAD_RIGHT))
 		{
-			if (volume_control_bar < 255)volume_control_bar++;
-			ResourceManager::SetSoundVolume(volume_control_bar);
+			if (volume_control_bar[_num] < 255)volume_control_bar[_num]++;
+			ResourceManager::SetSoundVolume(_num,volume_control_bar[_num]);
 			ResourceManager::StartSound(cursor_se);
 		}
 		if (PadInput::OnPressed(XINPUT_BUTTON_DPAD_LEFT))
 		{
-			if (volume_control_bar > 0)volume_control_bar--;
-			ResourceManager::SetSoundVolume(volume_control_bar);
+			if (volume_control_bar[_num] > 0)volume_control_bar[_num]--;
+			ResourceManager::SetSoundVolume(_num,volume_control_bar[_num]);
 			ResourceManager::StartSound(cursor_se);
 		}
 	}
 	//バーの大きさを再取得
-	volume_control_bar = ResourceManager::GetSoundVolume();
+	volume_control_bar[_num] = ResourceManager::GetSoundVolume(_num);
 }
 
 void Option::DrawVolumeSetting()const
 {
+	SetFontSize(30);
 	for (int i = 0; i < 3; i++)
 	{
+		//選択されている要素がないなら、右側の箱は半透明にする
+		if (current_bar != i)
+		{
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 127);
+		}
 		//スティック描画用変数定義
 		Vector2D stick_inclination;
 
+		//音量バーの上に文字描画
+		DrawFormatStringF(volume_bar_location[i].x + 127.5f - (GetDrawStringWidth(VolumeString[i], strlen("今日もいい天気だ")) / 2),
+			volume_bar_location[i].y - 40,
+			0xffffff, "%s", VolumeString[i]);
+		
 		//音量バー
 		DrawBoxAA(volume_bar_location[i].x,
 			volume_bar_location[i].y,
-			volume_bar_location[i].x  + volume_control_bar,
-			volume_bar_location[i].y + VOLUME_SETTING_HEIGHT, 0x00ff00, true);
-		//音量バー
-		DrawBoxAA(volume_bar_location[i].x,
-			volume_bar_location[i].y,
-			volume_bar_location[i].x + 255,
-			volume_bar_location[i].y + VOLUME_SETTING_HEIGHT, 0xffffff, false);
+			volume_bar_location[i].x  + volume_control_bar[i],
+			volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0x00ff00, true);
 
-		//スティックが動いているときしか描画しない
-		if (move_stick)
+		//選択されている外枠の下にスティックを描画する
+		if (i == current_bar)
 		{
-			//スティックとバーを繋ぐ線描画
-			DrawLineAA(stick_loc.x,
-				stick_loc.y,
-				stick_loc.x + (cosf(stick_radian) * 200),
-				stick_loc.y - (sinf(stick_radian) * 200), 0xff0000);
+
+			//スティックが動いているときしか描画しない線
+			if (move_stick)
+			{
+				//スティックとバーを繋ぐ線描画
+				DrawLineAA(stick_loc.x,
+					stick_loc.y,
+					stick_loc.x + (cosf(stick_radian) * 200),
+					stick_loc.y - (sinf(stick_radian) * 200), 0xff0000);
+			}
+
+			//スティック描画
+			stick_inclination = { PadInput::TipLStick(STICKL_X) * 10,PadInput::TipLStick(STICKL_Y) * 10 };
+			DrawCircleAA(stick_loc.x, stick_loc.y, 20, 20, 0xaaaaaa, false);
+			DrawCircleAA(stick_loc.x + stick_inclination.x, stick_loc.y - stick_inclination.y, 15, 20, 0xaaaaaa, true);
 		}
 
-		//スティック描画
-		stick_inclination = { PadInput::TipLStick(STICKL_X) * 10,PadInput::TipLStick(STICKL_Y) * 10 };
-		DrawCircleAA(stick_loc.x, stick_loc.y, 20, 20, 0xaaaaaa, false);
-		DrawCircleAA(stick_loc.x + stick_inclination.x, stick_loc.y - stick_inclination.y, 15, 20, 0xaaaaaa, true);
+		//半透明に設定されていたら元に戻す
+		if (current_bar != i)
+		{
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		}
 
+		//カーソルが合っているボックスを赤色で描画
+		if (i == v_cursor_num)
+		{
+			//音量バー外枠　赤
+			DrawBoxAA(volume_bar_location[i].x,
+				volume_bar_location[i].y,
+				volume_bar_location[i].x + 255,
+				volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0xff0000, false);
+		}
+		//カーソルが合っていないボックスを白色で描画
+		else
+		{
+			//音量バー外枠　白
+			DrawBoxAA(volume_bar_location[i].x,
+				volume_bar_location[i].y,
+				volume_bar_location[i].x + 255,
+				volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0xffffff, false);
+		}
 	}
 }
 
