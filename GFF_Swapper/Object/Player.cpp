@@ -353,22 +353,9 @@ void Player::Draw()const
 	if(hp <= 0){
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deathTimer * 2));
 	}
-
-	if (emoteFlg) {
-		DrawPlayerFront(false);
-	}
-	else {
-		if (damageEffectFlg) {
-			if (damageEffectTime % 3 == 0) {
-				//DrawPlayer();
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)),TRUE);
-			}
-		}
-		else {//見た目
-			//DrawPlayer();
-			DrawPlayerImage();
-		}
-	}
+	
+	//プレイヤー描画
+	DrawPlayerImage();
 
 	DrawPlayerFront(true);
 	for (int i = 0; i < hp; i++)
@@ -428,9 +415,6 @@ void Player::Draw()const
 
 #ifdef _DEBUG
 	DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);
-	DebugInfomation::Add("x", location.x);
-	DebugInfomation::Add("swap_timer", swapTimer);
-	DebugInfomation::Add("y", location.y);
 #endif // _DEBUG
 
 }
@@ -1343,6 +1327,7 @@ float Player::GetLength(Vector2D l1, Vector2D l2)
 
 void Player::LoadPlayerImage()
 {
+	//プレイヤーアニメーション格納
 	for (int i = 0; i < PLAYER_STATE_NUM; i++)
 	{
 		player_image[i] = ResourceManager::SetDivGraph(player_imagepath[i], 
@@ -1353,6 +1338,9 @@ void Player::LoadPlayerImage()
 			player_anim_image_num[i][4], 
 			player_anim_image_num[i][5],TRUE);
 	}
+
+	//プレイヤー正面画像格納
+	player_front_image = ResourceManager::SetDivGraph("Resource/Images/sozai/player_posing.PNG", 3, 3, 1, 100, 100, 0);
 }
 
 void Player::PlayerSound()
@@ -1741,7 +1729,31 @@ void Player::DrawPlayer() const
 
 void Player::DrawPlayerImage()const
 {
-	ResourceManager::DrawPlayerAnimGraph({ local_location.x -10,local_location.y }, player_image[p_state], color);
+	if (emoteFlg) {
+		//プレイヤー正面描画
+		DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_front_image, GetColorNum(color)), TRUE);
+
+	}
+	else
+	{//見た目
+
+	//ダメージ中描画
+		if (damageEffectFlg) {
+			if (damageEffectTime % 3 == 0) {
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)), TRUE);
+			}
+		}
+		//ジャンプ中描画
+		else if (p_state ==PlayerState::JUMP_LEFT || p_state == PlayerState::JUMP_RIGHT)
+		{
+			DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)), TRUE);
+		}
+		//通常描画
+		else
+		{
+			ResourceManager::DrawPlayerAnimGraph({ local_location.x - 10,local_location.y }, player_image[p_state], color);
+		}
+	}
 }
 
 void Player::DrawPlayerFront(bool f) const

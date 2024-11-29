@@ -201,6 +201,7 @@ void EnemyFrog::Draw()const
 	default:
 		break;
 	}
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 }
 
 void EnemyFrog::Finalize()

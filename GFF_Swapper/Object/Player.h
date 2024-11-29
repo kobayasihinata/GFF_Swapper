@@ -13,8 +13,8 @@ static char player_imagepath[PLAYER_STATE_NUM][256] =
 	"Resource/Images/sozai/player_wait_L.PNG",
 	"Resource/Images/sozai/player_run_R.PNG",
 	"Resource/Images/sozai/player_run_L.PNG",
-	"Resource/Images/sozai/player_wait_R.PNG",
-	"Resource/Images/sozai/player_wait_L.PNG",
+	"Resource/Images/sozai/player_jump_R.PNG",
+	"Resource/Images/sozai/player_jump_L.PNG",
 	"Resource/Images/sozai/player_damage_R.PNG",
 	"Resource/Images/sozai/player_damage_L.PNG",
 };
@@ -26,8 +26,8 @@ static int player_anim_image_num[PLAYER_STATE_NUM][6]
 	{12,4,3,85,100,5},
 	{12,4,3,100,100,5},
 	{12,4,3,100,100,5},
-	{12,4,3,85,100,0},
-	{12,4,3,85,100,0},
+	{3,3,1,100,100,0},
+	{3,3,1,100,100,0},
 	{3,3,1,100,100,0},
 	{3,3,1,100,100,0},
 };
@@ -98,6 +98,7 @@ private:
 	float circleAng;//カーソルの回転
 
 	int player_image[PLAYER_STATE_NUM];	//プレイヤー画像の格納場所
+	int player_front_image;				//プレイヤーが色交換を成功させた時の画像格納
 	int landing_se;		//着地SE
 	int walk_se[4];		//歩行SE格納
 	int jump_se;		//ジャンプSE格納

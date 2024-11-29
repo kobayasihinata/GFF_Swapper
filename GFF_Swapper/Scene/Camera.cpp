@@ -56,7 +56,6 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 		}
 	}
 
-	DebugInfomation::Add("impact", impact);
 	//カメラ振動処理
 	if (impact > 0)
 	{
