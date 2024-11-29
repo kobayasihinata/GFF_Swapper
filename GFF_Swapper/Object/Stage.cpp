@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4), fire_on_top(false)
 {
 	block_type = _type;
 	next_stage = _next_stage - TUTOSTAGE_ONE_TRANSITION;
@@ -212,6 +212,19 @@ void Stage::Update()
 		}
 	}
 
+	//炎ブロックなら
+	if (block_type == 6)
+	{
+		//フラグリセット
+		fire_on_top = false;
+
+		//上に炎がある？
+		if (stage_around_data[1] == FIRE_BLOCK)
+		{
+			fire_on_top = true;
+		}
+	}
+
 	//hit_timerに0が入ったらアニメーション開始
 	if (hit_timer >= 0)
 	{
@@ -241,7 +254,8 @@ void Stage::Draw()const
 		case GRAY_BLOCK:
 			if (debug_flg == false)
 			{
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(ground_image, ground_mapchip), true);			}
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(ground_image, ground_mapchip), true);			
+			}
 			else
 			{
 				ResourceManager::StageBlockDraw(local_location, 2);
@@ -249,10 +263,22 @@ void Stage::Draw()const
 			break;
 			//地面(赤、緑、青)
 		case RED_BLOCK:
+			if (debug_flg == false)
+			{
+				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(fire_image, ground_mapchip), true);
+			}
+			break;
 		case FIRE_BLOCK:
 			if (debug_flg == false)
 			{
-				ResourceManager::DrawAnimGraph(local_location, fire_image);
+				if (fire_on_top)
+				{
+					ResourceManager::DrawAnimGraph(local_location, fire_image2);
+				}
+				else
+				{
+					ResourceManager::DrawAnimGraph(local_location, fire_image);
+				}
 			}
 			break;
 		case GREEN_BLOCK:
@@ -519,7 +545,7 @@ void Stage::StageLoadGraph()
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/moss.PNG");
 		ground_image = ResourceManager::SetDivGraph("Resource/Images/sozai/ground.PNG", 9, 3, 3, 40, 40,0);
 		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/puddle.PNG", 8, 4, 2, 40, 40,8);
-		fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/magma.PNG", 8, 4, 2, 40, 40, 15);
+		fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/lava.PNG", 9, 3, 3, 40, 40, 0);
 	}
 	//ダメージゾーンの画像を読み込む
 	if (block_type == WOOD_BLOCK || block_type == FIRE_BLOCK || block_type == WATER_BLOCK)
@@ -527,14 +553,15 @@ void Stage::StageLoadGraph()
 		wood_image = ResourceManager::SetGraph("Resource/Images/sozai/lvy.PNG");
 		water_image = ResourceManager::SetDivGraph("Resource/Images/sozai/waterfall.PNG", 8, 4, 2, 40, 40,8);
 		fire_image = ResourceManager::SetDivGraph("Resource/Images/sozai/fire.PNG", 8, 4, 2, 40, 40, 8);
+		fire_image2 = ResourceManager::SetDivGraph("Resource/Images/sozai/magma.PNG", 8, 4, 2, 40, 40, 15);
 
 	}
 }
 
 void Stage::SetMapChip()
 {
-	//無色地面なら
-	if (block_type == 2)
+	//無色地面、もしくは赤ブロックなら
+	if (block_type == 2 || block_type == 3)
 	{
 		//上に何もない？
 		if (stage_around_data[1] == NULL_BLOCK)

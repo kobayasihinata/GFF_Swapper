@@ -129,10 +129,13 @@ void ObjectManager::Update(GameMain* _g)
 
 void ObjectManager::Draw()const
 {
-	std::vector<Object*> enemy;
+	std::vector<Object*> can_swap_object;
+
 	//オブジェクトの描画
 	for (const auto& in_screen_object : in_screen_object)
 	{
+
+		//ボスステージなら暗転
 		if (boss_blind_flg == true)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)(255 - sqrtf(powf(fabsf(player_object->GetLocation().x - in_screen_object->GetLocation().x), 2) + powf(fabsf(player_object->GetLocation().y - in_screen_object->GetLocation().y), 2))));
@@ -141,22 +144,31 @@ void ObjectManager::Draw()const
 		}
 		else
 		{
-			//敵以外なら描画、敵なら配列に格納してまとめて描画
-			if (in_screen_object->GetObjectType() != ENEMY)
+			//交換可能ブロック(もしくは敵)なら配列に格納してまとめて描画、それ以外は描画
+			if (!in_screen_object->GetCanSwap())
 			{
 				in_screen_object->Draw();
 			}
 			else
 			{
-				enemy.push_back(in_screen_object);
+				can_swap_object.push_back(in_screen_object);
 			}
 
 		}
 	}
-	//敵描画
-	for (const auto& enemy : enemy)
+
+	//プレイヤーが交換しようとしているなら、オブジェクトを暗く表示
+	if (player_object->GetSearchFlg())
 	{
-		enemy->Draw();
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
+		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+	}
+
+	//敵描画
+	for (const auto& can_swap_object : can_swap_object)
+	{
+		can_swap_object->Draw();
 	}
 
 	//プレイヤーの描画
