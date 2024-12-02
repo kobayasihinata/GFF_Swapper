@@ -80,7 +80,7 @@ private:
     bool move_stick;                  //スティックが動いているか
                                      
     //音源格納                       
-    int cursor_se;                    //カーソル移動のSE
+    int cursor_se;                    //カーソル移動のSE    
 
 public:
     //コンストラクタ _old_scene=ひとつ前のシーン(情報を保持する必要があるなら"this"を格納)

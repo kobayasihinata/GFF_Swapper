@@ -8,7 +8,7 @@ AnimData ResourceManager::div_image_data[DIV_IMAGE_NUM];
 int ResourceManager::image_data[IMAGE_NUM];
 SoundData ResourceManager::sound_data[SOUND_NUM];
 int ResourceManager::sound_freq = 50000;
-int ResourceManager::volume[] = { 255 };		//デフォルトの音量はMAXで
+int ResourceManager::volume[] = { 255,255,255 };		//デフォルトの音量はMAXで
 
 int ResourceManager::anim;			
 FireAnim ResourceManager::fire_anim[ANIM_BLOCK_NUM];
@@ -368,8 +368,8 @@ int ResourceManager::SetSound(const char* p,bool _bgm_or_se)
 		{
 			sound_data[i].sound_handle = LoadSoundMem(p);
 			sound_data[i].bgm_or_se = _bgm_or_se;
-			/*ChangeVolumeSoundMem(200, sound_data[i]);*/
 			sound_data[i].sound_filepath = const_cast<char*>(p);
+			ChangeVolumeSoundMem((int)(volume[(int)_bgm_or_se + 1] * (volume[0] / 255.f)), sound_data[i].sound_handle);
 			return i;
 		}
 		//同じ音源が既にあるならその格納場所を返す
@@ -420,7 +420,6 @@ void ResourceManager::DrawPlayerAnimGraph(Vector2D location, int _handle, int _c
 
 void ResourceManager::StartSound(int _num)
 {
-	ChangeVolumeSoundMem(volume[0], sound_data[_num].sound_handle);
 	//再生
 	if (sound_data[_num].bgm_or_se)
 	{
@@ -456,6 +455,52 @@ void ResourceManager::SetSoundVolume(int _num, int _volume)
 	else
 	{
 		volume[_num] = _volume;
+	}
+
+	//全体音量の数値は0~255から、倍率(0.0~1.0)に変更
+	float rate = volume[0] / 255.f;
+
+	//どの音量を変更したかによって、処理を変える
+	switch (_num)
+	{
+		//全体音量を変えていたら、全ての音源の再生音量を変更する
+	case 0:
+		for (int i = 0; sound_data[i].sound_handle != NULL; i++)
+		{
+			if (sound_data[i].bgm_or_se)
+			{
+				ChangeVolumeSoundMem((int)(volume[2] * rate), sound_data[i].sound_handle);
+			}
+			else
+			{
+				ChangeVolumeSoundMem((int)(volume[1] * rate), sound_data[i].sound_handle);
+			}
+		}
+		break;
+
+		//BGM音量を変えていたら、BGMのみ音源の再生音量を変更する
+	case 1:
+		for (int i = 0; sound_data[i].sound_handle != NULL; i++)
+		{
+			if (!sound_data[i].bgm_or_se)
+			{
+				ChangeVolumeSoundMem((int)(volume[1] * rate), sound_data[i].sound_handle);
+			}
+		}
+		break;
+
+		//SE音量を変えていたら、SEのみ音源の再生音量を変更する
+	case 2:
+		for (int i = 0; sound_data[i].sound_handle != NULL; i++)
+		{
+			if (sound_data[i].bgm_or_se)
+			{
+				ChangeVolumeSoundMem((int)(volume[2] * rate), sound_data[i].sound_handle);
+			}
+		}
+		break;
+	default:
+		break;
 	}
 }
 
