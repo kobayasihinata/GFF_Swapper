@@ -741,7 +741,7 @@ void EditScene::UpdateStage(int _width, int _height)
 	{
 		for (int j = 0; j < stage_width_num; j++)
 		{
-			if (stage_data[i][j] < 0)
+			if (stage[i][j] == nullptr)
 			{
 				stage_data[i][j] = 0;
 				stage[i][j] = new Stage(stage_data[i][j],stage_height_num * BOX_HEIGHT);

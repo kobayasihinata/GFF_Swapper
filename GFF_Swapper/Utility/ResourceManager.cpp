@@ -368,9 +368,8 @@ int ResourceManager::SetSound(const char* p,bool _bgm_or_se)
 		{
 			sound_data[i].sound_handle = LoadSoundMem(p);
 			sound_data[i].bgm_or_se = _bgm_or_se;
-			/*ChangeVolumeSoundMem(200, sound_data[i]);*/
 			sound_data[i].sound_filepath = const_cast<char*>(p);
-			ChangeVolumeSoundMem((int)(volume[(int)_bgm_or_se + 1] * (volume[0] / 255)), sound_data[i].sound_handle);
+			ChangeVolumeSoundMem((int)(volume[(int)_bgm_or_se + 1] * (volume[0] / 255.f)), sound_data[i].sound_handle);
 			return i;
 		}
 		//同じ音源が既にあるならその格納場所を返す
@@ -459,7 +458,7 @@ void ResourceManager::SetSoundVolume(int _num, int _volume)
 	}
 
 	//全体音量の数値は0~255から、倍率(0.0~1.0)に変更
-	float rate = volume[0] / 255;
+	float rate = volume[0] / 255.f;
 
 	//どの音量を変更したかによって、処理を変える
 	switch (_num)
