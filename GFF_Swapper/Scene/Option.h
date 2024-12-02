@@ -111,7 +111,10 @@ private:
     float stick_angle;                //スティックの角度
     float stick_radian;               //スティックの角度（ラジアン）
     bool move_stick;                  //スティックが動いているか
-                                     
+                
+    //画面遷移関連
+    int back_cursor;                  //戻る画面のカーソル
+
     //音源格納                       
     int cursor_se;                    //カーソル移動のSE    
 
@@ -154,8 +157,18 @@ public:
     void DrawVolumeSetting()const;
 
 
-    //キー割り当て一覧表示
+    //キー割り当て更新
+    void UpdateKeyConfig();
+
+    //キー割り当て表示
     void DrawKeyConfig()const;
+
+
+    //前の画面に戻る処理更新
+    AbstractScene* UpdateBack();
+    
+    //前の画面に戻る処理描画
+    void DrawBack()const;
 
     //前のシーンに戻るか判断
     AbstractScene* CheckReturnOldScene();

@@ -476,6 +476,16 @@ void Stage::Hit(Object* _object)
 			return;
 		}
 	}
+
+	//自身が炎で、真上にも炎があるなら
+	if (this->block_type == FIRE_BLOCK &&
+		_object->GetObjectType() == FIRE &&
+		this->location.x == _object->GetLocation().x &&
+		this->location.y >= _object->GetLocation().y)
+	{
+		//上に火があるとわからせる
+		stage_around_data[1] = FIRE_BLOCK;
+	}
 }
 
 void Stage::SetStageType(int _type)

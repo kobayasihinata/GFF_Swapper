@@ -26,9 +26,5 @@ public:
 	//ユーザーデータファイルに書き込む
 	static void UpdateUserData();
 
-
-//private:
-	//	//スティックの傾きをboolで返す
-	//static bool GetStick(int _assign_key);
 };
 
