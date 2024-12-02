@@ -3,6 +3,8 @@
 
 char PadInput::NowKey[BUTTONS];
 char PadInput::OldKey[BUTTONS];
+bool PadInput::NowStick[8] = { false };
+bool PadInput::OldStick[8] = { false };	
 XINPUT_STATE PadInput::Input;
 Stick PadInput::Rstick;
 Stick PadInput::Lstick;
@@ -17,25 +19,42 @@ void PadInput::UpdateKey()
 		NowKey[i] = Input.Buttons[i];
 	}
 
+	
 	//左スティック
 	Lstick.ThumbX = Input.ThumbLX;
 	Lstick.ThumbY = Input.ThumbLY;
+
+	//スティックをboolで判断した処理更新
+	for (int i = 0; i < 8; i++)
+	{
+		OldStick[i] = NowStick[i];
+		NowStick[i] = GetStick(i + L_STICK_UP);
+	}
 }
 
 bool PadInput::OnButton(int button)
 {
+	//スティックは別処理
+	if (button >= L_STICK_UP)return (NowStick[button- L_STICK_UP] == true && OldStick[button- L_STICK_UP] == false);
+	//ボタン処理
 	bool ret = (NowKey[button] == 1 && OldKey[button] == 0);
 	return ret;
 }
 
 bool PadInput::OnPressed(int button)
 {
+	//スティックは別処理
+	if (button >= L_STICK_UP)return NowStick[button- L_STICK_UP] == true;
+	//ボタン処理
 	bool ret = (NowKey[button] == 1);
 	return ret;
 }
 
 bool PadInput::OnRelease(int button)
 {
+	//スティックは別処理
+	if (button >= L_STICK_UP)return NowStick[button- L_STICK_UP] == false && OldStick[button- L_STICK_UP] == true;
+	//ボタン処理
 	bool ret = (NowKey[button] == 0 && OldKey[button] == 1);
 	return ret;
 }
@@ -77,3 +96,67 @@ float PadInput::TipRStick(short StickR)
 
 	return 0;
 }
+
+//スティックの傾きをboolで返す
+bool PadInput::GetStick(int _assign_key)
+{
+	//知りたいスティックによって処理を変える
+	switch (_assign_key)
+	{
+		//左スティック上
+	case L_STICK_UP:
+		return PadInput::TipLStick(STICKL_Y) > 0.5f;
+		break;
+		//左スティック下
+	case L_STICK_DOWN:
+		return PadInput::TipLStick(STICKL_Y) < -0.5f;
+		break;
+		//左スティック右
+	case L_STICK_RIGHT:
+		return PadInput::TipLStick(STICKL_X) > 0.5f;
+		break;
+		//左スティック左
+	case L_STICK_LEFT:
+		return PadInput::TipLStick(STICKL_X) < -0.5f;
+		break;
+		//右スティック上
+	case R_STICK_UP:
+		return PadInput::TipRStick(STICKL_Y) > 0.5f;
+		break;
+		//右スティック下
+	case R_STICK_DOWN:
+		return PadInput::TipRStick(STICKL_Y) < -0.5f;
+		break;
+		//右スティック右
+	case R_STICK_RIGHT:
+		return PadInput::TipRStick(STICKL_X) > 0.5f;
+		break;
+		//右スティック左
+	case R_STICK_LEFT:
+		return PadInput::TipRStick(STICKL_X) < -0.5f;
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+//bool PadInput::CheckIncStick(bool stickL_or_stickR, short x_or_y, float rat)
+//{
+//	//指定したスティックが右なら
+//	if (stickL_or_stickR)
+//	{
+//		//マイナス方向の向きならratに-をかけてから計算
+//		if()
+//		//縦の傾きか横の傾きの絶対値
+//		if(TipRStick(x_or_y))
+//		{
+//			
+//		}
+//	}
+//	//指定したスティックが左なら
+//	else
+//	{
+//
+//	}
+//}

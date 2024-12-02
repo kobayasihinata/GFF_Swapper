@@ -1,13 +1,15 @@
 #pragma once
 #include"DxLib.h"
+
+#include "../Utility/UserData.h"
 #include"../Object/Base/Object.h"
 
-#define IMAGE_NUM 100	//画像の最大数
+#define IMAGE_NUM 100		//画像の最大数
 #define DIV_IMAGE_NUM 100	//分割画像の最大数
-#define SOUND_NUM 100	//効果音の最大数
+#define SOUND_NUM 100		//効果音の最大数
 
 #define DIV_IMAGE_MAX 13	//分割画像の最大分割数
-#define ANIM_BLOCK_NUM 10 //エフェクト表示に使うブロックの数
+#define ANIM_BLOCK_NUM 10   //エフェクト表示に使うブロックの数
 
 //炎エフェクト用
 struct FireAnim
@@ -61,9 +63,8 @@ private:
 	static char* image_filepath[IMAGE_NUM];						//画像パス格納用
 	static AnimData div_image_data[DIV_IMAGE_NUM];				//分割画像パス格納用
 	static int image_data[IMAGE_NUM];							//画像格納用
-	static SoundData sound_data[SOUND_NUM];							//音源格納用
+	static SoundData sound_data[SOUND_NUM];						//音源格納用
 	static int sound_freq;										//音声の再生速度
-	static int volume[3];										//音量 0=全体 1=BGM 2=SE
 
 	//ステージアニメーション用
 	static int anim;											//アニメーション測定

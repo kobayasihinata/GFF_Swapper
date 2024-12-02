@@ -5,6 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include "../Utility/UserData.h"
 #include "../Utility/ResourceManager.h"
 #include "../Utility/DebugInfomation.h"
 #include "Title.h"
@@ -95,7 +96,7 @@ void Option::Initialize()
 
 void Option::Finalize()
 {
-
+	UserData::UpdateUserData();
 }
 
 AbstractScene* Option::Update()
@@ -146,7 +147,7 @@ AbstractScene* Option::Update()
 		break;
 	case (int)Items::FRAME_RATE:
 		break;
-	case (int)Items::SE_VOLUME:
+	case (int)Items::KEY_CONFIG:
 		break;
 	case (int)Items::BACK:
 		//シーン遷移するか確認
@@ -289,7 +290,8 @@ void Option::Draw() const
 		break;
 	case (int)Items::FRAME_RATE:
 		break;
-	case (int)Items::SE_VOLUME:
+	case (int)Items::KEY_CONFIG:
+		DrawKeyConfig();
 		break;
 	case (int)Items::BACK:
 		break;
@@ -550,6 +552,20 @@ void Option::DrawVolumeSetting()const
 				volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0xffffff, false);
 		}
 	}
+}
+
+void Option::DrawKeyConfig()const
+{
+	//ごり押しで現在のキー割り当て描画
+	SetFontSize(24);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 10, 0xffffff, "左移動:%s",		       KeyString[UserData::PLAYER_WALK_LEFT]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 40, 0xffffff, "右移動:%s",			   KeyString[UserData::PLAYER_WALK_RIGHT]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 70, 0xffffff, "ジャンプ:%s",			   KeyString[UserData::PLAYER_JUMP]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 100, 0xffffff, "交換:%s",			   KeyString[UserData::PLAYER_SWAP]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 130, 0xffffff, "交換カーソル上移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_UP]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 160, 0xffffff, "交換カーソル下移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_DOWN]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 190, 0xffffff, "交換カーソル左移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_LEFT]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 220, 0xffffff, "交換カーソル右移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_RIGHT]);
 }
 
 AbstractScene* Option::CheckReturnOldScene()
