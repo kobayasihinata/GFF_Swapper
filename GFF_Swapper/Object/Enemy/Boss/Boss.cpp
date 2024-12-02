@@ -595,6 +595,12 @@ void Boss::BossAtack(ObjectManager *_manager)
 				_manager->CreateObject(new BossAttackWater, l, e, BLUE);
 				attack_num++;
 			}
+			//全ての攻撃が終わった時、現在の座標の反対側にテレポートする
+			if (attack_num >= (attack_count / 4) && cnt == 400)
+			{
+				if (location.x = warp_pos[1].x)location = warp_pos[2];
+				else if (location.x = warp_pos[2].x)location = warp_pos[1];
+			}
 			if (cnt > BOSS_ATTACK_CD - (attack_count * 10)) {
 				cnt = 0;
 				f = false;
