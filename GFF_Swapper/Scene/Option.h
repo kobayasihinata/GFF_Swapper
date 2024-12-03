@@ -130,9 +130,13 @@ private:
     bool move_stick;                  //スティックが動いているか
                 
     //キー割り当て関連
+    int now_input;                    //現在入力されているボタン
     int action_num;                   //カーソルの位置
     int current_action;               //選択したアクション
     int wait_timer;                   //入力を受け付けない時間を測定
+    bool warning_flg;                 //既に割り振られている事の警告表示を出すか
+    int swap_action;                  //交換するアクション
+    bool press_flg;                   //キーを押して、何かしらのアクションを起こしたら真
 
     //画面遷移関連
     int back_cursor;                  //戻る画面のカーソル

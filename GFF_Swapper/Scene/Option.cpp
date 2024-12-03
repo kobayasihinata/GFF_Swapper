@@ -24,9 +24,13 @@ Option::Option(AbstractScene* _old_scene):
 	stick_angle(0.f),
 	stick_radian(0.f),
 	move_stick(false),
+	now_input(0),
 	action_num(0),
 	current_action(-1),//何も選択していない事を示す-1
 	wait_timer(0),
+	warning_flg(false),
+	swap_action(-1),	//何も選択していない事を示す-1
+	press_flg(false),
 	back_cursor(0),
 	cursor_se(0)
 {
@@ -362,13 +366,13 @@ void Option::UpdateLeftBox()
 		}
 
 	//Bボタンが押された時に選択されている要素に切り替え
-	if (PadInput::OnRelease(XINPUT_BUTTON_B))
+	if (PadInput::OnButton(XINPUT_BUTTON_B))
 		{
 			current_item = cursor_num;
 		}
 
 	//Aボタンが押された時に前の画面に戻る処理に移動する
-	if (PadInput::OnRelease(XINPUT_BUTTON_A))
+	if (PadInput::OnButton(XINPUT_BUTTON_A))
 	{
 		current_item = (int)Items::BACK;
 	}
@@ -588,10 +592,12 @@ void Option::DrawGameSetting()const
 
 void Option::UpdateKeyConfig()
 {
-	//キー入力を受け付けない時間な残っているなら、減算
-	if (--wait_timer < 0)wait_timer = 0;
+	
+	//どのキーも押していない事が検知されたらフラグをおろす
+	if (PadInput::GetNowInput() == -1)press_flg = false;
+
 	//キーの割り当て処理をしていないなら更新
-	if (current_action == -1 && wait_timer <= 0)
+	if (current_action == -1 && !press_flg)
 	{
 		//カーソル上移動
 		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
@@ -614,32 +620,84 @@ void Option::UpdateKeyConfig()
 		}
 
 		//Bボタンが押された時に選択されている要素に切り替え
-		if (PadInput::OnRelease(XINPUT_BUTTON_B))
+		if (PadInput::OnButton(XINPUT_BUTTON_B))
 		{
 			current_action = action_num;
+			press_flg = true;
 		}
 
 		//Aボタンが押された時に選択されている要素を解除
-		if (PadInput::OnRelease(XINPUT_BUTTON_A))
+		if (PadInput::OnButton(XINPUT_BUTTON_A))
 		{
 			current_item = -1;
+			press_flg = true;
+			warning_flg = false;
 		}
 	}
 	//キーの割り当て処理
-	else
+	else if(!press_flg)
 	{
+		//警告表示中なら、その処理だけして後の処理は行わない
+		if (warning_flg)
+		{
+			//キーの割り当てを交換
+			if (PadInput::OnButton(XINPUT_BUTTON_B))
+			{
+				int t;
+				t = UserData::player_key[current_action];
+				UserData::player_key[current_action] = UserData::player_key[swap_action];
+				UserData::player_key[swap_action] = t;
+
+				//フラグをおろす
+				warning_flg = false;
+				//キーの選択をやめる
+				current_action = -1;
+				press_flg = true;
+			}
+
+			//キーの選択をやめる
+			if (PadInput::OnButton(XINPUT_BUTTON_A))
+			{
+				//フラグをおろす
+				warning_flg = false;
+				//キーの選択をやめる
+				current_action = -1;
+				press_flg = true;
+			}
+
+			return;
+		}
 		//現在押されているキーを格納
-		int now_input = PadInput::GetNowInput();
+		now_input = PadInput::GetNowInput();
 
 		//選択されている時にBACKとSTART以外のボタンが押されたら、キーの割り当てを更新する
 		if (now_input != -1 && now_input != XINPUT_BUTTON_BACK && now_input != XINPUT_BUTTON_START)
 		{
-			//キーの割り当てを更新する
-			UserData::player_key[current_action] = now_input;
-			//割り当て処理をやめる
-			current_action = -1;
-			//5フレーム入力を受け付けない
-			wait_timer = 5;
+			warning_flg = false;
+			//割り当てられているキーを捜索して、割り当てようとしているキーがすでにあるなら、警告を出す
+			for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+			{
+				//同じキーを発見したら、フラグを立て、位置を格納(選択されている要素はスキップ)
+				if (UserData::player_key[i] == now_input && current_action != i)
+				{
+					swap_action = i;
+					warning_flg = true;
+					//5フレーム入力を受け付けない
+					wait_timer = 5;
+					break;
+				}
+			}
+
+			//割り当てられていないキーなら
+			if (!warning_flg)
+			{
+				//キーの割り当てを更新する
+				UserData::player_key[current_action] = now_input;
+				//割り当て処理をやめる
+				current_action = -1;
+				//5フレーム入力を受け付けない
+				wait_timer = 5;
+			}
 		}
 		//BACKかSTARTが押されたら割り当て処理をやめる
 		else if (now_input != -1)
@@ -719,6 +777,33 @@ void Option::DrawKeyConfig()const
 		DrawString(SCREEN_WIDTH / 2-100, SCREEN_HEIGHT / 2, "割り当てたいキーを押してください", 0xffffff);
 		DrawString(SCREEN_WIDTH / 2-90, SCREEN_HEIGHT / 2+30, "Back or Startキーで取り消し", 0xffffff);
 	}
+	//警告表示
+	if (warning_flg)
+	{
+		//警告表示箱（黒、塗りつぶしあり）
+		DrawBox((SCREEN_WIDTH / 2) - 200,
+			(SCREEN_HEIGHT / 2) - 150,
+			(SCREEN_WIDTH / 2) + 200,
+			(SCREEN_HEIGHT / 2) + 150, 0x000000, true);
+
+		//警告表示箱（白、塗りつぶしなし）
+		DrawBox((SCREEN_WIDTH / 2) - 200,
+			(SCREEN_HEIGHT / 2) - 150,
+			(SCREEN_WIDTH / 2) + 200,
+			(SCREEN_HEIGHT / 2) + 150, 0xffffff, false);
+
+		//警告表示
+		DrawString((SCREEN_WIDTH / 2) - (GetDrawStringWidth("---既に割り当てられているキーです！---", strlen("---既に割り当てられているキーです！---")) / 2),
+			(SCREEN_HEIGHT / 2) - 150, "---既に割り当てられているキーです！---", 0xffffff);
+
+		//該当アクション表示
+		DrawFormatString((SCREEN_WIDTH / 2) - (GetDrawStringWidth(PlayerAction[swap_action], strlen(PlayerAction[swap_action])) / 2),
+			(SCREEN_HEIGHT / 2) - 100, 0xffffff, "%s", PlayerAction[swap_action]);
+
+		//選択肢表示
+		DrawString((SCREEN_WIDTH / 2)- 200,
+			(SCREEN_HEIGHT / 2) - 50, "A = やめる      B = 交換して割り当てる", 0xffffff);
+	}
 }
 
 AbstractScene* Option::UpdateBack()
@@ -744,7 +829,7 @@ AbstractScene* Option::UpdateBack()
 		}
 
 	//Aボタンが押された時に選択されている要素を解除
-	if (PadInput::OnRelease(XINPUT_BUTTON_A))
+	if (PadInput::OnButton(XINPUT_BUTTON_A))
 	{
 		current_item = -1;
 	}
