@@ -18,10 +18,10 @@
 
 //オプションで選択できる要素一覧
 enum class Items {
-    VOLUME_SETTING = 0,  //音量調整
-    FRAME_RATE,         //BGM音量調整
-    SE_VOLUME,          //SE音量調整
-    BACK               //ひとつ前の画面に戻る
+    VOLUME_SETTING = 0, //音量調整
+    FRAME_RATE,         //ゲーム中設定
+    KEY_CONFIG,         //キー割り当て設定
+    BACK                //ひとつ前の画面に戻る
 
     //配列の最後に要素を追加するなら、#define ITEMS_NUMも書き換える
 };
@@ -31,7 +31,7 @@ static char ItemString[ITEMS_NUM][256] =
 {
     "音量設定",
     "ゲーム設定",
-    "",
+    "キー設定",
     "戻る",
 };
 static char VolumeString[3][256] =
@@ -39,6 +39,39 @@ static char VolumeString[3][256] =
     "全体音量",
     "BGM音量",
     "SE音量",
+};
+
+//画像完成までは文字で
+static char KeyString[24][256] =
+{
+    "十字上",
+    "十字下",
+    "十字左",
+    "十字右",
+    "START",
+
+    "BACK",
+    "左スティック押し込み",
+    "右スティック押し込み",
+    "LB",
+    "RB",
+
+    " ",
+    " ",
+    "A",
+    "B",
+    "X",
+
+    "Y",
+    "左スティック上",
+    "左スティック下",
+    "左スティック左",
+    "左スティック右",
+
+    "右スティック上",
+    "右スティック下",
+    "右スティック左",
+    "右スティック右",
 };
 
 //オプションの表示時の大きさ
@@ -78,7 +111,10 @@ private:
     float stick_angle;                //スティックの角度
     float stick_radian;               //スティックの角度（ラジアン）
     bool move_stick;                  //スティックが動いているか
-                                     
+                
+    //画面遷移関連
+    int back_cursor;                  //戻る画面のカーソル
+
     //音源格納                       
     int cursor_se;                    //カーソル移動のSE    
 
@@ -121,6 +157,18 @@ public:
     void DrawVolumeSetting()const;
 
 
+    //キー割り当て更新
+    void UpdateKeyConfig();
+
+    //キー割り当て表示
+    void DrawKeyConfig()const;
+
+
+    //前の画面に戻る処理更新
+    AbstractScene* UpdateBack();
+    
+    //前の画面に戻る処理描画
+    void DrawBack()const;
 
     //前のシーンに戻るか判断
     AbstractScene* CheckReturnOldScene();

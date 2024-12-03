@@ -1,4 +1,7 @@
 #include "ResourceManager.h"
+
+#include "UserData.h"
+
 #include "common.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -8,7 +11,6 @@ AnimData ResourceManager::div_image_data[DIV_IMAGE_NUM];
 int ResourceManager::image_data[IMAGE_NUM];
 SoundData ResourceManager::sound_data[SOUND_NUM];
 int ResourceManager::sound_freq = 50000;
-int ResourceManager::volume[] = { 255,255,255 };		//デフォルトの音量はMAXで
 
 int ResourceManager::anim;			
 FireAnim ResourceManager::fire_anim[ANIM_BLOCK_NUM];
@@ -369,7 +371,7 @@ int ResourceManager::SetSound(const char* p,bool _bgm_or_se)
 			sound_data[i].sound_handle = LoadSoundMem(p);
 			sound_data[i].bgm_or_se = _bgm_or_se;
 			sound_data[i].sound_filepath = const_cast<char*>(p);
-			ChangeVolumeSoundMem((int)(volume[(int)_bgm_or_se + 1] * (volume[0] / 255.f)), sound_data[i].sound_handle);
+			ChangeVolumeSoundMem((int)(UserData::volume[(int)_bgm_or_se + 1] * (UserData::volume[0] / 255.f)), sound_data[i].sound_handle);
 			return i;
 		}
 		//同じ音源が既にあるならその格納場所を返す
@@ -438,27 +440,27 @@ void ResourceManager::StopSound(int _num)
 
 int ResourceManager::GetSoundVolume(int _num)
 {
-	return volume[_num];
+	return UserData::volume[_num];
 }
 
 void ResourceManager::SetSoundVolume(int _num, int _volume)
 {
 	if (_volume > 255)
 	{
-		volume[_num] = 255;
+		UserData::volume[_num] = 255;
 
 	}
 	else if (_volume < 0)
 	{
-		volume[_num] = 0;
+		UserData::volume[_num] = 0;
 	}
 	else
 	{
-		volume[_num] = _volume;
+		UserData::volume[_num] = _volume;
 	}
 
 	//全体音量の数値は0~255から、倍率(0.0~1.0)に変更
-	float rate = volume[0] / 255.f;
+	float rate = UserData::volume[0] / 255.f;
 
 	//どの音量を変更したかによって、処理を変える
 	switch (_num)
@@ -469,11 +471,11 @@ void ResourceManager::SetSoundVolume(int _num, int _volume)
 		{
 			if (sound_data[i].bgm_or_se)
 			{
-				ChangeVolumeSoundMem((int)(volume[2] * rate), sound_data[i].sound_handle);
+				ChangeVolumeSoundMem((int)(UserData::volume[2] * rate), sound_data[i].sound_handle);
 			}
 			else
 			{
-				ChangeVolumeSoundMem((int)(volume[1] * rate), sound_data[i].sound_handle);
+				ChangeVolumeSoundMem((int)(UserData::volume[1] * rate), sound_data[i].sound_handle);
 			}
 		}
 		break;
@@ -484,7 +486,7 @@ void ResourceManager::SetSoundVolume(int _num, int _volume)
 		{
 			if (!sound_data[i].bgm_or_se)
 			{
-				ChangeVolumeSoundMem((int)(volume[1] * rate), sound_data[i].sound_handle);
+				ChangeVolumeSoundMem((int)(UserData::volume[1] * rate), sound_data[i].sound_handle);
 			}
 		}
 		break;
@@ -495,7 +497,7 @@ void ResourceManager::SetSoundVolume(int _num, int _volume)
 		{
 			if (sound_data[i].bgm_or_se)
 			{
-				ChangeVolumeSoundMem((int)(volume[2] * rate), sound_data[i].sound_handle);
+				ChangeVolumeSoundMem((int)(UserData::volume[2] * rate), sound_data[i].sound_handle);
 			}
 		}
 		break;

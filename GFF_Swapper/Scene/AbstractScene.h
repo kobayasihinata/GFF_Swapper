@@ -1,4 +1,5 @@
 #pragma once
+
 class AbstractScene
 {
 protected:
@@ -10,7 +11,10 @@ public:
 	virtual ~AbstractScene() {};
 
 	//イニシャライズ
-	virtual void Initialize() { init_flg = true; }
+	virtual void Initialize() 
+	{ 
+		init_flg = true; 
+	}
 
 	//ファイナライズ
 	virtual void Finalize() = 0;

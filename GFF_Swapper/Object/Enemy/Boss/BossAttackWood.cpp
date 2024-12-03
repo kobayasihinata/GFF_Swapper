@@ -79,7 +79,7 @@ void BossAttackWood::Draw() const
 		DrawBoxAA(local_location.x, SCREEN_HEIGHT - 40, local_location.x + erea.x, SCREEN_HEIGHT, 0x00ff00, true);
 		DrawBoxAA(local_location.x+17, SCREEN_HEIGHT - 37, local_location.x + erea.x-17, SCREEN_HEIGHT-17, 0x000000, true);
 		DrawBoxAA(local_location.x+17, SCREEN_HEIGHT - 15, local_location.x + erea.x-17, SCREEN_HEIGHT-5, 0x000000, true);
-		DrawBoxAA(local_location.x, 0, local_location.x + erea.x, SCREEN_HEIGHT, 0xff0000, false);
+		DrawBoxAA(local_location.x, 0, local_location.x + erea.x, SCREEN_HEIGHT, 0x00ff00, false);
 
 
 	}

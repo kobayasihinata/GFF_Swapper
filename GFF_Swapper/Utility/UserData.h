@@ -2,29 +2,29 @@
 #include "DxLib.h"
 #include "KeyInput.h"
 
-struct KeyBind {
-	int assign_key;		//割り振られたキー
-	int check_type;		//押し方の種類 0=単押し 1=長押し 2=離した瞬間
-};
-
 class UserData
 {
-private:
-	int master_volume;	//全体音量
-	int bgm_volume;		//BGM音量
-	int se_volume;		//SE音量
-
-	KeyBind PLAYER_WALK_LEFT = { XINPUT_BUTTON_DPAD_LEFT,0 };	//左移動
-	KeyBind PLAYER_WALK_RIGHT = { XINPUT_BUTTON_DPAD_RIGHT,0 }; //右移動
-	KeyBind PLAYER_JUMP = { XINPUT_BUTTON_A,0 };				//ジャンプ
-	KeyBind PLAYER_SWAP = { XINPUT_BUTTON_B,1 };				//交換
+public:
+	static int volume[3];				//音量 0=全体 1=BGM 2=SE
+	 
+	static int PLAYER_WALK_LEFT;		//左移動
+	static int PLAYER_WALK_RIGHT;		//右移動
+	static int PLAYER_JUMP;				//ジャンプ
+	static int PLAYER_SWAP;				//交換
+	static int PLAYER_SWAP_MOVE_UP;		//交換中のカーソル移動（上）
+	static int PLAYER_SWAP_MOVE_DOWN;	//交換中のカーソル移動（下）
+	static int PLAYER_SWAP_MOVE_LEFT;	//交換中のカーソル移動（左）
+	static int PLAYER_SWAP_MOVE_RIGHT;	//交換中のカーソル移動（右）
 
 public:
+	//初期化
+	static void Initialize();
 
 	//ユーザーデータファイルを読み込む
-	void LoadUserData();
+	static void LoadUserData();
 
 	//ユーザーデータファイルに書き込む
-	void UpdateUserData();
+	static void UpdateUserData();
+
 };
 

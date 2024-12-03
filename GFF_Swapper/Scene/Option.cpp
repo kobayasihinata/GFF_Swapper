@@ -5,6 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include "../Utility/UserData.h"
 #include "../Utility/ResourceManager.h"
 #include "../Utility/DebugInfomation.h"
 #include "Title.h"
@@ -24,6 +25,7 @@ Option::Option(AbstractScene* _old_scene):
 	stick_angle(0.f),
 	stick_radian(0.f),
 	move_stick(false),
+	back_cursor(0),
 	cursor_se(0)
 {
 	this->old_scene = _old_scene;
@@ -105,7 +107,7 @@ AbstractScene* Option::Update()
 	if (current_item == -1)
 	{
 		//カーソル上移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP))
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
 		{
 			if (--cursor_num < 0)
 			{
@@ -115,7 +117,7 @@ AbstractScene* Option::Update()
 		}
 
 		//カーソル下移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN))
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
 		{
 			if (++cursor_num > ITEMS_NUM - 1)
 			{
@@ -146,11 +148,10 @@ AbstractScene* Option::Update()
 		break;
 	case (int)Items::FRAME_RATE:
 		break;
-	case (int)Items::SE_VOLUME:
+	case (int)Items::KEY_CONFIG:
 		break;
 	case (int)Items::BACK:
-		//シーン遷移するか確認
-		return CheckReturnOldScene();
+		return UpdateBack();
 		break;
 	default:
 		break;
@@ -289,13 +290,18 @@ void Option::Draw() const
 		break;
 	case (int)Items::FRAME_RATE:
 		break;
-	case (int)Items::SE_VOLUME:
+	case (int)Items::KEY_CONFIG:
+		DrawKeyConfig();
 		break;
 	case (int)Items::BACK:
+		DrawBack();
 		break;
 	default:
 		//半透明に設定されていたら元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+		//上下とBボタンで何か選択する事を描画（画像差し替え予定）
+		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 24, "上下　＆　B", 0xffffff, true);
 		break;
 	}
 //////右側の設定描画終わり//////
@@ -365,7 +371,7 @@ void Option::UpdateVolumeSetting()
 	if (current_bar == -1)
 	{
 		//カーソル上移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP))
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP)|| PadInput::OnButton(L_STICK_UP))
 		{
 			if (--v_cursor_num < 0)
 			{
@@ -375,7 +381,7 @@ void Option::UpdateVolumeSetting()
 		}
 
 		//カーソル下移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN))
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
 		{
 			if (++v_cursor_num > 2)
 			{
@@ -490,7 +496,7 @@ void Option::DrawVolumeSetting()const
 		Vector2D stick_inclination;
 
 		//音量バーの上に文字描画
-		DrawFormatStringF(volume_bar_location[i].x + 127.5f - (GetDrawStringWidth(VolumeString[i], strlen("今日もいい天気だ")) / 2),
+		DrawFormatStringF(volume_bar_location[i].x + 127.5f - (GetDrawStringWidth(VolumeString[i], strlen(VolumeString[i])) / 2),
 			volume_bar_location[i].y - 40,
 			0xffffff, "%s", VolumeString[i]);
 		
@@ -550,6 +556,110 @@ void Option::DrawVolumeSetting()const
 				volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0xffffff, false);
 		}
 	}
+}
+
+void Option::UpdateKeyConfig()
+{
+
+}
+
+void Option::DrawKeyConfig()const
+{
+	//ごり押しで現在のキー割り当て描画
+	SetFontSize(24);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 10, 0xffffff, "左移動:%s",		       KeyString[UserData::PLAYER_WALK_LEFT]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 40, 0xffffff, "右移動:%s",			   KeyString[UserData::PLAYER_WALK_RIGHT]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 70, 0xffffff, "ジャンプ:%s",			   KeyString[UserData::PLAYER_JUMP]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 100, 0xffffff, "交換:%s",			   KeyString[UserData::PLAYER_SWAP]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 130, 0xffffff, "交換カーソル上移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_UP]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 160, 0xffffff, "交換カーソル下移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_DOWN]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 190, 0xffffff, "交換カーソル左移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_LEFT]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 220, 0xffffff, "交換カーソル右移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_RIGHT]);
+}
+
+AbstractScene* Option::UpdateBack()
+{
+		//カーソル上移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
+		{
+			if (--back_cursor < 0)
+			{
+				back_cursor = 2;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+		//カーソル下移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
+		{
+			if (++back_cursor > 2)
+			{
+				back_cursor = 0;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+	if (PadInput::OnButton(XINPUT_BUTTON_B))
+	{
+		switch (back_cursor)
+		{
+			//保存して終了
+		case 0:
+			//ファイルを更新してから終了
+			UserData::UpdateUserData();
+			return CheckReturnOldScene();
+			break;
+
+			//保存せず終了
+		case 1:
+			//保存する前のデータを読み込んで、ユーザーデータを変更前の物にしてから終了
+			UserData::LoadUserData();
+			//変更後のステージで音量が元に戻らないので、ロリセットした後の音量にする
+			ResourceManager::SetSoundVolume(0, UserData::volume[0]);
+			ResourceManager::SetSoundVolume(1, UserData::volume[1]);
+			ResourceManager::SetSoundVolume(2, UserData::volume[2]);
+			return CheckReturnOldScene();
+			break;
+
+			//キャンセル
+		case 2:
+			current_item = 1;
+			break;
+		default:
+			break;
+		}
+	}
+	return this;
+}
+
+void Option::DrawBack()const
+{
+	//後ろの描画を暗転させる
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+	DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+	SetFontSize(40);
+
+	//描画文字
+	DrawString((SCREEN_WIDTH / 2) - (GetDrawStringWidth("変更を保存しますか？", strlen("変更を保存しますか？"))/2), (SCREEN_HEIGHT / 2) - 70, "変更を保存しますか？", 0xffffff, true);
+	
+	//選択要素描画
+	SetFontSize(24);
+	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) , "保存して終了", 0xffffff);
+	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) + 24, "保存せず終了", 0xffffff);
+	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) + 48, "キャンセル", 0xffffff);
+
+	//カーソル描画
+	DrawTriangle((SCREEN_WIDTH / 2) - 190,
+		(SCREEN_HEIGHT / 2) + (back_cursor * 24),
+		(SCREEN_WIDTH / 2) - 160,
+		(SCREEN_HEIGHT / 2) + 6 + (back_cursor * 24),
+		(SCREEN_WIDTH / 2) - 190,
+		(SCREEN_HEIGHT / 2) + 12 + (back_cursor * 24), 0xffffff, true);
+
+	//上下とBボタンで何か選択する事を描画（画像差し替え予定）
+	DrawStringF((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) + 90, "上下　＆　B", 0xffffff, true);
 }
 
 AbstractScene* Option::CheckReturnOldScene()

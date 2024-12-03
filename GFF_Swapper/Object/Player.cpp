@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "../Utility/UserData.h"
 #include "../Utility/PadInput.h"
 #include "../Utility/KeyInput.h"
 #include "../Utility/ResourceManager.h"
@@ -179,11 +180,11 @@ void Player::Update(ObjectManager* _manager)
 
 		oldSearchFlg = searchFlg;
 		//Bボタンで色の交換ができるモードと切り替え
-		if (PadInput::OnPressed(XINPUT_BUTTON_B) && /*!_manager->GetPauseAfter() &&*/ swapTimer < 0) {
+		if (PadInput::OnPressed(UserData::PLAYER_SWAP) && /*!_manager->GetPauseAfter() &&*/ swapTimer < 0) {
 			SelectObject();
 			searchFlg = true;
 		}
-		else if (PadInput::OnRelease(XINPUT_BUTTON_B) && searchFlg && searchedObj != nullptr && swapTimer < 0) {
+		else if (PadInput::OnRelease(UserData::PLAYER_SWAP) && searchFlg && searchedObj != nullptr && swapTimer < 0) {
 			//交換エフェクトにかかる時間を受け取る
 			if (searchedObj != this)
 			{
@@ -198,7 +199,7 @@ void Player::Update(ObjectManager* _manager)
 				swapTimer = 0;
 			}
 		}
-		else if (PadInput::OnRelease(XINPUT_BUTTON_B) && swapTimer < 0) {//交換できるオブジェクトが画面内になかった時
+		else if (PadInput::OnRelease(UserData::PLAYER_SWAP) && swapTimer < 0) {//交換できるオブジェクトが画面内になかった時
 			searchFlg = false;
 		}
 
@@ -656,7 +657,7 @@ void Player::Hit(Object* _object)
 void Player::MoveActor()
 {
 	//ジャンプ
-	if ((PadInput::OnButton(XINPUT_BUTTON_A)/*|| PadInput::OnPressed(XINPUT_BUTTON_A)*/)) {
+	if (PadInput::OnButton(UserData::PLAYER_JUMP)) {
 		switch (state)
 		{
 		case 0:
@@ -684,17 +685,17 @@ void Player::MoveActor()
 			velocity = saveVec;
 		}
 
-		if (PadInput::TipLStick(STICKL_X) > 0.1f) {
-			stick = PadInput::TipLStick(STICKL_X);
-			velocity.x += stick * 1.f;
+		if (PadInput::OnPressed(UserData::PLAYER_WALK_RIGHT)) {
+			//stick = PadInput::TipLStick(STICKL_X);
+			velocity.x += 1.f;	//スティックの角度をかけていたのを削除
 			if (velocity.x > 6.5f) {
 				velocity.x = 6.5f;
 			}
 			moveFrontFlg = true;
 		}
-		else if (PadInput::TipLStick(STICKL_X) < -0.1f) {
-			stick = PadInput::TipLStick(STICKL_X);
-			velocity.x += stick * 1.f;
+		else if (PadInput::OnPressed(UserData::PLAYER_WALK_LEFT)) {
+			//stick = PadInput::TipLStick(STICKL_X);
+			velocity.x -= 1.f;//スティックの角度をかけていたのを削除
 			if (velocity.x < -6.5f) {
 				velocity.x = -6.5f;
 			}
@@ -788,7 +789,7 @@ void Player::SelectObject()
 	// スワップタイマーが未設定で、オブジェクトが検索されている場合の処理
 	if (swapTimer == -1 && searchedObjFlg && searchedObj != nullptr) {
 		// X軸の右方向の入力がある場合
-		if ((PadInput::TipLStick(STICKL_X) > 0.8f || PadInput::OnPressed(XINPUT_BUTTON_DPAD_RIGHT)) && oldStick[0]) {
+		if (PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_RIGHT) && oldStick[0]) {
 			ResourceManager::StartSound(cursor_se);
 			oldStick[0] = false;
 			flg = true;
@@ -909,7 +910,7 @@ void Player::SelectObject()
 			}
 	
 		}
-		else if ((PadInput::TipLStick(STICKL_X) < -0.8f || PadInput::OnPressed(XINPUT_BUTTON_DPAD_LEFT)) && oldStick[1]) {
+		else if (PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_LEFT) && oldStick[1]) {
 			ResourceManager::StartSound(cursor_se);
 			oldStick[1] = false;
 			flg = true;
@@ -1025,7 +1026,7 @@ void Player::SelectObject()
 				objSelectNumTmp = snum[0];
 			}
 		}
-		else if ((PadInput::TipLStick(STICKL_X) < 0.1f && PadInput::TipLStick(STICKL_X) > -0.1f) && (!PadInput::OnPressed(XINPUT_BUTTON_DPAD_RIGHT) && !PadInput::OnPressed(XINPUT_BUTTON_DPAD_LEFT))) {
+		else if (!PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_LEFT) && !PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_RIGHT)) {
 			oldStick[0] = true;
 			oldStick[1] = true;
 			stickTimer[0] = 0;
@@ -1042,7 +1043,7 @@ void Player::SelectObject()
 		}
 
 		//Y軸
-		if ((PadInput::TipLStick(STICKL_Y) > 0.8f || PadInput::OnPressed(XINPUT_BUTTON_DPAD_UP)) && oldStick[2]) {
+		if (PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_UP) && oldStick[2]) {
 			ResourceManager::StartSound(cursor_se);
 			oldStick[2] = false;
 			flg = true;
@@ -1152,7 +1153,7 @@ void Player::SelectObject()
 				objSelectNumTmp = tutirial_num;
 			}
 		}
-		else if ((PadInput::TipLStick(STICKL_Y) < -0.8f || PadInput::OnPressed(XINPUT_BUTTON_DPAD_DOWN)) && oldStick[3]) {
+		else if (PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_DOWN) && oldStick[3]) {
 			ResourceManager::StartSound(cursor_se); 
 			oldStick[3] = false;
 			flg = true;
@@ -1275,7 +1276,7 @@ void Player::SelectObject()
 				objSelectNumTmp = tutirial_num;
 			}
 		}
-		else if ((PadInput::TipLStick(STICKL_Y) < 0.1f && PadInput::TipLStick(STICKL_Y) > -0.1f) && (!PadInput::OnPressed(XINPUT_BUTTON_DPAD_UP) && !PadInput::OnPressed(XINPUT_BUTTON_DPAD_DOWN))) {
+		else if (!PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_UP) && !PadInput::OnPressed(UserData::PLAYER_SWAP_MOVE_DOWN)) {
 			oldStick[2] = true;
 			oldStick[3] = true;
 			stickTimer[1] = 0;
@@ -1354,7 +1355,7 @@ void Player::PlayerSound()
 			ResourceManager::StartSound(walk_se[now_riding]);
 		}
 		//ジャンプ
-		if (PadInput::OnButton(XINPUT_BUTTON_A) == true && ((state == 0 && stageHitFlg[1][bottom]) || state == 1))
+		if (PadInput::OnPressed(UserData::PLAYER_JUMP) == true && ((state == 0 && stageHitFlg[1][bottom]) || state == 1))
 		{
 			ResourceManager::StartSound(jump_se);
 		}

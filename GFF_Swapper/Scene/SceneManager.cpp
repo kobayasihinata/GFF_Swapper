@@ -1,8 +1,12 @@
 #include "SceneManager.h"
 #include "../Utility/DebugInfomation.h"
+#include "../Utility/UserData.h"
 
 void SceneManager::Initialize()
 {
+	//ユーザー情報の格納
+	UserData::Initialize();
+	//シーンの初期化
 	mScene->Initialize();
 }
 
@@ -32,7 +36,7 @@ AbstractScene* SceneManager::Update() {
 			mScene->Initialize();
 		}
 	};
-
+	DebugInfomation::Add("master", UserData::volume[0]);
 	return p;
 };
 

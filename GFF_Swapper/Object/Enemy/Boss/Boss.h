@@ -11,11 +11,11 @@
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"
 static float WOOD_SPAWN[6][3]{
-	{80,120,160},
 	{570,610,650},
-	{1080,1120,1160},
 	{315,355,395},
 	{825,865,905},
+	{80,120,160},
+	{1080,1120,1160},
 	{-825,-865,-905},
 };
 enum class BossState {
