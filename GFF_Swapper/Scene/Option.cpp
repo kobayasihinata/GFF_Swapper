@@ -5,7 +5,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "../Utility/UserData.h"
 #include "../Utility/ResourceManager.h"
 #include "../Utility/DebugInfomation.h"
 #include "Title.h"
@@ -25,6 +24,9 @@ Option::Option(AbstractScene* _old_scene):
 	stick_angle(0.f),
 	stick_radian(0.f),
 	move_stick(false),
+	action_num(0),
+	current_action(-1),//何も選択していない事を示す-1
+	wait_timer(0),
 	back_cursor(0),
 	cursor_se(0)
 {
@@ -102,43 +104,10 @@ void Option::Finalize()
 
 AbstractScene* Option::Update()
 {
+	//キー情報取得
+	DebugInfomation::Add("state", PadInput::GetNowInput());
+
 	frame++;
-	//十字キー上下で選択されている要素を切り替え 他の要素が既に選択されていたら動かせないように
-	if (current_item == -1)
-	{
-		//カーソル上移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
-		{
-			if (--cursor_num < 0)
-			{
-				cursor_num = ITEMS_NUM - 1;
-			}
-			ResourceManager::StartSound(cursor_se);
-		}
-
-		//カーソル下移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
-		{
-			if (++cursor_num > ITEMS_NUM - 1)
-			{
-				cursor_num = 0;
-			}
-			ResourceManager::StartSound(cursor_se);
-		}
-
-		//Bボタンが押された時に選択されている要素に切り替え
-		if (PadInput::OnRelease(XINPUT_BUTTON_B))
-		{
-			current_item = cursor_num;
-		}
-	}
-
-	//Aボタンが押された時に選択されている要素を解除(音量バー選択から一気に2段階戻るのは直すべきか)
-	if (PadInput::OnRelease(XINPUT_BUTTON_A))
-	{
-		if(current_bar !=-1)current_bar = -1;
-		else current_item = -1;
-	}
 
 	//選択されている要素に応じて処理を変える
 	switch (current_item)
@@ -147,13 +116,17 @@ AbstractScene* Option::Update()
 		UpdateVolumeSetting();
 		break;
 	case (int)Items::FRAME_RATE:
+		UpdateGameSetting();
 		break;
 	case (int)Items::KEY_CONFIG:
+		UpdateKeyConfig();
 		break;
 	case (int)Items::BACK:
 		return UpdateBack();
 		break;
 	default:
+		//何も選択されていないなら、左側の要素選択ボックスを更新する
+		UpdateLeftBox();
 		break;
 	}
 
@@ -289,6 +262,7 @@ void Option::Draw() const
 		DrawVolumeSetting();
 		break;
 	case (int)Items::FRAME_RATE:
+		DrawGameSetting();
 		break;
 	case (int)Items::KEY_CONFIG:
 		DrawKeyConfig();
@@ -365,6 +339,41 @@ void Option::BackGroundUpdate()
 	}
 }
 
+void Option::UpdateLeftBox()
+{
+	//カーソル上移動
+	if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
+		{
+			if (--cursor_num < 0)
+			{
+				cursor_num = ITEMS_NUM - 1;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+	//カーソル下移動
+	if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
+		{
+			if (++cursor_num > ITEMS_NUM - 1)
+			{
+				cursor_num = 0;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+	//Bボタンが押された時に選択されている要素に切り替え
+	if (PadInput::OnRelease(XINPUT_BUTTON_B))
+		{
+			current_item = cursor_num;
+		}
+
+	//Aボタンが押された時に前の画面に戻る処理に移動する
+	if (PadInput::OnRelease(XINPUT_BUTTON_A))
+	{
+		current_item = (int)Items::BACK;
+	}
+}
+
 void Option::UpdateVolumeSetting()
 {
 	//十字キー上下で選択されている要素を切り替え 他の要素が既に選択されていたら動かせないように
@@ -400,7 +409,11 @@ void Option::UpdateVolumeSetting()
 	//Aボタンが押された時に選択されている要素を解除
 	if (PadInput::OnRelease(XINPUT_BUTTON_A))
 	{
-		current_bar = -1;
+		//音量調整バーが選択されていたら、選択を解除
+		if (current_bar != -1)current_bar = -1;
+		//音量調整バーが選択されていなければ、要素選択ボックスに戻る
+		else current_item = -1;
+
 	}
 
 	//何かしらのバーが選択されているなら音量更新
@@ -558,29 +571,160 @@ void Option::DrawVolumeSetting()const
 	}
 }
 
-void Option::UpdateKeyConfig()
+void Option::UpdateGameSetting()
 {
 
+	//Aボタンが押された時に選択されている要素を解除
+	if (PadInput::OnRelease(XINPUT_BUTTON_A))
+	{
+		current_item = -1;
+	}
+}
+
+void Option::DrawGameSetting()const
+{
+	DrawString(right_box_location.x + 10, right_box_location.y + 10, "ゲーム設定", 0xffffff);
+}
+
+void Option::UpdateKeyConfig()
+{
+	//キー入力を受け付けない時間な残っているなら、減算
+	if (--wait_timer < 0)wait_timer = 0;
+	//キーの割り当て処理をしていないなら更新
+	if (current_action == -1 && wait_timer <= 0)
+	{
+		//カーソル上移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
+		{
+			if (--action_num < 0)
+			{
+				action_num = PLAYER_INPUT_NUM - 1;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+		//カーソル下移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
+		{
+			if (++action_num > PLAYER_INPUT_NUM - 1)
+			{
+				action_num = 0;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+		//Bボタンが押された時に選択されている要素に切り替え
+		if (PadInput::OnRelease(XINPUT_BUTTON_B))
+		{
+			current_action = action_num;
+		}
+
+		//Aボタンが押された時に選択されている要素を解除
+		if (PadInput::OnRelease(XINPUT_BUTTON_A))
+		{
+			current_item = -1;
+		}
+	}
+	//キーの割り当て処理
+	else
+	{
+		//現在押されているキーを格納
+		int now_input = PadInput::GetNowInput();
+
+		//選択されている時にBACKとSTART以外のボタンが押されたら、キーの割り当てを更新する
+		if (now_input != -1 && now_input != XINPUT_BUTTON_BACK && now_input != XINPUT_BUTTON_START)
+		{
+			//キーの割り当てを更新する
+			UserData::player_key[current_action] = now_input;
+			//割り当て処理をやめる
+			current_action = -1;
+			//5フレーム入力を受け付けない
+			wait_timer = 5;
+		}
+		//BACKかSTARTが押されたら割り当て処理をやめる
+		else if (now_input != -1)
+		{
+			current_action = -1;
+			//5フレーム入力を受け付けない
+			wait_timer = 5;
+		}
+	}
 }
 
 void Option::DrawKeyConfig()const
 {
-	//ごり押しで現在のキー割り当て描画
 	SetFontSize(24);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 10, 0xffffff, "左移動:%s",		       KeyString[UserData::PLAYER_WALK_LEFT]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 40, 0xffffff, "右移動:%s",			   KeyString[UserData::PLAYER_WALK_RIGHT]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 70, 0xffffff, "ジャンプ:%s",			   KeyString[UserData::PLAYER_JUMP]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 100, 0xffffff, "交換:%s",			   KeyString[UserData::PLAYER_SWAP]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 130, 0xffffff, "交換カーソル上移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_UP]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 160, 0xffffff, "交換カーソル下移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_DOWN]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 190, 0xffffff, "交換カーソル左移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_LEFT]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 220, 0xffffff, "交換カーソル右移動:%s", KeyString[UserData::PLAYER_SWAP_MOVE_RIGHT]);
+
+	//ごり押しで現在のキー割り当て描画
+
+	/*DrawFormatString(right_box_location.x + 10, right_box_location.y + 10, 0xffffff,  "左移動:%s",		       KeyString[UserData::player_key[(int)PlayerActionKey::P_WALK_LEFT]]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 40, 0xffffff,  "右移動:%s",			   KeyString[UserData::player_key[(int)PlayerActionKey::P_WALK_RIGHT]]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 70, 0xffffff,  "ジャンプ:%s",		   KeyString[UserData::player_key[(int)PlayerActionKey::P_JUMP]]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 100, 0xffffff, "交換:%s",			   KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP]]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 130, 0xffffff, "交換カーソル上移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_UP]]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 160, 0xffffff, "交換カーソル下移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_DOWN]]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 190, 0xffffff, "交換カーソル左移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_LEFT]]);
+	DrawFormatString(right_box_location.x + 10, right_box_location.y + 220, 0xffffff, "交換カーソル右移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_RIGHT]]);*/
+
+	//現在のキー割り当て描画
+
+	//プレイヤーの入力の数だけ箱を描画する
+	for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+	{
+		//操作一覧を格納する箱(白、塗りつぶしあり)
+		DrawBox(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH,
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
+			right_box_location.x + (right_box_size.x / 2),
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+			0xffffff, true);
+		//操作一覧を格納する箱の外枠(黒、塗りつぶしなし)
+		DrawBox(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH,
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
+			right_box_location.x + (right_box_size.x / 2),
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+			0x000000, false);
+		//操作一覧を文字で描画
+		DrawFormatString(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH + 10,
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + 10, 0x000000, "%s", PlayerAction[i]);
+		//割り当てられたキーを格納する用
+		DrawBox(right_box_location.x + (right_box_size.x / 2) ,
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
+			right_box_location.x + (right_box_size.x / 2) + KEY_BOX_WIDTH,
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+			0xffffff, false);
+		//キーを描画する（今は文字）
+		DrawFormatString(right_box_location.x + (right_box_size.x / 2) + 10,
+			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + 10, 0xffffff, "%s", KeyString[UserData::player_key[i]]);
+
+		//カーソルを描画する
+		if (i == action_num)
+		{
+			//操作一覧を格納する箱の外枠(赤、塗りつぶしなし)
+			DrawBox(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH,
+				right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
+				right_box_location.x + (right_box_size.x / 2),
+				right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+				0xff0000, false);
+		}
+	}
+	//キー割り当て処理中なら背景を暗転＆説明文を描画
+	if (current_action != -1)
+	{
+		//暗転
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+		//説明文
+		DrawString(SCREEN_WIDTH / 2-100, SCREEN_HEIGHT / 2, "割り当てたいキーを押してください", 0xffffff);
+		DrawString(SCREEN_WIDTH / 2-90, SCREEN_HEIGHT / 2+30, "Back or Startキーで取り消し", 0xffffff);
+	}
 }
 
 AbstractScene* Option::UpdateBack()
 {
-		//カーソル上移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
+	//カーソル上移動
+	if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
 		{
 			if (--back_cursor < 0)
 			{
@@ -589,8 +733,8 @@ AbstractScene* Option::UpdateBack()
 			ResourceManager::StartSound(cursor_se);
 		}
 
-		//カーソル下移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
+	//カーソル下移動
+	if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
 		{
 			if (++back_cursor > 2)
 			{
@@ -598,6 +742,12 @@ AbstractScene* Option::UpdateBack()
 			}
 			ResourceManager::StartSound(cursor_se);
 		}
+
+	//Aボタンが押された時に選択されている要素を解除
+	if (PadInput::OnRelease(XINPUT_BUTTON_A))
+	{
+		current_item = -1;
+	}
 
 	if (PadInput::OnButton(XINPUT_BUTTON_B))
 	{
@@ -614,7 +764,7 @@ AbstractScene* Option::UpdateBack()
 		case 1:
 			//保存する前のデータを読み込んで、ユーザーデータを変更前の物にしてから終了
 			UserData::LoadUserData();
-			//変更後のステージで音量が元に戻らないので、ロリセットした後の音量にする
+			//変更後のステージで音量が元に戻らないので、リセットした後の音量にする
 			ResourceManager::SetSoundVolume(0, UserData::volume[0]);
 			ResourceManager::SetSoundVolume(1, UserData::volume[1]);
 			ResourceManager::SetSoundVolume(2, UserData::volume[2]);

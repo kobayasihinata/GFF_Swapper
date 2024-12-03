@@ -57,6 +57,8 @@ public:
 	//スティックの傾きをboolで返す
 	static bool GetStick(int _assign_key);
 
-	/////スティックが指定した割合より傾いていたら真を返す
-	//static bool CheckIncStick(bool stickL_or_stickR, short x_or_y, float rat);
+	// 現在押されているボタン、スティックの番号を返す
+	// 同時に入力されている場合は各種ボタン、左スティック上下左右、
+	// 右スティック上下左右の順番で若い数字の物が返される
+	static int GetNowInput();
 };

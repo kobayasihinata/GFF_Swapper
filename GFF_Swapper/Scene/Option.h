@@ -3,19 +3,23 @@
 #include "../Utility/common.h"
 #include "../Utility/Vector2D.h"
 #include "eNum/BackGroundStruct.h"
+#include "../Utility/UserData.h"
 
 #define BG_BLOCK_WIDTH_NUM 32    //背景のブロックの横の数
 #define BG_BLOCK_HEIGHT_NUM 18   //背景のブロックの横の数
 
 #define ITEMS_SHIFT_Y 15    //オプションを描画する時のY移動値
 #define ITEMS_SPACE_Y 30     //オプションを描画する時のY間隔
-#define ITEMS_NUM (int)Items::BACK + 1 //enumの要素数
 #define RIGHT_BOX_SPACE 20      //右側の箱の画面端との間隔
 
 #define VOLUME_SETTING_HEIGHT 175  //音量調節バーの大きさ（スティックの描画含む） 
 #define VOLUME_BAR_HEIGHT 50  //音量調節バーの大きさ（スティックの描画含まない） 
 #define VOLUME_SETTING_SPACE 20  //音量調節バー同士の間隔（スティックの描画含む） 
 
+#define KEY_BOX_WIDTH 300       //キー表示ボックスの幅
+#define KEY_BOX_HEIGHT 50       //キー表示ボックスの高さ
+
+#define ITEMS_NUM (int)Items::BACK + 1 //enumの要素数
 //オプションで選択できる要素一覧
 enum class Items {
     VOLUME_SETTING = 0, //音量調整
@@ -39,6 +43,19 @@ static char VolumeString[3][256] =
     "全体音量",
     "BGM音量",
     "SE音量",
+};
+
+//操作一覧
+static char PlayerAction[PLAYER_INPUT_NUM][256] =
+{
+    "左移動",
+    "右移動",
+    "ジャンプ",
+    "交換",
+    "交換カーソル上移動",
+    "交換カーソル下移動",
+    "交換カーソル左移動",
+    "交換カーソル右移動"
 };
 
 //画像完成までは文字で
@@ -112,6 +129,11 @@ private:
     float stick_radian;               //スティックの角度（ラジアン）
     bool move_stick;                  //スティックが動いているか
                 
+    //キー割り当て関連
+    int action_num;                   //カーソルの位置
+    int current_action;               //選択したアクション
+    int wait_timer;                   //入力を受け付けない時間を測定
+
     //画面遷移関連
     int back_cursor;                  //戻る画面のカーソル
 
@@ -137,7 +159,7 @@ public:
     //描画に関することを実装
     void Draw() const override;
 
-
+//////背景関連//////
 
     //縦横の位置から規則的な色を返す
     int GetColor(int i, int j);
@@ -146,6 +168,13 @@ public:
     void BackGroundUpdate();
 
 
+//////左側の要素選択ボックス関連//////
+    
+    //要素ボックス更新
+    void UpdateLeftBox();
+
+
+//////音量調整関連//////
 
     //音量調整の更新
     void UpdateVolumeSetting();
@@ -157,12 +186,24 @@ public:
     void DrawVolumeSetting()const;
 
 
+//////ゲーム設定関連//////
+    
+    //ゲーム設定更新
+    void UpdateGameSetting();
+
+    //ゲーム設定描画
+    void DrawGameSetting()const;
+        
+//////キー割り当て関連//////
+
     //キー割り当て更新
     void UpdateKeyConfig();
 
     //キー割り当て表示
     void DrawKeyConfig()const;
 
+
+//////遷移関連//////
 
     //前の画面に戻る処理更新
     AbstractScene* UpdateBack();

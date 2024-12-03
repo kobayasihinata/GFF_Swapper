@@ -141,22 +141,18 @@ bool PadInput::GetStick(int _assign_key)
 	return false;
 }
 
-//bool PadInput::CheckIncStick(bool stickL_or_stickR, short x_or_y, float rat)
-//{
-//	//指定したスティックが右なら
-//	if (stickL_or_stickR)
-//	{
-//		//マイナス方向の向きならratに-をかけてから計算
-//		if()
-//		//縦の傾きか横の傾きの絶対値
-//		if(TipRStick(x_or_y))
-//		{
-//			
-//		}
-//	}
-//	//指定したスティックが左なら
-//	else
-//	{
-//
-//	}
-//}
+int PadInput::GetNowInput()
+{
+	//ボタンの入力を調べる
+	for (int i = 0; i < BUTTONS; i++)
+	{
+		if (Input.Buttons[i] == 1)return i;
+	}
+	//スティックの入力を調べる初期値L_STICK_UPから始まり、2つのスティックの上下左右を調べる為、８を足す
+	for (int j = L_STICK_UP; j < L_STICK_UP + 8; j++)
+	{
+		if (GetStick(j))return j;
+	}
+	//何も入力されていない事を返す
+	return -1;
+}
