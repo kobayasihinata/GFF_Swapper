@@ -259,15 +259,15 @@ void Player::Update(ObjectManager* _manager)
 		}
 
 		//交換中だけ対象のオブジェクトの見た目を白くする
-		if (swapTimer > SWAP_EFFECT_STOP_TIME)
-		{
-			//選択中のオブジェクトを更新
-			_manager->SetNowCurrentObject(searchedObj);
-		}
-		else
-		{
-			_manager->SetNowCurrentObject(nullptr);
-		}
+		//if (swapTimer > SWAP_EFFECT_STOP_TIME)
+		//{
+		//	//選択中のオブジェクトを更新
+		//	_manager->SetNowCurrentObject(searchedObj);
+		//}
+		//else
+		//{
+		//	_manager->SetNowCurrentObject(nullptr);
+		//}
 		//音声の周波数設定
 		if (searchFlg == TRUE)
 		{
@@ -284,6 +284,7 @@ void Player::Update(ObjectManager* _manager)
 		//damage
 		if (damageFlg && !damageOldFlg/* && d == 1*/) {
 			if (damageEffectFlg == false) {
+				
 				damageEffectFlg = true;
 				hp--;
 			}
@@ -292,23 +293,20 @@ void Player::Update(ObjectManager* _manager)
 			if (damageEffectTime == 90) {
 
 				camera->SetImpact(30);
-				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
-				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
-				_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
+				//HPが０なら、エフェクトをスポーンさせない
+				if (hp != 0)
+				{
+					_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
+					_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
+					_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
+				}
 			}
 			damageEffectTime--;
 			if (damageEffectTime <= 0) {
 				damageEffectFlg = false;
 				damageEffectTime = 90;
 				damageFlg = false;
-				//エフェクトが終わった後に体力が0ならプレイヤーを削除
 			}
-		}
-
-		if (hp <= 0) {
-			damageEffectFlg = false;
-			velocity.x = 0.f;
-			velocity.y = 0.f;
 		}
 
 		for (int i = 0; i < 4; i++) {
@@ -333,14 +331,12 @@ void Player::Update(ObjectManager* _manager)
 		if (circleAng++ >= 360.f) {
 			circleAng = 0.f;
 		}
-
 		//ゲームオーバー
-		if (hp <= 0) {
-			deathTimer++;
-			if (deathTimer > 90)
-			{
-				_manager->UpdateState(GameMainState::GameOver);
-			}
+		if (hp <= 0 || location.y > camera->GetStageSize().y +100) {
+			
+			velocity.x = 0.f;
+			velocity.y = 0.f;
+			if (deathTimer++ == 0)_manager->UpdateState(GameMainState::GameOver);
 		}
 	}
 
@@ -1740,7 +1736,7 @@ void Player::DrawPlayerImage()const
 
 	//ダメージ中描画
 		if (damageEffectFlg) {
-			if (damageEffectTime % 3 == 0) {
+			if (damageEffectTime % 4 != 0) {
 				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)), TRUE);
 			}
 		}
@@ -2002,8 +1998,12 @@ void Player::PlayerReset(ObjectManager* _manager)
 	searchFlg = false;
 	//プレイヤーによって選択されているオブジェクトをリセットする
 	_manager->SetNowCurrentObject(nullptr);
+	//死亡演出のタイマーをリセットする
+	deathTimer = 0;
+	damageFlg = false;
+	 
 	//HPを初期値に戻す
-	hp = 5;
+	hp = 2;
 	//プレイヤーの色を初期色に戻す
 	color = DEFAULT_PLAYER_COLOR;
 	draw_color = color;

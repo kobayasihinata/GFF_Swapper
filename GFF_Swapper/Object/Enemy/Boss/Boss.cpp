@@ -73,6 +73,7 @@ Boss::Boss() :
 	boss_color = BOSS_RED;
 
 	velocity = 0;
+	invin_flg = false;
 }
 
 Boss::~Boss()
@@ -289,12 +290,23 @@ void Boss::Draw() const
 			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2,			  change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
 			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 34, 0xFFFFFF, FALSE, 3.0f);
 			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 38, 36, color, FALSE, 2.0f);
-			if(barrier_num > 0) {
-				DrawHexagonSphere();
-				// バリアの描画
-				DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
+			if (barrier_num > 0) {
+
+				DrawHexagonSphere(color);
+				// バリアの描画(通常時)
+				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
 				DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
-				DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
+				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
+		
+
+			}
+			//無敵状態なら、バリアを白くコーティング
+			if (invin_flg)
+			{
+				DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2, 150, 6, 0xffffff, FALSE, 3.0f);
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+				DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2, 150, 6, 0xffffff, TRUE, 3.0f);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 			}
 		}
 	}
@@ -307,12 +319,23 @@ void Boss::Draw() const
 		//DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 36, color, FALSE, 2.0f);
 
 		if (barrier_num > 0) {
+
 			// バリアの描画
-			DrawHexagonSphere();
+			DrawHexagonSphere(color);
 			//for (int i = 0; i < barrier_num; i++) {
 			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE , 3.0f);
 			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
 			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
+
+		}
+
+		//無敵状態なら、バリアを白くコーティング
+		if (invin_flg)
+		{
+			DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2, 150, 6, 0xffffff, FALSE, 3.0f);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+			DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2, 150, 6, 0xffffff, TRUE, 3.0f);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		}
 	}
 
@@ -416,9 +439,10 @@ void Boss::Hit(Object* _object)
 {
 	//弱点色に触れた時の処理
 	if (
-		(_object->GetColorData() == RED && this->color == GREEN) ||
+		((_object->GetColorData() == RED && this->color == GREEN) ||
 		(_object->GetColorData() == BLUE && this->color == RED) ||
-		(_object->GetColorData() == GREEN && this->color == BLUE)
+		(_object->GetColorData() == GREEN && this->color == BLUE))
+		&& !invin_flg
 		)
 	{
 		//バリア減るごとにクールタイムを設ける
@@ -513,7 +537,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 	float rad;
 
 	if (f) {
-		can_swap = false;
+		invin_flg = true;
 		switch (attack)
 		{
 		case 0://火
@@ -527,13 +551,16 @@ void Boss::BossAtack(ObjectManager *_manager)
 			velocity.x = 5 * cosf(rad);
 			velocity.y = 5 * sinf(rad);
 
-
+			//攻撃する時、一回だけ自身の色を変える
+			if (t == 0)
+			{
+				color = RED;
+			}
 			if (++t > 90 + (attack_count / 4)*30) {
 				
-				can_swap = true;
+				invin_flg = false;
 			}
 			if (cnt % 30 == 0 && fire_count <=(attack_count / 4)) {
-				color = RED;
 				Vector2D e = { 20.f,20.f };
 				_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), e, RED);
 				fire_count++;
@@ -548,11 +575,15 @@ void Boss::BossAtack(ObjectManager *_manager)
 			break;
 
 		case 1://木
-			if (++t > 20) {
-				can_swap = true;
+			//攻撃する時、一回だけ自身の色を変える
+			if (t == 0)
+			{
+				color = GREEN;
+			}
+			if (++t > 30* attack_num) {
+				invin_flg = false;
 			}
 			if (cnt % 30 == 0 && attack_num <= (attack_count/4)) {
-				color = GREEN;
 				for (int i = 0; i < 3; i++)
 				{
 					Vector2D e = { 1000.0f,40.f };
@@ -577,8 +608,13 @@ void Boss::BossAtack(ObjectManager *_manager)
 			}
 			break;
 		case 2://水
+			//攻撃する時、一回だけ自身の色を変える
+			if (t == 0)
+			{
+				color = BLUE;
+			}
 			if (++t > 120) {
-				can_swap = true;
+				invin_flg = false;
 			}
 			if (cnt % 30 == 0 && attack_num <= (attack_count / 4)) {
 				color = BLUE;
@@ -615,7 +651,7 @@ void Boss::BossAtack(ObjectManager *_manager)
 	}
 }
 
-void Boss::DrawHexagonSphere() const
+void Boss::DrawHexagonSphere(int _color) const
 {
 	// ボスの中心座標
 	Vector2D center = { local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 };
@@ -644,7 +680,7 @@ void Boss::DrawHexagonSphere() const
 				float distance = (float)sqrt(pow(hexa_center.x - center.x, 2) + pow(hexa_center.y - center.y, 2));
 				if (distance <= 110) {
 					// 描画範囲を調整して内部を埋める
-					DrawHexagon({ hexa_center.x, hexa_center.y }, hex_size * 0.9f, color); // 0.9fは調整可能
+					DrawHexagon({ hexa_center.x, hexa_center.y }, hex_size * 0.9f, _color); // 0.9fは調整可能
 				}
 			}
 		}
