@@ -16,6 +16,7 @@
 #define VOLUME_BAR_HEIGHT 50  //音量調節バーの大きさ（スティックの描画含まない） 
 #define VOLUME_SETTING_SPACE 20  //音量調節バー同士の間隔（スティックの描画含む） 
 
+#define KEY_BOX_SHIFT 100       //キー表示ボックスをY座標にどれだけずらすか
 #define KEY_BOX_WIDTH 300       //キー表示ボックスの幅
 #define KEY_BOX_HEIGHT 50       //キー表示ボックスの高さ
 
@@ -75,11 +76,11 @@ static char KeyString[24][256] =
 
     " ",
     " ",
-    "A",
-    "B",
-    "X",
+    "Aボタン",
+    "Bボタン",
+    "Xボタン",
 
-    "Y",
+    "Yボタン",
     "左スティック上",
     "左スティック下",
     "左スティック左",
@@ -130,9 +131,12 @@ private:
     bool move_stick;                  //スティックが動いているか
                 
     //キー割り当て関連
+    Vector2D action_box_location[PLAYER_INPUT_NUM];     //キー設定箱の座標
     int now_input;                    //現在入力されているボタン
-    int action_num;                   //カーソルの位置
-    int current_action;               //選択したアクション
+    int action_num_x;                   //カーソルの位置(X軸)
+    int action_num_y;                   //カーソルの位置(Y軸)
+    int current_action_x;               //選択したアクション(X軸)
+    int current_action_y;               //選択したアクション(Y軸)
     int wait_timer;                   //入力を受け付けない時間を測定
     bool warning_flg;                 //既に割り振られている事の警告表示を出すか
     int swap_action;                  //交換するアクション

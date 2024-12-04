@@ -80,6 +80,12 @@ AbstractScene* GameMain::Update()
 	//フレーム測定
 	frame++;
 
+	//シーン遷移用変数のリセット
+	now_scene = this;
+
+	//BGMが再生されていなければ、再生する
+	ResourceManager::StartSound(bgm_normal);
+
 	//カメラの更新
 	camera->Update(now_stage, object_manager->GetPlayerLocation());
 
@@ -99,7 +105,7 @@ AbstractScene* GameMain::Update()
 		case GameMainState::Pause:	//一時停止
 			UpdatePause();
 			break;
-		case GameMainState::S_Help:	//ヘルプ
+		case GameMainState::Option:	//ヘルプ
 			UpdateHelp();
 			break;
 		case GameMainState::GameClear:	//ゲームクリア
@@ -160,7 +166,7 @@ void GameMain::Draw() const
 		DrawGameMain();
 		DrawPause();
 		break;
-	case GameMainState::S_Help:
+	case GameMainState::Option:
 		DrawGameMain();
 		DrawHelp();
 		break;
@@ -516,7 +522,9 @@ void GameMain::UpdatePause()
 		else if(cursor == 1)
 		{
 			ResourceManager::StartSound(decision_se);
-			gm_state = GameMainState::S_Help;
+			//オプションに遷移
+			now_scene = new Option(this);
+			//gm_state = GameMainState::Option;
 		}
 		else
 		{
@@ -539,14 +547,14 @@ void GameMain::DrawPause()const
 	DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
-	DrawBoxAA(200, 410, 500, 510, 0x000000, TRUE);
-	DrawBoxAA(200, 410, 500, 510, 0xffffff, FALSE);
+	DrawBoxAA(190, 410, 490, 510, 0x000000, TRUE);
+	DrawBoxAA(190, 410, 490, 510, 0xffffff, FALSE);
 
-	DrawBoxAA(480, 410, 780, 510, 0x000000, TRUE);
-	DrawBoxAA(480, 410, 780, 510, 0xffffff, FALSE);
+	DrawBoxAA(490, 410, 790, 510, 0x000000, TRUE);
+	DrawBoxAA(490, 410, 790, 510, 0xffffff, FALSE);
 
-	DrawBoxAA(780, 410, 1080, 510, 0x000000, TRUE);
-	DrawBoxAA(780, 410, 1080, 510, 0xffffff, FALSE);
+	DrawBoxAA(790, 410, 1090, 510, 0x000000, TRUE);
+	DrawBoxAA(790, 410, 1090, 510, 0xffffff, FALSE);
 
 	int fontsize = 192 / 2;
 	SetFontSize(fontsize * 2);
@@ -557,9 +565,9 @@ void GameMain::DrawPause()const
 	DrawString(400 + fontsize * 4, 100, "E", 0x0000ff);
 
 	SetFontSize(48);
-	DrawString(300, 436, "BACK", 0xffffff);
-	DrawString(580, 436, "Help", 0xffffff);
-	DrawString(860, 436, "TITLE", 0xffffff);
+	DrawString(290, 436, "BACK", 0xffffff);
+	DrawString(570, 436, "OPTION", 0xffffff);
+	DrawString(870, 436, "TITLE", 0xffffff);
 
 	Vector2D circleLoc;
 

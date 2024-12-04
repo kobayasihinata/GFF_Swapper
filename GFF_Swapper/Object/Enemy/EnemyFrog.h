@@ -42,6 +42,7 @@ private:
 	bool effect_once;		 //エフェクトを一回だけ出す用
 
 	int frog_image[4];		 //カエル画像格納
+	int jump_image[4];		 //跳躍カエル画像格納
 	int jump_se;			 //ジャンプSE
 	int damage_se[3];		 //被ダメージSE格納
 
