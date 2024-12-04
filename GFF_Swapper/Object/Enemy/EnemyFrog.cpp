@@ -40,6 +40,10 @@ void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	frog_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/green_frog.PNG");
 	frog_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/blue_frog.PNG");
 
+	jump_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/red_frog_jump.PNG");
+	jump_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/green_frog_jump.PNG");
+	jump_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/blue_frog_jump.PNG");
+
 	jump_se = ResourceManager::SetSound("Resource/Sounds/Enemy/frog_jump.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
@@ -183,10 +187,19 @@ void EnemyFrog::Draw()const
 		DrawGraphF(local_location.x, local_location.y, ResourceManager::GetGraph(frog_image[GetColorNum(color)]), TRUE);
 		break;
 	case FrogState::LEFT_JUMP:
-		JumpFrogDraw(local_location, face_angle);		
+		//JumpFrogDraw(local_location, face_angle);	
+		
+		//カエル跳躍描画
+		DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle / 60.f, ResourceManager::GetGraph(jump_image[GetColorNum(color)]), TRUE, TRUE);
+
 		break;
 	case FrogState::RIGHT_JUMP:
-		JumpFrogDraw(local_location, face_angle);
+
+		//カエル跳躍描画
+		DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle / 60.f, ResourceManager::GetGraph(jump_image[GetColorNum(color)]), TRUE, FALSE);
+
+
+		//JumpFrogDraw(local_location, face_angle);
 		//DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle, TRUE, TRUE);
 		break;
 	case FrogState::FAINT:
@@ -604,7 +617,7 @@ void EnemyFrog::Move(ObjectManager* _manager)
 	{
 		if (frog_state == FrogState::LEFT_JUMP)
 		{
-			face_angle = atanf(velocity.y / velocity.x) * 60 +180;
+			face_angle = atanf(velocity.y / velocity.x) * 60;
 		}
 		if (frog_state == FrogState::RIGHT_JUMP)
 		{

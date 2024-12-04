@@ -429,13 +429,27 @@ void ResourceManager::StartSound(int _num)
 	}
 	else
 	{
-		PlaySoundMem(sound_data[_num].sound_handle, DX_PLAYTYPE_LOOP, FALSE);
+		if (!CheckSoundMem(sound_data[_num].sound_handle))
+		{
+			PlaySoundMem(sound_data[_num].sound_handle, DX_PLAYTYPE_LOOP, FALSE);
+		}
 	}
 }
 
 void ResourceManager::StopSound(int _num)
 {
 	StopSoundMem(sound_data[_num].sound_handle);
+}
+
+void ResourceManager::StopAllSound()
+{
+	for (int i = 0; sound_data[i].sound_handle != NULL; i++)
+	{
+		if (CheckSoundMem(sound_data[i].sound_handle))
+		{
+			StopSoundMem(sound_data[i].sound_handle);
+		}
+	}
 }
 
 int ResourceManager::GetSoundVolume(int _num)

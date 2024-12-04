@@ -36,7 +36,6 @@ AbstractScene* SceneManager::Update() {
 			mScene->Initialize();
 		}
 	};
-	DebugInfomation::Add("master", UserData::volume[0]);
 	return p;
 };
 

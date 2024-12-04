@@ -121,6 +121,9 @@ public:
 	//音源再生終了
 	static void StopSound(int _num);
 
+	//全BGM停止
+	static void StopAllSound();
+
 	//全体音量取得　_num 音量の種類 0=全体 1=BGM 2=SE
 	static int GetSoundVolume(int _num);
 
