@@ -24,9 +24,12 @@ Option::Option(AbstractScene* _old_scene):
 	stick_angle(0.f),
 	stick_radian(0.f),
 	move_stick(false),
+	action_box_location{0},
 	now_input(0),
-	action_num(0),
-	current_action(-1),//何も選択していない事を示す-1
+	action_num_x(0),
+	action_num_y(0),
+	current_action_x(-1),//何も選択していない事を示す-1
+	current_action_y(-1),//何も選択していない事を示す-1
 	wait_timer(0),
 	warning_flg(false),
 	swap_action(-1),	//何も選択していない事を示す-1
@@ -75,6 +78,13 @@ void Option::Initialize()
 		volume_control_bar[i] = ResourceManager::GetSoundVolume(i);
 	}
 
+	//キー設定箱の位置計算
+	for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+	{
+		action_box_location[i].x = right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH;
+		action_box_location[i].y = right_box_location.y + KEY_BOX_SHIFT + (i * KEY_BOX_HEIGHT);
+	}
+	
 	//背景の初期化
 	for (int i = 0; i < BG_BLOCK_WIDTH_NUM; i++)
 	{
@@ -97,13 +107,17 @@ void Option::Initialize()
 
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 
+	//全てのBGMを停止
+	ResourceManager::StopAllSound();
+
 	//オプション画面のBGM再生
 	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
 }
 
 void Option::Finalize()
 {
-
+	//全てのBGMを停止
+	ResourceManager::StopAllSound();
 }
 
 AbstractScene* Option::Update()
@@ -139,7 +153,6 @@ AbstractScene* Option::Update()
 
 	return this;
 }
-
 
 void Option::Draw() const
 {
@@ -597,14 +610,14 @@ void Option::UpdateKeyConfig()
 	if (PadInput::GetNowInput() == -1)press_flg = false;
 
 	//キーの割り当て処理をしていないなら更新
-	if (current_action == -1 && !press_flg)
+	if (current_action_y == -1 && !press_flg)
 	{
 		//カーソル上移動
 		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
 		{
-			if (--action_num < 0)
+			if (--action_num_y < 0)
 			{
-				action_num = PLAYER_INPUT_NUM - 1;
+				action_num_y = PLAYER_INPUT_NUM - 1;
 			}
 			ResourceManager::StartSound(cursor_se);
 		}
@@ -612,17 +625,37 @@ void Option::UpdateKeyConfig()
 		//カーソル下移動
 		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
 		{
-			if (++action_num > PLAYER_INPUT_NUM - 1)
+			if (++action_num_y > PLAYER_INPUT_NUM - 1)
 			{
-				action_num = 0;
+				action_num_y = 0;
 			}
 			ResourceManager::StartSound(cursor_se);
 		}
 
+		//カーソル右移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_RIGHT) || PadInput::OnButton(L_STICK_RIGHT))
+		{
+			if (++action_num_x > 1)
+			{
+				action_num_x = 0;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
+
+		//カーソル左移動
+		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT) || PadInput::OnButton(L_STICK_LEFT))
+		{
+			if (--action_num_x < 0)
+			{
+				action_num_x = 1;
+			}
+			ResourceManager::StartSound(cursor_se);
+		}
 		//Bボタンが押された時に選択されている要素に切り替え
 		if (PadInput::OnButton(XINPUT_BUTTON_B))
 		{
-			current_action = action_num;
+			current_action_y = action_num_y;
+			current_action_x = action_num_x;
 			press_flg = true;
 		}
 
@@ -644,14 +677,14 @@ void Option::UpdateKeyConfig()
 			if (PadInput::OnButton(XINPUT_BUTTON_B))
 			{
 				int t;
-				t = UserData::player_key[current_action];
-				UserData::player_key[current_action] = UserData::player_key[swap_action];
-				UserData::player_key[swap_action] = t;
+				t = UserData::player_key[current_action_y][current_action_x];
+				UserData::player_key[current_action_y][current_action_x] = UserData::player_key[swap_action][current_action_x];
+				UserData::player_key[swap_action][current_action_x] = t;
 
 				//フラグをおろす
 				warning_flg = false;
 				//キーの選択をやめる
-				current_action = -1;
+				current_action_y = -1;
 				press_flg = true;
 			}
 
@@ -661,7 +694,7 @@ void Option::UpdateKeyConfig()
 				//フラグをおろす
 				warning_flg = false;
 				//キーの選択をやめる
-				current_action = -1;
+				current_action_y = -1;
 				press_flg = true;
 			}
 
@@ -678,7 +711,7 @@ void Option::UpdateKeyConfig()
 			for (int i = 0; i < PLAYER_INPUT_NUM; i++)
 			{
 				//同じキーを発見したら、フラグを立て、位置を格納(選択されている要素はスキップ)
-				if (UserData::player_key[i] == now_input && current_action != i)
+				if (UserData::player_key[i][current_action_x] == now_input && current_action_y != i)
 				{
 					swap_action = i;
 					warning_flg = true;
@@ -692,9 +725,9 @@ void Option::UpdateKeyConfig()
 			if (!warning_flg)
 			{
 				//キーの割り当てを更新する
-				UserData::player_key[current_action] = now_input;
+				UserData::player_key[current_action_y][current_action_x] = now_input;
 				//割り当て処理をやめる
-				current_action = -1;
+				current_action_y = -1;
 				//5フレーム入力を受け付けない
 				wait_timer = 5;
 			}
@@ -702,7 +735,7 @@ void Option::UpdateKeyConfig()
 		//BACKかSTARTが押されたら割り当て処理をやめる
 		else if (now_input != -1)
 		{
-			current_action = -1;
+			current_action_y = -1;
 			//5フレーム入力を受け付けない
 			wait_timer = 5;
 		}
@@ -730,43 +763,62 @@ void Option::DrawKeyConfig()const
 	for (int i = 0; i < PLAYER_INPUT_NUM; i++)
 	{
 		//操作一覧を格納する箱(白、塗りつぶしあり)
-		DrawBox(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH,
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
-			right_box_location.x + (right_box_size.x / 2),
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+		DrawBox(action_box_location[i].x,
+			action_box_location[i].y,
+			action_box_location[i].x + KEY_BOX_WIDTH,
+			action_box_location[i].y + KEY_BOX_HEIGHT,
 			0xffffff, true);
+
 		//操作一覧を格納する箱の外枠(黒、塗りつぶしなし)
-		DrawBox(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH,
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
-			right_box_location.x + (right_box_size.x / 2),
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+		DrawBox(action_box_location[i].x,
+			action_box_location[i].y,
+			action_box_location[i].x + KEY_BOX_WIDTH,
+			action_box_location[i].y + KEY_BOX_HEIGHT,
 			0x000000, false);
+
 		//操作一覧を文字で描画
-		DrawFormatString(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH + 10,
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + 10, 0x000000, "%s", PlayerAction[i]);
-		//割り当てられたキーを格納する用
-		DrawBox(right_box_location.x + (right_box_size.x / 2) ,
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
-			right_box_location.x + (right_box_size.x / 2) + KEY_BOX_WIDTH,
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+		DrawFormatString(action_box_location[i].x + 10,
+			action_box_location[i].y + 10,
+			0x000000, "%s", PlayerAction[i]);
+
+		//割り当てられたキーを格納する用(白 塗りつぶしなし)
+		DrawBox(action_box_location[i].x + KEY_BOX_WIDTH,
+			action_box_location[i].y,
+			action_box_location[i].x + (KEY_BOX_WIDTH * 2), 
+			action_box_location[i].y + KEY_BOX_HEIGHT,
 			0xffffff, false);
-		//キーを描画する（今は文字）
-		DrawFormatString(right_box_location.x + (right_box_size.x / 2) + 10,
-			right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + 10, 0xffffff, "%s", KeyString[UserData::player_key[i]]);
+
+		//一つ目のキーを描画する（今は文字）
+		DrawFormatString(action_box_location[i].x + 10 + KEY_BOX_WIDTH,
+			action_box_location[i].y + 10,
+			0xffffff, "%s", KeyString[UserData::player_key[i][0]]);
+
+		//割り当てられたキーを格納する用(白 塗りつぶしなし)
+		DrawBox(action_box_location[i].x + (KEY_BOX_WIDTH*2),
+			action_box_location[i].y,
+			action_box_location[i].x + (KEY_BOX_WIDTH * 3),
+			action_box_location[i].y + KEY_BOX_HEIGHT,
+			0xffffff, false);
+
+		//二つ目のキーを描画する（今は文字）
+		DrawFormatString(action_box_location[i].x + 10 + KEY_BOX_WIDTH+ KEY_BOX_WIDTH,
+			action_box_location[i].y + 10,
+			0xffffff, "%s", KeyString[UserData::player_key[i][1]]);
 
 		//カーソルを描画する
-		if (i == action_num)
+		if (i == action_num_y)
 		{
 			//操作一覧を格納する箱の外枠(赤、塗りつぶしなし)
-			DrawBox(right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH,
-				right_box_location.y + 100 + (i * KEY_BOX_HEIGHT),
-				right_box_location.x + (right_box_size.x / 2),
-				right_box_location.y + 100 + (i * KEY_BOX_HEIGHT) + KEY_BOX_HEIGHT,
+			DrawBox(action_box_location[i].x + (KEY_BOX_WIDTH*(action_num_x+1)),
+				action_box_location[i].y,
+				action_box_location[i].x + (KEY_BOX_WIDTH * (action_num_x + 2)),
+				action_box_location[i].y + KEY_BOX_HEIGHT,
 				0xff0000, false);
+
 		}
 	}
 	//キー割り当て処理中なら背景を暗転＆説明文を描画
-	if (current_action != -1)
+	if (current_action_y != -1)
 	{
 		//暗転
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
@@ -858,7 +910,7 @@ AbstractScene* Option::UpdateBack()
 
 			//キャンセル
 		case 2:
-			current_item = 1;
+			current_item = -1;
 			break;
 		default:
 			break;
