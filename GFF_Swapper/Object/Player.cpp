@@ -337,11 +337,6 @@ void Player::Update(ObjectManager* _manager)
 			velocity.x = 0.f;
 			velocity.y = 0.f;
 			if (deathTimer++ == 0)_manager->UpdateState(GameMainState::GameOver);
-			
-			//if (deathTimer > 90)
-			//{
-			//	_manager->UpdateState(GameMainState::GameOver);
-			//}
 		}
 	}
 
