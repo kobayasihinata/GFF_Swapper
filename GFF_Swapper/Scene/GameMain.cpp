@@ -38,6 +38,7 @@ void GameMain::Initialize()
 
 	bgm_title =  ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav",false);
 	bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNormal.wav", false);
+	//bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1228555_RPGや冒険を思わせるチップチューン.wav", false);
 	bgm_noise =  ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNoise.wav", false);
 	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainAbnormal.wav", false);
 

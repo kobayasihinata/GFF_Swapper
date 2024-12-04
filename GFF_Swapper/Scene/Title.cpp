@@ -67,7 +67,8 @@ void Title::Initialize()
 	swap_se = ResourceManager::SetSound("Resource/Sounds/Effect/swap.wav");
 	rise_se = ResourceManager::SetSound("Resource/Sounds/System/rise.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
-	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
+	//ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
+	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false));
 
 	//背景の初期化
 	for (int i = 0; i < BG_BLOCK_WIDTH_NUM; i++)
@@ -92,7 +93,7 @@ void Title::Initialize()
 
 void Title::Finalize()
 {
-	ResourceManager::StopSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
+	ResourceManager::StopSound(ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false));
 }
 
 AbstractScene* Title::Update()
