@@ -15,7 +15,7 @@
 #include "Help.h"
 #include "Option.h"
 
-GameMain::GameMain(int _stage) :frame(0), stage_data{ 0 }, now_stage(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), player_object(0), boss_object(0), weather_timer(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
+GameMain::GameMain(int _stage) :frame(0), stage_data{ 0 }, now_stage(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), player_object(0), boss_object(0), weather_timer(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), death_timer(0),clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
 {
 	old_stage = -1;	//ひとつ前のステージは存在しないため-1
 	now_stage = _stage;
@@ -110,7 +110,7 @@ AbstractScene* GameMain::Update()
 		case GameMainState::GameClear:	//ゲームクリア
 			UpdateGameClear();
 			break;
-		case GameMainState::Check:
+		case GameMainState::Check:	//確認画面
 			UpdateCheck();
 			break;
 		case GameMainState::GameOver:	//ゲームオーバー
@@ -179,7 +179,16 @@ void GameMain::Draw() const
 		DrawCheck();
 		break;
 	case GameMainState::GameOver:
+		//フィルターを適用するために、新しいスクリーンに描画
+		int handle = MakeScreen(SCREEN_WIDTH, SCREEN_HEIGHT);
+		SetDrawScreen(handle);
 		DrawGameMain();
+		//色相・彩度・輝度フィルターを施す
+		GraphFilter(handle, DX_GRAPH_FILTER_HSB, 0, 0, -(death_timer*2), 0);
+		SetDrawScreen(DX_SCREEN_BACK);
+
+		//ゲームメインオブジェクトを描画してから、ゲームオーバー画面を表示
+		DrawGraph(0, 0, handle, TRUE);
 		DrawGameOver();
 		break;
 	}
@@ -362,9 +371,7 @@ void GameMain::SetStage(int _stage)
 	//BGMの再生 & ボス暗転設定
 	if (now_stage != STAGE_NUM-1)
 	{
-		ResourceManager::StopSound(bgm_normal);
-		ResourceManager::StopSound(bgm_noise);
-		ResourceManager::StopSound(bgm_abnormal);
+		ResourceManager::StopAllSound();
 
 		ResourceManager::StartSound(bgm_normal);
 		ResourceManager::StartSound(bgm_noise);
@@ -767,13 +774,20 @@ void GameMain::DrawGameClear()const
 
 void GameMain::UpdateGameOver()
 {
+	//演出が終了して無いならゲームオーバー画面の更新はしない
+	if (++death_timer < DEATH_TIMER)
+	{
+		//演出時間の半分が経過してからプレイヤーの更新を始める
+		if(death_timer > DEATH_TIMER / 2)object_manager->PlayerUpdate(this);
+		return;
+	}
 
+	ResourceManager::StopAllSound();
+	ResourceManager::StartSound(bgm_title);
 	cursorOld = cursor;
 	if (set_sound_once == false)
 	{
-		ResourceManager::StopSound(bgm_normal);
-		ResourceManager::StopSound(bgm_noise);
-		ResourceManager::StopSound(bgm_abnormal);
+		ResourceManager::StopAllSound();
 		ResourceManager::StartSound(bgm_title);
 		set_sound_once = true;
 	}
@@ -797,20 +811,20 @@ void GameMain::UpdateGameOver()
 		switch (cursor)
 		{
 		case 0:
+			death_timer = 0;
 			ResourceManager::StartSound(decision_se);
-			set_sound_once = false;
 			SetStage(now_stage);
 			gm_state = GameMainState::S_GameMain;
 			pause_after_flg = true;
 			ResourceManager::StopSound(bgm_title);
-			//BGMの再生
-			if (now_stage == 0)
+			//BGMの再生(ボスステージ以外)
+			if (now_stage != STAGE_NUM-1)
 			{
 				ResourceManager::StartSound(bgm_normal);
-				ResourceManager::StartSound(bgm_noise);
 			}
 			break;
 		case 1:
+			ResourceManager::StartSound(decision_se);
 			cursor = 0;
 			before_check_scene = gm_state;
 			gm_state = GameMainState::Check;
@@ -828,60 +842,69 @@ void GameMain::UpdateGameOver()
 
 void GameMain::DrawGameOver()const
 {
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-	DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+	//ゲームオーバー演出の描画
+	if (death_timer < DEATH_TIMER)
+	{
 
-	DrawBoxAA(200, 410, 500, 510, 0x000000, TRUE);
-	DrawBoxAA(200, 410, 500, 510, 0xffffff, FALSE);
-	DrawBoxAA(780, 410, 1080, 510, 0x000000, TRUE);
-	DrawBoxAA(780, 410, 1080, 510, 0xffffff, FALSE);
-
-	int fontsize = 192 / 2;
-	SetFontSize(fontsize * 2);
-	DrawString(240, 100, "G", 0xff0000);
-	DrawString(240 + fontsize * 1, 100, "A", 0xffffff);
-	DrawString(240 + fontsize * 2, 100, "M", 0xffffff);
-	DrawString(240 + fontsize * 3, 100, "E", 0xffffff);
-	DrawString(240 + fontsize * 4, 100, "O", 0x00ff00);
-	DrawString(240 + fontsize * 5, 100, "V", 0xffffff);
-	DrawString(240 + fontsize * 6, 100, "E", 0xffffff);
-	DrawString(240 + fontsize * 7, 100, "R", 0x0000ff);
-	SetFontSize(48);
-	DrawString(260, 436, "RESTART", 0xffffff);
-	DrawString(860, 436, "TITLE", 0xffffff);
-
-	Vector2D circleLoc;
-
-	if (cursor == 0) {
-		circleLoc.x = 350.f;
-		circleLoc.y = 460.f;
 	}
-	else {
-		circleLoc.x = 930.f;
-		circleLoc.y = 460.f;
+	//ゲームオーバー画面の描画
+	else
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+		DrawBoxAA(200, 410, 500, 510, 0x000000, TRUE);
+		DrawBoxAA(200, 410, 500, 510, 0xffffff, FALSE);
+		DrawBoxAA(780, 410, 1080, 510, 0x000000, TRUE);
+		DrawBoxAA(780, 410, 1080, 510, 0xffffff, FALSE);
+
+		int fontsize = 192 / 2;
+		SetFontSize(fontsize * 2);
+		DrawString(240, 100, "G", 0xff0000);
+		DrawString(240 + fontsize * 1, 100, "A", 0xffffff);
+		DrawString(240 + fontsize * 2, 100, "M", 0xffffff);
+		DrawString(240 + fontsize * 3, 100, "E", 0xffffff);
+		DrawString(240 + fontsize * 4, 100, "O", 0x00ff00);
+		DrawString(240 + fontsize * 5, 100, "V", 0xffffff);
+		DrawString(240 + fontsize * 6, 100, "E", 0xffffff);
+		DrawString(240 + fontsize * 7, 100, "R", 0x0000ff);
+		SetFontSize(48);
+		DrawString(260, 436, "RESTART", 0xffffff);
+		DrawString(860, 436, "TITLE", 0xffffff);
+
+		Vector2D circleLoc;
+
+		if (cursor == 0) {
+			circleLoc.x = 350.f;
+			circleLoc.y = 460.f;
+		}
+		else {
+			circleLoc.x = 930.f;
+			circleLoc.y = 460.f;
+		}
+
+		DrawCircleAA(circleLoc.x, circleLoc.y, 40.f * 2.3f, 40, 0xffff00, FALSE, 4.f * 2.3f);
+
+		Vector2D base;
+		base.x = circleLoc.x;
+		base.y = circleLoc.y;
+
+		Vector2D l[3];
+		l[0].x = base.x;
+		l[0].y = base.y - 40.f * 2.3f;
+
+		l[0] = RotationLocation(base, l[0], (float)(circleAng * M_PI / 180));
+
+		l[1] = RotationLocation(base, l[0], (float)(120.f * M_PI / 180));
+
+		l[2] = RotationLocation(base, l[0], (float)(240.f * M_PI / 180));
+
+
+		DrawCircleAA(l[0].x, l[0].y, 15.f * 1.5f, 32, 0xcc0000, TRUE);
+		DrawCircleAA(l[1].x, l[1].y, 15.f * 1.5f, 32, 0x3c78d8, TRUE);
+		DrawCircleAA(l[2].x, l[2].y, 15.f * 1.5f, 32, 0x6aa84f, TRUE);
 	}
-
-	DrawCircleAA(circleLoc.x, circleLoc.y, 40.f * 2.3f, 40, 0xffff00, FALSE, 4.f * 2.3f);
-
-	Vector2D base;
-	base.x = circleLoc.x;
-	base.y = circleLoc.y;
-
-	Vector2D l[3];
-	l[0].x = base.x;
-	l[0].y = base.y - 40.f * 2.3f;
-
-	l[0] = RotationLocation(base, l[0], (float)(circleAng * M_PI / 180));
-
-	l[1] = RotationLocation(base, l[0], (float)(120.f * M_PI / 180));
-
-	l[2] = RotationLocation(base, l[0], (float)(240.f * M_PI / 180));
-
-
-	DrawCircleAA(l[0].x, l[0].y, 15.f * 1.5f, 32, 0xcc0000, TRUE);
-	DrawCircleAA(l[1].x, l[1].y, 15.f * 1.5f, 32, 0x3c78d8, TRUE);
-	DrawCircleAA(l[2].x, l[2].y, 15.f * 1.5f, 32, 0x6aa84f, TRUE);
 }
 
 void GameMain::UpdateCheck()

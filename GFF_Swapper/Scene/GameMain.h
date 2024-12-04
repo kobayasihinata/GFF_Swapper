@@ -24,7 +24,7 @@
 #include <vector>
 
 #define DEFAULT_PLAYER_COLOR GREEN
-
+#define DEATH_TIMER 180  //プレイヤー死亡演出の時間
 class Player;
 
 class GameMain :
@@ -69,7 +69,8 @@ private:
     bool pause_after_flg;
     GameMainState before_check_scene;     //チェックシーンに来る前のシーンを格納
     bool set_sound_once;
-
+    
+    int death_timer;    //死亡演出の時間測定
     int clear_timer;
 
     int cursor;

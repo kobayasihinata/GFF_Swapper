@@ -344,11 +344,6 @@ void ObjectManager::PlayerUpdate(GameMain* _g)
 				player_object->SearchColor(boss_object);
 			}
 		}
-		//プレイヤーが落下したときに死亡判定とする
-		if (player_object->GetLocation().y > camera->GetStageSize().y + 100)
-		{
-			change_state = GameMainState::GameOver;
-		}
 	}
 }
 
