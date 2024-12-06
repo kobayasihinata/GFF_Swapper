@@ -1,10 +1,11 @@
 #include "DxLib.h"
 #include "BackGround.h"
+#include "../Utility/ResourceManager.h"
 
 BackGround::BackGround():stage_erea{0.0}, now_stage(0), is_clear(false), mountain_handle(0), cloud_handle(0)
 {
-	bg_erea.x = 12000;
-	bg_erea.y = 2000;
+	bg_erea.x = 1920;
+	bg_erea.y = 720;
 }
 
 BackGround::~BackGround()
@@ -15,6 +16,8 @@ BackGround::~BackGround()
 void BackGround::Initialize(Vector2D _stage_erea)
 {
 	stage_erea = _stage_erea;
+
+	back_ground_image = ResourceManager::SetGraph("Resource/Images/sozai/back_image.PNG");
 
 	font_handle[0] = CreateFontToHandle("Franklin Gothic", 48, -1, -1);
 	font_handle[1] = CreateFontToHandle("Wingdings", 48, -1, -1);
@@ -34,69 +37,78 @@ void BackGround::Update()
 
 void BackGround::Draw(Vector2D _camera_location)const
 {
-	Vector2D shift_location = { -_camera_location.x / (stage_erea.x / (bg_erea.x / 12)) ,-_camera_location.y / (stage_erea.y / (bg_erea.y / 10)) };
+	Vector2D shift_location = { -_camera_location.x / (stage_erea.x / (bg_erea.x / 12)) ,-_camera_location.y / (stage_erea.y / (bg_erea.y / 7.2f))};
 	int r = 0, g = 0, b = 0;
 	int bg_color = /*(_camera_location.x / 80)*/0;	//背景のバグ演出を一旦消す
 
-
-	for (int i = 0; i < 50; i++)
-	{
-		if (now_stage == STAGE_NUM-1 && is_clear == false)
-		{
-			r = 0;
-			g = 0;
-			b = 0;
-		}
-		else
-		{
-			if ((i * 3) + 50 - bg_color > 255)
-			{
-				r = 255;
-				g = 255;
-			}
-			else if ((i * 3) + 50 - bg_color < 0)
-			{
-				r = 0;
-				g = 0;
-			}
-			else
-			{
-				r = (i * 3) + 50 - bg_color;
-				g = (i * 3) + 50 - bg_color;
-			}
-			if (255 - bg_color < 0)
-			{
-				b = 0;
-			}
-			else
-			{
-				b = 255 - bg_color;
-			}
-		}
-		//青空
-		DrawBoxAA(shift_location.x, shift_location.y + (i * 25),
-			bg_erea.x + shift_location.x, shift_location.y + (i + 1) * 26,
-			GetColor(r, g, b), true);
-	}
-
 	//ボスエリア以外の背景
-	if (now_stage != STAGE_NUM-1)
+	if (now_stage != STAGE_NUM - 1)
 	{
-		//後でランダムな形で生成するようにする
-		DrawMountain({ shift_location.x - 200, shift_location.y - 50 }, { 300,300 }, 0.1f,bg_color);
-		DrawMountain({ shift_location.x - 6400, shift_location.y }, { 310,300 }, 0.1f, bg_color);
-		DrawMountain({ shift_location.x - 8400, shift_location.y + 50 }, { 200,300 }, 0.1f, bg_color);
-		DrawMountain(shift_location, { 150,150 }, 0.2f, bg_color);
-		DrawMountain({ shift_location.x - 500, shift_location.y - 50 }, { 140,70 }, 0.3f, bg_color);
-		DrawMountain({ shift_location.x - 500, shift_location.y - 50 }, { 140,70 }, 0.3f, bg_color);
-		DrawMountain({ shift_location.x - 400, shift_location.y - 100 }, { 140,70 }, 0.35f, bg_color);
-		DrawMountain({ shift_location.x - 300, shift_location.y - 50 }, { 110,150 }, 0.5f, bg_color);
-
-		DrawCloud({ shift_location.x - 200, 200 }, { 30,30 }, 0.1f, bg_color);
-		DrawCloud({ shift_location.x - 4500, 300 }, { 40,40 }, 0.2f, bg_color);
-		DrawCloud({ shift_location.x+1000, 250 }, { 30,30 }, 0.2f, bg_color);
-		DrawCloud({ shift_location.x - 4500, 300 }, { 35,35 }, 0.1f, bg_color);
+		DrawGraphF(shift_location.x, shift_location.y+72, ResourceManager::GetGraph(back_ground_image), TRUE);
 	}
+	//ボスエリアの背景
+	else
+	{
+		DrawGraphF(shift_location.x, shift_location.y, ResourceManager::GetGraph(back_ground_image), TRUE);
+	}
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	if (now_stage == STAGE_NUM-1 && is_clear == false)
+	//	{
+	//		r = 0;
+	//		g = 0;
+	//		b = 0;
+	//	}
+	//	else
+	//	{
+	//		if ((i * 3) + 50 - bg_color > 255)
+	//		{
+	//			r = 255;
+	//			g = 255;
+	//		}
+	//		else if ((i * 3) + 50 - bg_color < 0)
+	//		{
+	//			r = 0;
+	//			g = 0;
+	//		}
+	//		else
+	//		{
+	//			r = (i * 3) + 50 - bg_color;
+	//			g = (i * 3) + 50 - bg_color;
+	//		}
+	//		if (255 - bg_color < 0)
+	//		{
+	//			b = 0;
+	//		}
+	//		else
+	//		{
+	//			b = 255 - bg_color;
+	//		}
+	//	}
+	//	//青空
+	//	DrawBoxAA(shift_location.x, shift_location.y + (i * 25),
+	//		bg_erea.x + shift_location.x, shift_location.y + (i + 1) * 26,
+	//		GetColor(r, g, b), true);
+	//}
+
+	////ボスエリア以外の背景
+	//if (now_stage != STAGE_NUM-1)
+	//{
+	//	//後でランダムな形で生成するようにする
+	//	DrawMountain({ shift_location.x - 200, shift_location.y - 50 }, { 300,300 }, 0.1f,bg_color);
+	//	DrawMountain({ shift_location.x - 6400, shift_location.y }, { 310,300 }, 0.1f, bg_color);
+	//	DrawMountain({ shift_location.x - 8400, shift_location.y + 50 }, { 200,300 }, 0.1f, bg_color);
+	//	DrawMountain(shift_location, { 150,150 }, 0.2f, bg_color);
+	//	DrawMountain({ shift_location.x - 500, shift_location.y - 50 }, { 140,70 }, 0.3f, bg_color);
+	//	DrawMountain({ shift_location.x - 500, shift_location.y - 50 }, { 140,70 }, 0.3f, bg_color);
+	//	DrawMountain({ shift_location.x - 400, shift_location.y - 100 }, { 140,70 }, 0.35f, bg_color);
+	//	DrawMountain({ shift_location.x - 300, shift_location.y - 50 }, { 110,150 }, 0.5f, bg_color);
+
+	//	DrawCloud({ shift_location.x - 200, 200 }, { 30,30 }, 0.1f, bg_color);
+	//	DrawCloud({ shift_location.x - 4500, 300 }, { 40,40 }, 0.2f, bg_color);
+	//	DrawCloud({ shift_location.x+1000, 250 }, { 30,30 }, 0.2f, bg_color);
+	//	DrawCloud({ shift_location.x - 4500, 300 }, { 35,35 }, 0.1f, bg_color);
+	//}
 
 	//GetDrawScreenGraph(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, bg_handle);	//背景をハンドルに保存
 	//ClearDrawScreen();													// 画面の初期化

@@ -80,6 +80,7 @@ Vector2D BoxCollider::GetLocation()const
 {
 	return location;
 }
+
 Vector2D BoxCollider::GetCenterLocation()const
 {
 	Vector2D ret = { 0 };
@@ -87,10 +88,12 @@ Vector2D BoxCollider::GetCenterLocation()const
 	ret.y = location.y + erea.y / 2;
 	return ret;
 }
+
 Vector2D BoxCollider::GetLocalLocation()const
 {
 	return local_location;
 }
+
 Vector2D BoxCollider::GetErea()const
 {
 	return erea;

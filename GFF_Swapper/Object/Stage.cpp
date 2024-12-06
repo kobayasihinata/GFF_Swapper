@@ -307,7 +307,7 @@ void Stage::Draw()const
 		case TUTOSTAGE_TWO_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
 		case BOSSSTAGE_TRANSITION:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(GetRand(255), GetRand(255), GetRand(255)), true);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(0,0,GetRand(255)), true);
 
 			//デバッグ時はどこに飛ぶか分かりやすいように
 			if (debug_flg == false)DrawFormatStringF(local_location.x, local_location.y, 0x000000, "%d", next_stage);
