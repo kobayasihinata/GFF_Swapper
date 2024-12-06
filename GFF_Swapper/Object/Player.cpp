@@ -1748,7 +1748,7 @@ void Player::DrawPlayerImage()const
 		//通常描画
 		else
 		{
-			ResourceManager::DrawPlayerAnimGraph({ local_location.x - 10,local_location.y }, player_image[p_state], color);
+			ResourceManager::DrawColorAnimGraph(local_location+(erea/2), player_image[p_state], color,false);
 		}
 	}
 }
@@ -2003,7 +2003,7 @@ void Player::PlayerReset(ObjectManager* _manager)
 	damageFlg = false;
 	 
 	//HPを初期値に戻す
-	hp = 2;
+	hp = 5;
 	//プレイヤーの色を初期色に戻す
 	color = DEFAULT_PLAYER_COLOR;
 	draw_color = color;

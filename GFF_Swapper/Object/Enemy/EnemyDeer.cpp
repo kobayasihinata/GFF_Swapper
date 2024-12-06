@@ -53,6 +53,9 @@ EnemyDeer::EnemyDeer()
 		anim_flg[i] = false;
 	}
 	speed = 1.0f;
+
+	deer_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_walk.PNG", 12, 4, 3, 88, 90, 5, TRUE);
+	damage_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_damage.PNG", 3, 3, 1, 89, 90, 0, FALSE);
 }
 
 EnemyDeer::~EnemyDeer()
@@ -127,10 +130,10 @@ void EnemyDeer::Update(ObjectManager* _manager)
 
 void EnemyDeer::Draw()const
 {
-	//スタン中以外、スタン中なら一定フレーム毎に描画（点滅）
+	//スタン中以外、またはスタン中の一定フレーム毎に描画（点滅）
 	if (deer_state != DeerState::FAINT || (deer_state == DeerState::FAINT && frame % 3 == 0))
 	{
-		//-x方向に移動中なら
+		/*//-x方向に移動中なら
 		if (velocity.x < 0)
 		{
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
@@ -239,6 +242,48 @@ void EnemyDeer::Draw()const
 		//ResourceManager::DrawRotaBox(local_location.x + 75.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 75.0f, local_location.y + 88.0f, -leg_angle[3], draw_color, true);
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		}*/
+		//右移動
+		if (velocity.x < 0)
+		{
+			if (deer_state == DeerState::DEATH)
+			{
+				//徐々に透明に
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
+				//ダメージ画像描画
+				DrawRotaGraphF(local_location.x + (erea.x / 2),
+					local_location.y + (erea.y / 2),
+					1.0f,
+					0,
+					ResourceManager::GetDivGraph(damage_image, GetColorNum(color)),
+					TRUE,
+					true);
+				//透明をリセットする
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+				return;
+			}
+			ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, false);
+		}
+		//左移動
+		else
+		{
+			if (deer_state == DeerState::DEATH)
+			{
+				//徐々に透明に
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
+				//ダメージ画像描画
+				DrawRotaGraphF(local_location.x + (erea.x / 2),
+					local_location.y + (erea.y / 2),
+					1.0f,
+					0,
+					ResourceManager::GetDivGraph(damage_image, GetColorNum(color)),
+					TRUE,
+					false);
+				//透明をリセットする
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+				return;
+			}
+			ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, true);
 		}
 	}
 }

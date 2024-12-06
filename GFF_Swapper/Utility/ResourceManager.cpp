@@ -87,7 +87,7 @@ void ResourceManager::StageAnimUpdate()
 		//アニメーションがない分割画像なら(マップチップ等)アニメーション処理を飛ばす
 		if (div_image_data[i].anim_speed <= 0)continue;
 		//プレイヤー画像なら処理の仕方を変える
-		if (div_image_data[i].player_flg)
+		if (div_image_data[i].object_flg)
 		{
 			//画像ごとの周期に達したら次の画像に切り替え
 			if (anim % div_image_data[i].anim_speed == 0)
@@ -349,7 +349,7 @@ int ResourceManager::SetDivGraph(const char* p, int AllNum, int XNum, int YNum, 
 			div_image_data[i].image_width_num = XNum;
 			div_image_data[i].image_height_num = YNum;
 			div_image_data[i].anim_speed = AnimSpeed;
-			div_image_data[i].player_flg = player_flg;
+			div_image_data[i].object_flg = player_flg;
 			return i;
 		}
 		//同じ画像が既にあるならその格納場所を返す
@@ -399,7 +399,7 @@ void ResourceManager::DrawAnimGraph(Vector2D location, int _handle)
 	DrawGraphF(location.x, location.y, div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image], TRUE);
 }
 
-void ResourceManager::DrawPlayerAnimGraph(Vector2D location, int _handle, int _color)
+void ResourceManager::DrawColorAnimGraph(Vector2D location, int _handle, int _color,bool _reverse)
 {
 	int color = _color;
 	//色を数字に直す
@@ -417,7 +417,7 @@ void ResourceManager::DrawPlayerAnimGraph(Vector2D location, int _handle, int _c
 	default:
 		break;
 	}
-	DrawGraphF(location.x, location.y, div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image + (color * div_image_data[_handle].image_width_num)], TRUE);
+	DrawRotaGraphF(location.x, location.y, 1.0f,0,div_image_data[_handle].div_image_handle[div_image_data[_handle].now_image + (color * div_image_data[_handle].image_width_num)], TRUE, _reverse);
 }
 
 void ResourceManager::StartSound(int _num)

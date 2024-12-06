@@ -45,7 +45,7 @@ struct AnimData {
 	int div_image_num;			//分割画像要素数格納用
 	int now_image = 0;			//現在の画像
 	int anim_speed;				//画像切り替え速度
-	bool player_flg;				//プレイヤー画像かどうか
+	bool object_flg;			//色によって描画の違うオブジェクト画像かどうか
 	int image_width_num;		//画像の横の枚数(プレイヤー用)
 	int image_height_num;		//画像の縦の枚数(プレイヤー用)
 };
@@ -113,7 +113,7 @@ public:
 	static void DrawAnimGraph(Vector2D location , int _handle);
 
 	//プレイヤーアニメーションの描画（指定した分割画像がアニメーション処理された状態の物を呼び出す）
-	static void DrawPlayerAnimGraph(Vector2D location, int _handle,int _color);
+	static void DrawColorAnimGraph(Vector2D location, int _handle,int _color, bool _reverse);
 
 	//音源再生開始
 	static void StartSound(int _num);
