@@ -25,6 +25,7 @@
 
 #define DEFAULT_PLAYER_COLOR GREEN
 #define DEATH_TIMER 180  //プレイヤー死亡演出の時間
+
 class Player;
 
 class GameMain :

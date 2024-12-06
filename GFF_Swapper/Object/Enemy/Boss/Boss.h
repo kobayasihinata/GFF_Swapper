@@ -10,6 +10,8 @@
 #include "BossAttackFire.h"
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"
+
+#define  APPEARED_TIME 300		//登場演出の時間
 static float WOOD_SPAWN[6][3]{
 	{570,610,650},
 	{315,355,395},
@@ -18,6 +20,7 @@ static float WOOD_SPAWN[6][3]{
 	{1080,1120,1160},
 	{-825,-865,-905},
 };
+
 enum class BossState {
 	MOVE = 0,
 	ATTACK,
@@ -78,6 +81,7 @@ private:
 	int t = 0;
 
 	int state_change_time;		//状態変更のタイミング
+	int boss_appeared_timer;	//登場演出の時間測定
 
 	std::vector<Vector2D> vertices; //ボスの頂点情報
 	std::vector<Vector2D> warp_pos; //ワープ位置情報
@@ -97,6 +101,8 @@ private:
 
 	float attackWood[6];
 	int woodNum = 0;
+
+	int back_groound_image;	//背景画像格納用
 
 	int damage_se;	//被ダメージSE
 

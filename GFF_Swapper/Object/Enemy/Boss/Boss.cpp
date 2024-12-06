@@ -111,6 +111,8 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 
 	LoadPosition();  // 初期化時に座標を読み込む
 
+	back_groound_image = ResourceManager::SetDivGraph("Resource/Sounds/Enemy/Boss/back_ground_test.PNG");
+
 	damage_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_damage.wav");
 
 }
@@ -144,7 +146,10 @@ void Boss::Update(ObjectManager* _manager)
 	//プレイヤーが一定距離まで近づいてきたら更新開始
 	if (frame > 1 && player_local_location.x > 140)
 	{
-		stop_flg = false;
+		if (++boss_appeared_timer > APPEARED_TIME)
+		{
+			stop_flg = false;
+		}
 	}
 	//停止させる状態でなければ更新
 	if (!stop_flg)
