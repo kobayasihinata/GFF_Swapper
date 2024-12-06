@@ -334,6 +334,7 @@ void Player::Update(ObjectManager* _manager)
 		//ゲームオーバー
 		if (hp <= 0 || location.y > camera->GetStageSize().y +100) {
 			
+			searchFlg = false;
 			velocity.x = 0.f;
 			velocity.y = 0.f;
 			if (deathTimer++ == 0)_manager->UpdateState(GameMainState::GameOver);
@@ -453,7 +454,16 @@ void Player::Hit(Object* _object)
 			break;
 			//あいこの場合
 		case 0:
-			velocity.x = (velocity.x * 1.2f) * -1;
+			//プレイヤーが右にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x = 10;
+			}
+			//プレイヤーが左にいるなら左にノックバック
+			else
+			{
+				velocity.x = -10;
+			}
 			break;
 			//有利の場合
 		case 1:
@@ -1748,7 +1758,7 @@ void Player::DrawPlayerImage()const
 		//通常描画
 		else
 		{
-			ResourceManager::DrawPlayerAnimGraph({ local_location.x - 10,local_location.y }, player_image[p_state], color);
+			ResourceManager::DrawColorAnimGraph(local_location+(erea/2), player_image[p_state], color,false);
 		}
 	}
 }
@@ -2003,7 +2013,7 @@ void Player::PlayerReset(ObjectManager* _manager)
 	damageFlg = false;
 	 
 	//HPを初期値に戻す
-	hp = 2;
+	hp = 5;
 	//プレイヤーの色を初期色に戻す
 	color = DEFAULT_PLAYER_COLOR;
 	draw_color = color;

@@ -67,6 +67,8 @@ private:
 	bool anim_flg[4];
 	float speed;
 
+	int deer_image;		//鹿アニメーション格納
+	int damage_image;	//鹿ダメージ格納
 public:
 
 	EnemyDeer();
