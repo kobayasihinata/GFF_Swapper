@@ -67,6 +67,8 @@ private:
 	int change_rand;		//ボスを揺らす
 	int boss_color;
 
+	bool invin_flg;			//無敵かどうか
+
 	//計算用
 	Vector2D velocity;
 	Vector2D player_local_location;	//プレイヤーの座標
@@ -129,7 +131,7 @@ public:
 	void BossAtack(ObjectManager* _manager);
 
 	//六角形模様球体の描画
-	void DrawHexagonSphere() const;
+	void DrawHexagonSphere(int _color) const;
 
 	//六角形描画
 	void DrawHexagon(Vector2D center, float size, int color) const;
