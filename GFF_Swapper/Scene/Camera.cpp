@@ -20,6 +20,12 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 	//カメラ更新（通常ステージ）
 	else
 	{
+		//カメラY座標が初期値の時だけプレイヤーへ移動させ、後はゆっくりプレイヤーを追従するようにする
+		if (camera_location.y == 0)
+		{
+			before_moving_camera.y = _player_location.y - (SCREEN_HEIGHT / 2);
+		}
+
 		//プレイヤー座標更新
 		player_location = _player_location;
 
@@ -28,7 +34,7 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 
 		//カメラ座標更新
 		camera_location.x = _player_location.x - (SCREEN_WIDTH / 2);
-		camera_location.y = _player_location.y - (SCREEN_HEIGHT / 2);
+		camera_location.y = before_moving_camera.y - ((before_moving_camera.y - player_location.y + (SCREEN_HEIGHT / 2)) / 10);
 
 		//カメラX座標が画面左端以下なら
 		if (camera_location.x <= lock_pos[0].x)
@@ -55,8 +61,6 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 			camera_location.y = lock_pos[1].y;
 		}
 
-		//動かす前のカメラ座標を保存
-		before_moving_camera = camera_location;
 	}
 
 	//カメラ振動処理
@@ -72,6 +76,12 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 	}
 	camera_location.x += (impact_rand + camera_shift.x);
 	camera_location.y += (impact_rand + camera_shift.y);
+
+	//動かす前のカメラ座標を保存
+	before_moving_camera.x = camera_location.x - (impact_rand + camera_shift.x);
+	before_moving_camera.y = camera_location.y - (impact_rand + camera_shift.y);
+
+	//移動後にもう一度端チェック
 	//カメラX座標が画面左端以下なら
 	if (camera_location.x <= lock_pos[0].x)
 	{
@@ -96,16 +106,13 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 		//カメラのX座標を下端固定する
 		camera_location.y = lock_pos[1].y;
 	}
-	DebugInfomation::Add("camera_shift_x", GetPlayerEdgeDistance().x);
-	DebugInfomation::Add("camera_shift_y", GetPlayerEdgeDistance().y);
 }
 
 void Camera::CameraShiftUpdate()
 {
 	//プレイヤーの位置に応じてカメラを動かせる量を変える
 	float shift_limit_x = X_SHIFT_LIMIT - GetPlayerEdgeDistance().x;
-	float shift_limit_y = Y_SHIFT_LIMIT + GetPlayerEdgeDistance().y;
-		;
+	float shift_limit_y = Y_SHIFT_LIMIT - GetPlayerEdgeDistance().y;
 	//右スティックが真ん中以外か判断
 	if (PadInput::TipRStick(STICKL_X) > 0.1f ||
 		PadInput::TipRStick(STICKL_X) < -0.1f ||

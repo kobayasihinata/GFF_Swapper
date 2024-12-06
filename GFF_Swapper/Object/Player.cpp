@@ -334,6 +334,7 @@ void Player::Update(ObjectManager* _manager)
 		//ゲームオーバー
 		if (hp <= 0 || location.y > camera->GetStageSize().y +100) {
 			
+			searchFlg = false;
 			velocity.x = 0.f;
 			velocity.y = 0.f;
 			if (deathTimer++ == 0)_manager->UpdateState(GameMainState::GameOver);

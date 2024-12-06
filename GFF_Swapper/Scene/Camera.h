@@ -12,7 +12,7 @@ private:
 	Vector2D camera_location = { 0,0 };			//カメラ座標
 	Vector2D before_moving_camera = { 0,0 };	//カメラ移動前のカメラ座標
 	Vector2D lock_pos[2];						//カメラの固定位置（四隅）
-	Vector2D stage_size;						//カメラの固定位置（四隅）
+	Vector2D stage_size;						//ステージの大きさ
 	Vector2D player_location;					//プレイヤー座標格納用
 	Vector2D camera_shift = { 0,0 };			//カメラをずらす
 	float camera_size;							//カメラの大きさ
