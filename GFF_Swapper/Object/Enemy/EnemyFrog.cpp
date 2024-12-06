@@ -244,6 +244,7 @@ void EnemyFrog::Hit(Object* _object)
 {
 	__super::Hit(_object);
 
+
 	//プレイヤーと当たった時の処理
 	if (_object->GetObjectType() == PLAYER)
 	{
@@ -458,10 +459,14 @@ void EnemyFrog::Hit(Object* _object)
 		}
 	}
 
+	//ボス攻撃なら上書きしない為に処理終了
+	if (_object->GetIsBossAttack())return;
+
 	//ダメージゾーンを上書きする
 	if ((this->color == GREEN && _object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE) ||
 		(this->color == BLUE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE) ||
-		(this->color == RED && _object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE))
+		(this->color == RED && _object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE)
+		)
 	{
 		_object->SetColorData(color);
 	}

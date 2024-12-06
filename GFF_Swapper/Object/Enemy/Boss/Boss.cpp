@@ -114,6 +114,7 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 
 
 	damage_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_damage.wav");
+	appeared_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_ap.wav");
 
 }
 
@@ -144,10 +145,17 @@ void Boss::Update(ObjectManager* _manager)
 	boss_anim = (float)sin(PI * 2.f / 60.f * wing_fps) * 5.f;
 
 	//プレイヤーが一定距離まで近づいてきたら更新開始
-	if (frame > 1 && player_local_location.x > 140)
+	if (stop_flg && frame > 1 && player_local_location.x > 140)
 	{
+		//SE再生
+		if (boss_appeared_timer == 125)
+		{
+			ResourceManager::StartSound(appeared_se);
+		}
 		if (++boss_appeared_timer > APPEARED_TIME)
 		{
+			//SE停止
+			ResourceManager::StopSound(appeared_se);
 			stop_flg = false;
 			boss_appeared_timer = 0;
 		}
@@ -432,6 +440,19 @@ void Boss::Draw() const
 		//登場（２秒）
 		if (boss_appeared_timer < 120)
 		{
+			for (int x = 0; x < appearance_size.x; x += 40)
+			{
+				for (int y = 0; y < appearance_size.y; y += 40)
+				{
+					if (GetRand(4) == 0)
+					{
+						DrawBoxAA(local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x,
+							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y,
+							local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x + 41,
+							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y + 41, 0x000000, true);
+					}
+				}
+			}
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (boss_appeared_timer*2));
 			DrawBox(local_location.x + (erea.x / 2) - (appearance_size.x / 2),
 				local_location.y + (erea.y / 2) - (appearance_size.y / 2),
@@ -439,6 +460,8 @@ void Boss::Draw() const
 				local_location.y + (erea.y / 2) + (appearance_size.y / 2),
 				0x000000, TRUE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+
 		}
 		//暗転(一瞬)
 		else if (boss_appeared_timer < 125)

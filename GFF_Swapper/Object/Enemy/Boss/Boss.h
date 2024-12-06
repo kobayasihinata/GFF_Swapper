@@ -104,6 +104,7 @@ private:
 	int woodNum = 0;
 
 	int damage_se;	//被ダメージSE
+	int appeared_se;	//登場SE
 
 public:
 	Boss();

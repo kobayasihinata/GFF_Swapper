@@ -89,10 +89,13 @@ void Cannon::Update(ObjectManager* _manager)
 void Cannon::Draw()const
 {
 	DrawBox(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xaaaaaa, TRUE);
-	//発射周期の視覚化
-	DrawCircleAA(local_location.x + (erea.x/2),
-		local_location.y + (erea.y/2),
-		(cannon_cooldown[cannon_type] - (frame % cannon_cooldown[cannon_type]))*1.5f, 100, ColorList[cannon_type],false);
+	if (!cannon_stop)
+	{
+		//発射周期の視覚化
+		DrawCircleAA(local_location.x + (erea.x / 2),
+			local_location.y + (erea.y / 2),
+			(cannon_cooldown[cannon_type] - (frame % cannon_cooldown[cannon_type])) * 1.5f, 100, ColorList[cannon_type], false);
+	}
 #ifdef _DEBUG
 	//大砲停止範囲の描画
 	DrawBox(local_location.x - CANNON_STOP, 

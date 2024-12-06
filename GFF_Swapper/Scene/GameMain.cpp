@@ -84,7 +84,14 @@ AbstractScene* GameMain::Update()
 	now_scene = this;
 
 	//BGMが再生されていなければ、再生する
-	ResourceManager::StartSound(bgm_normal);
+	if (now_stage != STAGE_NUM - 1)
+	{
+		ResourceManager::StartSound(bgm_normal);
+	}
+	else if(!boss_blind_flg)
+	{
+		ResourceManager::StartSound(bgm_abnormal);
+	}
 
 	//カメラの更新
 	camera->Update(now_stage, object_manager->GetPlayerLocation());
@@ -375,13 +382,10 @@ void GameMain::SetStage(int _stage)
 		ResourceManager::StopAllSound();
 
 		ResourceManager::StartSound(bgm_normal);
-		ResourceManager::StartSound(bgm_noise);
 	}
 	else
 	{
-		ResourceManager::StopSound(bgm_normal);
-		ResourceManager::StopSound(bgm_noise);
-		//ResourceManager::StopSound(bgm_abnormal);
+		ResourceManager::StopAllSound();
 
 		boss_blind_flg = true;
 	}
@@ -723,9 +727,7 @@ void GameMain::UpdateGameClear()
 	cursorOld = cursor;
 	if (set_sound_once == false)
 	{
-		ResourceManager::StopSound(bgm_normal);
-		ResourceManager::StopSound(bgm_noise);
-		ResourceManager::StopSound(bgm_abnormal);
+		ResourceManager::StopAllSound();
 		ResourceManager::StartSound(game_clear_bgm);
 		back_ground->SetIsClear(true);
 		set_sound_once = true;

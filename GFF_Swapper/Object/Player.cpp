@@ -663,7 +663,7 @@ void Player::Hit(Object* _object)
 void Player::MoveActor()
 {
 	//ジャンプ
-	if (UserData::CheckActionKey((int)PlayerActionKey::P_JUMP, ON_BUTTON)) {
+	if (UserData::CheckActionKey((int)PlayerActionKey::P_JUMP, ON_BUTTON) && !damageEffectFlg) {
 		switch (state)
 		{
 		case 0:
