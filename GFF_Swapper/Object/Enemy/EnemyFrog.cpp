@@ -44,6 +44,10 @@ void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	jump_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/green_frog_jump.PNG");
 	jump_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/blue_frog_jump.PNG");
 
+	damage_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/red_frog_damage.PNG");
+	damage_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/green_frog_damage.PNG");
+	damage_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/blue_frog_damage.PNG");
+
 	jump_se = ResourceManager::SetSound("Resource/Sounds/Enemy/frog_jump.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
@@ -139,6 +143,8 @@ void EnemyFrog::Update(ObjectManager* _manager)
 		if (velocity.x < 0)velocity.x++;
 		break;
 	case FrogState::DEATH:
+		//その場で停止
+		velocity = 0;
 		_manager->SpawnEffect(location, erea, DeathEffect, 15, color);
 		if (++death_timer > 60)
 		{
@@ -214,6 +220,14 @@ void EnemyFrog::Draw()const
 		}
 		break;
 	case FrogState::DEATH:
+		if (old_state == FrogState::LEFT_IDOL || old_state == FrogState::LEFT_JUMP)
+		{
+			DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle / 60.f - 90.f / 60.f, ResourceManager::GetGraph(damage_image[GetColorNum(color)]), TRUE, TRUE);
+		}
+		else 
+		{
+			DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, face_angle / 60.f + 90.f / 60.f, ResourceManager::GetGraph(damage_image[GetColorNum(color)]), TRUE, FALSE);
+		}
 		break;
 	default:
 		break;
