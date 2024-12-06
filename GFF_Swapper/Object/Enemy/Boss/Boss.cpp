@@ -149,6 +149,7 @@ void Boss::Update(ObjectManager* _manager)
 		if (++boss_appeared_timer > APPEARED_TIME)
 		{
 			stop_flg = false;
+			boss_appeared_timer = 0;
 		}
 	}
 	//停止させる状態でなければ更新
@@ -416,33 +417,41 @@ void Boss::Draw() const
 		}
 	}
 	//停止中（演出）の描画
-	else
+	else if (boss_appeared_timer > 1)
 	{
-		//ボスを覆う黒ボックス
-		for (int x = 0; x < appearance_size.x; x += 40)
+		////世界を覆っていて、時間とともにボスの周りから消えていく黒ボックス
+		//for (int x = 0; x < SCREEN_WIDTH; x += 40)
+		//{
+		//	for (int y = 0; y < SCREEN_HEIGHT; y += 40)
+		//	{
+		//		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)(sqrtf(powf(fabsf(this->local_location.x+(erea.x/2) - x), 2) + powf(fabsf(this->local_location.y+(erea.y/2) - y), 2))) - (boss_appeared_timer-40) * 10);
+		//		DrawBoxAA(x, y, x + 41, y + 41, 0x000000, true);
+		//		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		//	}
+		//}
+		//登場（２秒）
+		if (boss_appeared_timer < 120)
 		{
-			for (int y = 0; y < appearance_size.y; y += 40)
-			{
-				DrawBoxAA(local_location.x + (erea.x / 2)-(appearance_size.x/2) + x,
-						  local_location.y + (erea.y / 2)-(appearance_size.y/2) + y,
-						  local_location.x + (erea.x / 2)-(appearance_size.x/2) + x + 41,
-						  local_location.y + (erea.y / 2)-(appearance_size.y/2) + y + 41,
-						  0x000000, true);
-			}
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (boss_appeared_timer*2));
+			DrawBox(local_location.x + (erea.x / 2) - (appearance_size.x / 2),
+				local_location.y + (erea.y / 2) - (appearance_size.y / 2),
+				local_location.x + (erea.x / 2) + (appearance_size.x / 2),
+				local_location.y + (erea.y / 2) + (appearance_size.y / 2),
+				0x000000, TRUE);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		}
-		//ボスに近づけば近づくだけスポーンする可能性があがる黒ボックス
-		for (int x = 0; x < appearance_size.x*2; x += 40)
+		//暗転(一瞬)
+		else if (boss_appeared_timer < 125)
 		{
-			for (int y = 0; y < appearance_size.y*2; y += 40)
+			DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);\
+		}
+		//覇気
+		else
+		{
+			for (int i = 0; i < 200; i += 20)
 			{
-				if (GetRand(100) == 0)
-				{
-					DrawBoxAA(local_location.x + (erea.x / 2) - appearance_size.x + x,
-						local_location.y + (erea.y / 2) - appearance_size.y + y,
-						local_location.x + (erea.x / 2) - appearance_size.x + x + 41,
-						local_location.y + (erea.y / 2) - appearance_size.y + y + 41,
-						0x000000, true);
-				}
+				DrawCircleAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), (boss_appeared_timer + i) * 30 % 1000, 100, 0xffffff, FALSE);
+
 			}
 		}
 	}

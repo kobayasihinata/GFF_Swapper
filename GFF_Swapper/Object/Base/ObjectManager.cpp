@@ -259,7 +259,7 @@ void ObjectManager::InScreenUpdate()
 		auto result = std::find(in_screen_object.begin(), in_screen_object.end(), object_list);
 		if (result == in_screen_object.end())
 		{
-			//スクリーン内に入っているオブジェクトを追加する
+			//スクリーン内に入っているオブジェクト、もしくは砲台を追加する
 			if (CheckInScreen(object_list))
 			{
 				in_screen_object.push_back(object_list);

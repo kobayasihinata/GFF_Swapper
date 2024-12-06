@@ -38,19 +38,19 @@ private:
 		left,
 		right
 	};
-	class Camera* camera;	//カメラ位置
-	Vector2D appearance_size;	//羽も含めた、見た目の大きさ
-	Vector2D vector;		//ボスのベクトル
-	bool stageHitFlg[2][4]; //bossとステージの当たり判定
-	float move[4];			//各方向加速度格納用
+	class Camera* camera;			//カメラ位置
+	Vector2D appearance_size;		//羽も含めた、見た目の大きさ
+	Vector2D vector;				//ボスのベクトル
+	bool stageHitFlg[2][4];			//bossとステージの当たり判定
+	float move[4];					//各方向加速度格納用
 
-	BossState boss_state;// 現在のボスの状態
+	BossState boss_state;			//現在のボスの状態
 
-	float barrier_rad[3];	//バリアの半径
-	int barrier_num;		//バリアの数
+	float barrier_rad[3];			//バリアの半径
+	int barrier_num;				//バリアの数
 
-	int wood_count;			//木攻撃の数カウント
-	int fire_count;			//火攻撃の数カウント
+	int wood_count;					//木攻撃の数カウント
+	int fire_count;					//火攻撃の数カウント
 	int wing_color;
 	int part_color[3];
 
@@ -64,14 +64,14 @@ private:
 	int damage_anim_time;
 	int shake_anim;
 
-	float speed;				//移動速度;
+	float speed;					//移動速度;
 
-	float change_color_timer;	//色変化にかける時間
-	int next_color;				//次に変わる色
-	int change_rand;		//ボスを揺らす
+	float change_color_timer;		//色変化にかける時間
+	int next_color;					//次に変わる色
+	int change_rand;				//ボスを揺らす
 	int boss_color;
 
-	bool invin_flg;			//無敵かどうか
+	bool invin_flg;					//無敵かどうか
 
 	//計算用
 	Vector2D velocity;

@@ -49,7 +49,7 @@ void BackGround::Draw(Vector2D _camera_location)const
 	//ボスエリアの背景
 	else
 	{
-		DrawGraphF(shift_location.x, shift_location.y, ResourceManager::GetGraph(back_ground_image), TRUE);
+		//DrawGraphF(shift_location.x, shift_location.y, ResourceManager::GetGraph(back_ground_image), TRUE);
 	}
 	//for (int i = 0; i < 50; i++)
 	//{

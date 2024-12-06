@@ -67,7 +67,7 @@ void Cannon::Update(ObjectManager* _manager)
 	}
 
 	//大砲を弾の種類別のクールタイム毎に発射する
-	if (!cannon_stop && frame % cannon_cooldown[cannon_type] == 0)
+	if (!cannon_stop && (frame % cannon_cooldown[cannon_type] == 0 || frame == 1))
 	{
 		switch (cannon_type)
 		{
