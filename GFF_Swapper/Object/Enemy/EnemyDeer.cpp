@@ -357,12 +357,14 @@ void EnemyDeer::Hit(Object* _object)
 	DrawTest5 = _object->GetObjectType();
 	DrawTest6 = _object->GetColerData();*/
 
-	//ブロックと当たった時の処理
+	//ブロックや同じ色のプレイヤー、敵と当たった時の処理
 	if (
 			((_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE) ||
 			(_object->GetObjectType() == FIRE && _object->GetCanSwap() == TRUE && this->color == RED) ||
 			(_object->GetObjectType() == WOOD && _object->GetCanSwap() == TRUE && this->color == GREEN) ||
-			(_object->GetObjectType() == WATER && _object->GetCanSwap() == TRUE && this->color == BLUE)
+			(_object->GetObjectType() == WATER && _object->GetCanSwap() == TRUE && this->color == BLUE)||
+			(_object->GetObjectType() == PLAYER && CheckCompatibility(this,_object)==0) ||
+			(_object->GetObjectType() == ENEMY && CheckCompatibility(this, _object) == 0)
 		)
 	{
 		Vector2D tmpl = location;

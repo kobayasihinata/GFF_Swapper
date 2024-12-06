@@ -454,7 +454,16 @@ void Player::Hit(Object* _object)
 			break;
 			//あいこの場合
 		case 0:
-			velocity.x = (velocity.x * 1.2f) * -1;
+			//プレイヤーが右にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x = 10;
+			}
+			//プレイヤーが左にいるなら左にノックバック
+			else
+			{
+				velocity.x = -10;
+			}
 			break;
 			//有利の場合
 		case 1:

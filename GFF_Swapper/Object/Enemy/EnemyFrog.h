@@ -25,6 +25,7 @@ public:
 	};
 private:
 	int timer;				 //時間測定
+	FrogState old_state;	 //一つ前のカエルの状態
 	FrogState frog_state;	 //カエルの状態
 
 	bool death_flg;			 //生きているか
@@ -58,10 +59,12 @@ public:
 		return false;
 	}
 
+private:
 	void JumpFrogDraw(Vector2D location,float _angle)const;		//ジャンプ中カエルの描画
 	void IdolFrogDraw(Vector2D location,bool _direction)const;		//通常カエルの描画
 	void Move(ObjectManager* _manager);		//移動系処理
 	void UpdataState(ObjectManager* _manager);	//カエルの状態更新
 	bool CheckCollision(Vector2D l, Vector2D e); //ステージとの当たり判定
+	void SetFrogState(FrogState _state);			//カエルの状態変更
 };
 
