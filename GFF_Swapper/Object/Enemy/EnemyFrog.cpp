@@ -208,7 +208,9 @@ void EnemyFrog::Draw()const
 		//3フレーム毎に描画する（点滅）
 		if (frame % 3 == 0)
 		{
-			JumpFrogDraw(local_location, frame * 5);
+			//JumpFrogDraw(local_location, frame * 5);
+			//カエル跳躍描画
+			DrawRotaGraphF(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), 1.0f, (frame*5/60.f), ResourceManager::GetGraph(jump_image[GetColorNum(color)]), TRUE);
 		}
 		break;
 	case FrogState::DEATH:
@@ -239,28 +241,28 @@ void EnemyFrog::Hit(Object* _object)
 			//スタン状態か死亡状態でないなら実行
 			if (frog_state != FrogState::FAINT && frog_state != FrogState::DEATH)
 			{
-				//プレイヤーが左にいるなら右にノックバック
-				if (this->location.x > _object->GetLocation().x)
-				{
-					velocity.x = 10;
-				}
-				//プレイヤーが右にいるなら左にノックバック
-				else
-				{
-					velocity.x = -10;
-				}
-				//プレイヤーが上にいるなら下にノックバック
-				if (this->location.y > _object->GetLocation().y)
-				{
-					velocity.y = 10;
-				}
-				//プレイヤーが下にいるなら上にノックバック
-				else
-				{
-					velocity.y = -10;
-				}
 				//スタン状態になる
 				SetFrogState(FrogState::FAINT);
+			}
+			//プレイヤーが左にいるなら右にノックバック
+			if (this->location.x > _object->GetLocation().x)
+			{
+				velocity.x = 10;
+			}
+			//プレイヤーが右にいるなら左にノックバック
+			else
+			{
+				velocity.x = -10;
+			}
+			//プレイヤーが上にいるなら下にノックバック
+			if (this->location.y > _object->GetLocation().y)
+			{
+				velocity.y = 10;
+			}
+			//プレイヤーが下にいるなら上にノックバック
+			else
+			{
+				velocity.y = -10;
 			}
 			break;
 			//あいこの場合

@@ -10,6 +10,7 @@ private:
 	int font_handle[2];        //使用フォント
 	int bg_handle;			//背景保存
 
+	int back_ground_image;	//背景画像格納用
 	int mountain_handle;	//山描画保存用
 	int cloud_handle;		//雲描画保存用
 public:

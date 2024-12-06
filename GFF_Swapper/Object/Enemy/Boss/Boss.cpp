@@ -84,7 +84,8 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 {
 	location = { SCREEN_WIDTH - 300.0f, SCREEN_HEIGHT - 400};//x座標 ,y座標 
 	//location = { SCREEN_WIDTH / 2, SCREEN_HEIGHT - 300 };//x座標 ,y座標 
-	erea = { _erea };	   //高さ、幅	
+	erea = { _erea };			 //高さ、幅	
+	appearance_size = erea*1.71f;		//ボスの見た目の大きさ
 	color = _color_data;
 
 	object_pos = _object_pos;
@@ -111,7 +112,6 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 
 	LoadPosition();  // 初期化時に座標を読み込む
 
-	back_groound_image = ResourceManager::SetDivGraph("Resource/Sounds/Enemy/Boss/back_ground_test.PNG");
 
 	damage_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_damage.wav");
 
@@ -292,8 +292,8 @@ void Boss::Draw() const
 		{
 			DrawWings();
 			//本体
-			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2,			  change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
-			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 34, 0xFFFFFF, FALSE, 3.0f);
+			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
+			DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 34, 0xFFFFFF, FALSE, 3.0f);
 			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 38, 36, color, FALSE, 2.0f);
 			if (barrier_num > 0) {
 
@@ -302,7 +302,7 @@ void Boss::Draw() const
 				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
 				DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
 				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
-		
+
 
 			}
 			//無敵状態なら、バリアを白くコーティング
@@ -319,7 +319,7 @@ void Boss::Draw() const
 	{
 		DrawWings();
 		//本体
-		DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
+		DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, boss_color, TRUE);
 		DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 34, 0xFFFFFF, FALSE, 3.0f);
 		//DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 36, color, FALSE, 2.0f);
 
@@ -328,9 +328,9 @@ void Boss::Draw() const
 			// バリアの描画
 			DrawHexagonSphere(color);
 			//for (int i = 0; i < barrier_num; i++) {
-			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE , 3.0f);
+			DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
 			DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
-			DrawCircleAA(change_rand*-1 + local_location.x + BOSS_SIZE / 2, change_rand*-1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
+			DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
 
 		}
 
@@ -360,57 +360,91 @@ void Boss::Draw() const
 	//	}
 	//	DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, barrier_rad[i], 50, barrier_color, FALSE, 5.f);
 	//}
-	
 
-	//色変化エフェクト描画
-	if (cnt > 0 && cnt < 240)
+	//停止中で無いなら、エフェクトの描画
+	if (!stop_flg)
 	{
-		int delay1 = cnt + 5;
-		int delay2 = cnt + 10;
-		int delay3 = cnt + 15;
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*10),      6, next_color,	false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt%20)*10)-2,    6, 0xffffff,	false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*10),   6, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1%20)*10)-2, 6, 0xffffff, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*10),   6, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2%20)*10)-2, 6, 0xffffff, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*10),   6, next_color, false);
-		DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3%20)*10)-2, 6, 0xffffff, false);
-	}
-	else
-	{
-		//攻撃の強さによって出る線が変わる
-		for (int i = 0; i < attack_count / 4 + 1; i++)
+		//色変化エフェクト描画
+		if (cnt > 0 && cnt < 240)
 		{
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260-(i*10)) * 25, 6, color, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25 - 2, 6, 0xffffff, false);
+			int delay1 = cnt + 5;
+			int delay2 = cnt + 10;
+			int delay3 = cnt + 15;
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt % 20) * 10) - 2, 6, 0xffffff, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1 % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1 % 20) * 10) - 2, 6, 0xffffff, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2 % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2 % 20) * 10) - 2, 6, 0xffffff, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3 % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3 % 20) * 10) - 2, 6, 0xffffff, false);
+		}
+		else
+		{
+			//攻撃の強さによって出る線が変わる
+			for (int i = 0; i < attack_count / 4 + 1; i++)
+			{
+				DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25, 6, color, false);
+				DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25 - 2, 6, 0xffffff, false);
+			}
+		}
+
+		//火攻撃のターゲット線＆照準
+		if (attack == 0 && cnt >= 240)
+		{
+			//ターゲット線
+			DrawLineAA(local_location.x + (erea.x / 2),
+				local_location.y + (erea.y / 2),
+				local_location.x + (erea.x / 2) + (velocity.x * 1000),
+				local_location.y + (erea.y / 2) + (velocity.y * 1000), 0xff0000, true);
+
+			int line = 50;
+			//照準
+			DrawCircleAA(player_local_location.x + (PLAYER_WIDTH / 2),
+				player_local_location.y + (PLAYER_HEIGHT / 2),
+				PLAYER_HEIGHT / 2, 50, 0xffffff, false);
+
+			DrawLineAA(player_local_location.x - line,
+				player_local_location.y + (PLAYER_HEIGHT / 2),
+				player_local_location.x + PLAYER_WIDTH + line,
+				player_local_location.y + (PLAYER_HEIGHT / 2), 0xffffff);
+
+			DrawLineAA(player_local_location.x + (PLAYER_WIDTH / 2),
+				player_local_location.y - line,
+				player_local_location.x + (PLAYER_WIDTH / 2),
+				player_local_location.y + PLAYER_HEIGHT + line, 0xffffff);
 		}
 	}
-
-	//火攻撃のターゲット線＆照準
-	if (attack == 0 && cnt >= 240)
+	//停止中（演出）の描画
+	else
 	{
-		//ターゲット線
-		DrawLineAA(local_location.x + (erea.x / 2), 
-		   local_location.y + (erea.y / 2), 
-		   local_location.x + (erea.x / 2) + (velocity.x * 1000), 
-		   local_location.y + (erea.y / 2) + (velocity.y * 1000), 0xff0000, true);
-
-		int line = 50;
-		//照準
-		DrawCircleAA(player_local_location.x + (PLAYER_WIDTH / 2),
-			player_local_location.y + (PLAYER_HEIGHT / 2),
-			PLAYER_HEIGHT/2,50, 0xffffff, false);
-
-		DrawLineAA(player_local_location.x- line,
-			player_local_location.y + (PLAYER_HEIGHT / 2),
-			player_local_location.x + PLAYER_WIDTH+ line,
-			player_local_location.y + (PLAYER_HEIGHT / 2), 0xffffff);
-
-		DrawLineAA(player_local_location.x + (PLAYER_WIDTH / 2),
-			player_local_location.y- line,
-			player_local_location.x + (PLAYER_WIDTH / 2),
-			player_local_location.y + PLAYER_HEIGHT+ line, 0xffffff);
+		//ボスを覆う黒ボックス
+		for (int x = 0; x < appearance_size.x; x += 40)
+		{
+			for (int y = 0; y < appearance_size.y; y += 40)
+			{
+				DrawBoxAA(local_location.x + (erea.x / 2)-(appearance_size.x/2) + x,
+						  local_location.y + (erea.y / 2)-(appearance_size.y/2) + y,
+						  local_location.x + (erea.x / 2)-(appearance_size.x/2) + x + 41,
+						  local_location.y + (erea.y / 2)-(appearance_size.y/2) + y + 41,
+						  0x000000, true);
+			}
+		}
+		//ボスに近づけば近づくだけスポーンする可能性があがる黒ボックス
+		for (int x = 0; x < appearance_size.x*2; x += 40)
+		{
+			for (int y = 0; y < appearance_size.y*2; y += 40)
+			{
+				if (GetRand(100) == 0)
+				{
+					DrawBoxAA(local_location.x + (erea.x / 2) - appearance_size.x + x,
+						local_location.y + (erea.y / 2) - appearance_size.y + y,
+						local_location.x + (erea.x / 2) - appearance_size.x + x + 41,
+						local_location.y + (erea.y / 2) - appearance_size.y + y + 41,
+						0x000000, true);
+				}
+			}
+		}
 	}
 }
 

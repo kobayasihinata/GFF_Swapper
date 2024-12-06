@@ -39,6 +39,7 @@ private:
 		right
 	};
 	class Camera* camera;	//カメラ位置
+	Vector2D appearance_size;	//羽も含めた、見た目の大きさ
 	Vector2D vector;		//ボスのベクトル
 	bool stageHitFlg[2][4]; //bossとステージの当たり判定
 	float move[4];			//各方向加速度格納用
@@ -101,8 +102,6 @@ private:
 
 	float attackWood[6];
 	int woodNum = 0;
-
-	int back_groound_image;	//背景画像格納用
 
 	int damage_se;	//被ダメージSE
 
