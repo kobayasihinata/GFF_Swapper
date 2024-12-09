@@ -39,11 +39,13 @@ private:
 	bool boss_blind_flg;						//ボスステージの暗転が有効か
 	GameMainState change_state;					//次に変えるゲームメインのステート
 
+	bool boss_appeared_set_once;				//ボス演出が開始された時の数値変更用
 public:
 	bool player_respawn_flg;					//プレイヤーをリスポーンさせるか判断
 	Vector2D player_respawn;					//プレイヤーが生成された地点を保存しておく
 	int change_stage;							//次に変えるゲームメインのステージ
 
+	bool boss_appeared_flg;						//ボス演出中か格納
 public:
 	void Initialize();				//初期化処理
 	void Update(GameMain* _g);		//オブジェクト更新処理
@@ -71,7 +73,6 @@ public:
 	int GetPlayerColor()const;							//プレイヤーの色取得
 
 	Vector2D GetBossLocation()const;					//ボスの位置取得
-
 	void UpdateState(GameMainState _state);				//ゲームメインの状態更新
 
 	void SpawnEffect(Vector2D _location, Vector2D _erea, int _type, int _time, int _color, float _angle = 0.0f);	//エフェクトの生成

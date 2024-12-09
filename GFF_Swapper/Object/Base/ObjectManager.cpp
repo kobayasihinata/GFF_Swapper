@@ -10,7 +10,11 @@ void ObjectManager::Initialize()
 	effect_spawner->Initialize();
 
 	change_state = GameMainState::Null;
+
+	boss_appeared_set_once = false;
+
 	change_stage = -1;
+	boss_appeared_flg = false;
 }
 
 void ObjectManager::Update(GameMain* _g)
@@ -69,8 +73,21 @@ void ObjectManager::Update(GameMain* _g)
 	//更新処理
 	InScreenUpdate();
 
-	//プレイヤー更新
-	PlayerUpdate(_g);
+	//ボス演出中以外なら、プレイヤーを更新する
+	if (!boss_appeared_flg)
+	{
+		//プレイヤー更新
+		PlayerUpdate(_g);
+	}
+	//一回だけプレイヤーを更新　ステートの更新のため
+	else if (!boss_appeared_set_once)
+	{
+		//プレイヤー更新
+		PlayerUpdate(_g);
+
+		//フラグを立てる
+		boss_appeared_set_once = true;
+	}
 
 
 	//画面内のオブジェクトを更新する処理

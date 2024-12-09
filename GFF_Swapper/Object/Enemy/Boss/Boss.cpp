@@ -145,12 +145,19 @@ void Boss::Update(ObjectManager* _manager)
 	boss_anim = (float)sin(PI * 2.f / 60.f * wing_fps) * 5.f;
 
 	//プレイヤーが一定距離まで近づいてきたら更新開始
-	if (stop_flg && frame > 1 && player_local_location.x > 140)
+	if (stop_flg && frame > 1 && player_local_location.x > 160)
 	{
-		//SE再生
+		//マネージャー側に演出開始を伝える
+		_manager->boss_appeared_flg = true;
+		//一回だけSE再生
 		if (boss_appeared_timer == 125)
 		{
 			ResourceManager::StartSound(appeared_se);
+		}
+		//ボス振動
+		if (boss_appeared_timer > 125)
+		{
+			shake_anim = GetRand(30) - 15;
 		}
 		if (++boss_appeared_timer > APPEARED_TIME)
 		{
@@ -158,6 +165,8 @@ void Boss::Update(ObjectManager* _manager)
 			ResourceManager::StopSound(appeared_se);
 			stop_flg = false;
 			boss_appeared_timer = 0;
+			//マネージャー側に演出終了を伝える
+			_manager->boss_appeared_flg = false;
 		}
 	}
 	//停止させる状態でなければ更新
@@ -427,16 +436,6 @@ void Boss::Draw() const
 	//停止中（演出）の描画
 	else if (boss_appeared_timer > 1)
 	{
-		////世界を覆っていて、時間とともにボスの周りから消えていく黒ボックス
-		//for (int x = 0; x < SCREEN_WIDTH; x += 40)
-		//{
-		//	for (int y = 0; y < SCREEN_HEIGHT; y += 40)
-		//	{
-		//		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)(sqrtf(powf(fabsf(this->local_location.x+(erea.x/2) - x), 2) + powf(fabsf(this->local_location.y+(erea.y/2) - y), 2))) - (boss_appeared_timer-40) * 10);
-		//		DrawBoxAA(x, y, x + 41, y + 41, 0x000000, true);
-		//		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-		//	}
-		//}
 		//登場（２秒）
 		if (boss_appeared_timer < 120)
 		{
@@ -444,7 +443,7 @@ void Boss::Draw() const
 			{
 				for (int y = 0; y < appearance_size.y; y += 40)
 				{
-					if (GetRand(4) == 0)
+					if (GetRand(3) == 0)
 					{
 						DrawBoxAA(local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x,
 							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y,

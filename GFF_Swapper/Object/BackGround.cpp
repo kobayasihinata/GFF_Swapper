@@ -42,9 +42,9 @@ void BackGround::Draw(Vector2D _camera_location)const
 	int bg_color = /*(_camera_location.x / 80)*/0;	//背景のバグ演出を一旦消す
 
 	//ボスエリア以外の背景
-	if (now_stage != STAGE_NUM - 1)
+	if (now_stage != STAGE_NUM - 1 || is_clear)
 	{
-		DrawGraphF(shift_location.x, shift_location.y+72, ResourceManager::GetGraph(back_ground_image), TRUE);
+		DrawGraphF(shift_location.x, shift_location.y, ResourceManager::GetGraph(back_ground_image), TRUE);
 	}
 	//ボスエリアの背景
 	else

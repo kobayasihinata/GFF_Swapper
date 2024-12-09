@@ -6,6 +6,7 @@
 
 EnemyDeer::EnemyDeer()
 {
+	old_location = 0;
 	velocity = 0;
 	type = ENEMY;
 	can_swap = TRUE;
@@ -330,9 +331,11 @@ void EnemyDeer::EnemyDeerMove()
 	default:
 		break;
 	}
-
+	old_location = location;
 	location += velocity;
 
+	//高速移動を始めようとしたら、想定外の挙動とみなして移動を無かったことにする
+	if (fabsf(old_location.x - location.x) > erea.x || fabsf(old_location.y - location.y) > erea.y)location = old_location;
 	//加速度減算
 	velocity.x -= (velocity.x / 2);
 	velocity.y -= (velocity.y / 2);
@@ -396,7 +399,10 @@ void EnemyDeer::Hit(Object* _object)
 
 			if (!deer_spawn)
 			{
-				ChangeDeerState(DeerState::LEFT);
+				if (deer_state != DeerState::DEATH)
+				{
+					ChangeDeerState(DeerState::LEFT);
+				}
 				deer_spawn = true;
 			}
 		}
@@ -441,7 +447,7 @@ void EnemyDeer::Hit(Object* _object)
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
 			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
-			if (deer_state != DeerState::FAINT)ChangeDeerState(DeerState::RIGHT);
+			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)ChangeDeerState(DeerState::RIGHT);
 		}
 		else {
 			stageHitFlg[0][left] = false;
@@ -453,7 +459,7 @@ void EnemyDeer::Hit(Object* _object)
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right]) {
 			stageHitFlg[0][right] = true;
 			stageHitFlg[1][right] = true;
-			if (deer_state != DeerState::FAINT)ChangeDeerState(DeerState::LEFT);
+			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)ChangeDeerState(DeerState::LEFT);
 		}
 		else {
 			stageHitFlg[0][right] = false;
@@ -591,24 +597,24 @@ void EnemyDeer::Hit(Object* _object)
 			//エネミーが左にいるなら右に方向転換
 			if (this->location.x > _object->GetLocation().x)
 			{
-				//スタン状態でないなら方向転換
-				if(deer_state != DeerState::FAINT)deer_state = DeerState::RIGHT;
+				//スタン状態か死亡状態でないなら方向転換
+				if(deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)deer_state = DeerState::RIGHT;
 			}
 			//エネミーが右にいるなら左に方向転換
 			else
 			{
-				//スタン状態でないなら方向転換
-				if (deer_state != DeerState::FAINT)deer_state = DeerState::LEFT;
+				//スタン状態か死亡状態でないなら方向転換
+				if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)deer_state = DeerState::LEFT;
 			}
-			//プレイヤーが上にいるなら下にノックバック
+			//敵が上にいるなら下にノックバック
 			if (this->location.y > _object->GetLocation().y)
 			{
-				velocity.y = 20;
+				velocity.y = 5;
 			}
-			//プレイヤーが下にいるなら上にノックバック
+			//敵が下にいるなら上にノックバック
 			else
 			{
-				velocity.y = -20;
+				velocity.y = -15;
 			}
 			break;
 			//有利の場合

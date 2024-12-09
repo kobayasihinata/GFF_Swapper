@@ -224,5 +224,10 @@ public:
 
     //前のシーンに戻るか判断
     AbstractScene* CheckReturnOldScene();
+
+//////その他//////
+
+    //ユーザーガイド描画
+    void DrawUserGuide()const;
 };
 

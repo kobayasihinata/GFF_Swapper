@@ -102,7 +102,6 @@ void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int
 
 void Player::Update(ObjectManager* _manager)
 {
-
 	if (!is_tutorial) {
 		__super::Update(_manager);
 
@@ -341,6 +340,8 @@ void Player::Update(ObjectManager* _manager)
 		}
 	}
 
+	//ボス演出中ならプレイヤーを停止させる
+	if (_manager->boss_appeared_flg)p_state = PlayerState::IDLE_RIGHT;
 }
 
 void Player::Draw()const

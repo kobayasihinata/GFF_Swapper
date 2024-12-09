@@ -156,7 +156,8 @@ AbstractScene* Option::Update()
 
 void Option::Draw() const
 {
-	DrawStringF(0, 0, "option", 0x00ff00, true);
+	int old_size = GetFontSize();
+	SetFontSize(24);
 
 //////背景描画//////
 	DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xffffff, TRUE);
@@ -290,12 +291,17 @@ void Option::Draw() const
 	default:
 		//半透明に設定されていたら元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-
-		//上下とBボタンで何か選択する事を描画（画像差し替え予定）
-		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 24, "上下　＆　B", 0xffffff, true);
 		break;
 	}
 //////右側の設定描画終わり//////
+
+//////その他//////
+
+	//ユーザーガイド描画
+	DrawUserGuide();
+
+	//フォントサイズをもとに戻す
+	SetFontSize(old_size);
 }
 
 void Option::BackGroundUpdate()
@@ -831,7 +837,8 @@ void Option::DrawKeyConfig()const
 		if (!warning_flg)
 		{
 			DrawString(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, "割り当てたいキーを押してください", 0xffffff);
-			DrawString(SCREEN_WIDTH / 2 - 90, SCREEN_HEIGHT / 2 + 30, "Back or Startキーで取り消し", 0xffffff);
+			DrawString(SCREEN_WIDTH / 2 - 90, SCREEN_HEIGHT / 2 + 30, "BACKキーで取り消し", 0xffffff);
+			DrawString(SCREEN_WIDTH / 2 - 90, SCREEN_HEIGHT / 2 + 60, "STARTキーで割り当て解除", 0xffffff);
 		}
 	}
 	//警告表示
@@ -986,4 +993,22 @@ int Option::GetColor(int i, int j)
 		return 0x000000;
 	}
 	return 0x000000;
+}
+
+void Option::DrawUserGuide()const
+{
+	SetFontSize(24);
+	//何も選択していない時の表示
+	if (current_item == -1)
+	{
+		//上下とBボタンで何か選択する事を描画（画像差し替え予定）
+		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 24, "上下 ＆ B = 選択", 0xffffff, true);
+	}
+	//何か選択している時の表示
+	else
+	{
+		//上下とBボタンで何か選択する事を描画（画像差し替え予定）
+		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 48, "上下 ＆ B = 選択", 0xffffff, true);
+		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 24, "A = 戻る", 0xffffff, true);
+	}
 }
