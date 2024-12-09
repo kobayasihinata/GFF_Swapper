@@ -40,12 +40,15 @@ private:
 	GameMainState change_state;					//次に変えるゲームメインのステート
 
 	bool boss_appeared_set_once;				//ボス演出が開始された時の数値変更用
+
 public:
 	bool player_respawn_flg;					//プレイヤーをリスポーンさせるか判断
 	Vector2D player_respawn;					//プレイヤーが生成された地点を保存しておく
 	int change_stage;							//次に変えるゲームメインのステージ
 
 	bool boss_appeared_flg;						//ボス演出中か格納
+	bool boss_appeared_skip;					//ボスに二回目以降挑戦するなら、演出スキップが出来るようにする
+
 public:
 	void Initialize();				//初期化処理
 	void Update(GameMain* _g);		//オブジェクト更新処理
@@ -57,13 +60,14 @@ public:
 	void CreatePlayer(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);	//プレイヤーの生成
 	void CreateBoss(Object* _object, Vector2D _location, Vector2D _erea, int _color_data);		//ボスの生成
 	void DeleteObject(Object* _object);					//オブジェクトの削除
+	void DeleteBoss();									//ボスを削除
 	void DeleteAllObject(bool _player_delete);			//全てのオブジェクトの削除
 	void HitCheck();									//当たり判定の確認
 	void InScreenUpdate();								//画面内オブジェクトの確認
 	bool CheckInScreen(Object* _object)const;			//そのオブジェクトが画面内に居るか判断
 
 	void PlayerUpdate(GameMain* _g);					//プレイヤーの更新
-	void BossUpdate();			//ボス＆ボス攻撃の更新
+	void BossUpdate();									//ボス＆ボス攻撃の更新
 	void SetNowCurrentObject(Object* _object);			//現在交換対象になっているオブジェクトを設定する
 
 	bool GetSearchFlg()const;							//交換中か取得

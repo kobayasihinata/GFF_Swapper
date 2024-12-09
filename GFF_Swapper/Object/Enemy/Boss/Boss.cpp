@@ -25,6 +25,8 @@ Boss::Boss() :
 	attack_count(0),
 	stop_flg(true),	    //ボスは最初停止させておく
 	damage_flg(false), 
+	death_flg(false),
+	death_timer(0),
 	state_change_time(0), 
 	speed(0.0f),
 	wing_fps(0),
@@ -112,10 +114,10 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 
 	LoadPosition();  // 初期化時に座標を読み込む
 
-
+	//SE、BGM読み込み
 	damage_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_damage.wav");
 	appeared_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_ap.wav");
-
+	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainAbnormal.wav", false);
 }
 
 void Boss::Update(ObjectManager* _manager)
@@ -159,14 +161,21 @@ void Boss::Update(ObjectManager* _manager)
 		{
 			shake_anim = GetRand(30) - 15;
 		}
-		if (++boss_appeared_timer > APPEARED_TIME)
+		//演出時間が終了するか、スキップ可能な時にBボタンを押したか
+		if (++boss_appeared_timer > APPEARED_TIME ||
+			(_manager->boss_appeared_skip && PadInput::OnButton(XINPUT_BUTTON_B)))
 		{
 			//SE停止
 			ResourceManager::StopSound(appeared_se);
+			//BGM再生
+			ResourceManager::StartSound(bgm_abnormal);
 			stop_flg = false;
 			boss_appeared_timer = 0;
 			//マネージャー側に演出終了を伝える
 			_manager->boss_appeared_flg = false;
+			//次の演出をスキップ可能にする
+			_manager->boss_appeared_skip = true;
+			shake_anim = 0;
 		}
 	}
 	//停止させる状態でなければ更新
@@ -182,8 +191,12 @@ void Boss::Update(ObjectManager* _manager)
 			BossAtack(_manager);
 			break;
 		case BossState::DEATH:
-			_manager->DeleteObject(this);
-			_manager->UpdateState(GameMainState::GameClear);
+			if (++death_timer > BOSS_DEATH_TIME)
+			{
+				_manager->DeleteBoss();
+				_manager->UpdateState(GameMainState::GameClear);
+			}
+			shake_anim = GetRand(death_timer) - (death_timer/2);
 			break;
 		default:
 			break;
@@ -274,6 +287,7 @@ void Boss::Update(ObjectManager* _manager)
 		}*/
 		damage_flg = true;
 		damage_anim_flg = true;
+		boss_state = BossState::DEATH;
 	}
 	if (KeyInput::OnKey(KEY_INPUT_Z))
 	{
@@ -317,9 +331,9 @@ void Boss::Draw() const
 
 				DrawHexagonSphere(color);
 				// バリアの描画(通常時)
-				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
-				DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
-				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 + shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
+				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 +	shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 115, 50, color, FALSE, 3.0f);
+				DrawCircleAA(change_rand + local_location.x + BOSS_SIZE / 2 +		shake_anim, change_rand + local_location.y + BOSS_SIZE / 2 + boss_anim, 112.5, 50, color, FALSE, 2.0f);
+				DrawCircleAA(change_rand * -1 + local_location.x + BOSS_SIZE / 2 +	shake_anim, change_rand * -1 + local_location.y + BOSS_SIZE / 2 + boss_anim, 109, 50, color, FALSE);
 
 
 			}
@@ -476,6 +490,14 @@ void Boss::Draw() const
 
 			}
 		}
+	}
+
+	//やられる演出
+	if (boss_state == BossState::DEATH)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, death_timer);
+		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xffffff, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	}
 }
 

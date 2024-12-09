@@ -88,7 +88,7 @@ AbstractScene* GameMain::Update()
 	{
 		ResourceManager::StartSound(bgm_normal);
 	}
-	else if(!boss_blind_flg)
+	else if(!boss_blind_flg && !object_manager->boss_appeared_flg)
 	{
 		ResourceManager::StartSound(bgm_abnormal);
 	}
@@ -261,6 +261,7 @@ void GameMain::SetStage(int _stage)
 {
 	bool first_flg = false;	//ゲームメインに最初に入った時の呼び出しかを格納
 	boss_blind_flg = false;
+	object_manager->boss_appeared_flg = false;
 
 	//プレイヤー以外のすべてのオブジェクトを削除
 	object_manager->DeleteAllObject(false);
@@ -409,7 +410,7 @@ Vector2D GameMain::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) con
 
 void GameMain::UpdateGameMain()
 {
-	if (PadInput::OnButton(XINPUT_BUTTON_START) && gm_state != GameMainState::Pause)
+	if (PadInput::OnButton(XINPUT_BUTTON_START) && gm_state != GameMainState::Pause && !object_manager->boss_appeared_flg)
 	{
 		gm_state = GameMainState::Pause;
 	}
@@ -439,7 +440,6 @@ void GameMain::UpdateGameMain()
 		object_manager->CreateObject(new Stage(1), { 120,560 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		object_manager->CreateObject(new Stage(1), { 120,600 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		object_manager->CreateObject(new Stage(1), { 120,640 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		ResourceManager::StartSound(bgm_abnormal);
 		boss_blind_timer = 10;
 		boss_blind_flg = false;
 		create_once = true;
