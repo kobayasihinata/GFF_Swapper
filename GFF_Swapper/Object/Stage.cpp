@@ -150,10 +150,18 @@ void Stage::Update(ObjectManager* _manager)
 		old_color = color;
 	}
 
-	//ステージ遷移ブロックに触れたら遷移
-	if (hit_flg == true && (block_type == TUTOSTAGE_ONE_TRANSITION || block_type == TUTOSTAGE_TWO_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION))
+	//ステージの遷移ブロックは判断
+	if (block_type == TUTOSTAGE_ONE_TRANSITION || block_type == TUTOSTAGE_TWO_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION)
 	{
-		_manager->change_stage = next_stage;
+		if (frame % 10 == 0)
+		{
+			_manager->SpawnEffect({ location.x + (erea.x / 2) , location.y + (erea.y / 2) }, erea * 3.f, LightGathers, 3, 0xffffff);
+		}
+		//ステージ遷移ブロックに触れたら遷移
+		if (hit_flg == true)
+		{
+			_manager->change_stage = next_stage;
+		}
 	}
 
 	//リセット
@@ -308,9 +316,15 @@ void Stage::Draw()const
 		case FIRSTSTAGE_TRANSITION:
 		case BOSSSTAGE_TRANSITION:
 			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(0,0,GetRand(255)), true);
-
+			DrawOvalAA(local_location.x+(erea.x/2), local_location.y+(erea.y/2), erea.x * 0.7f, erea.y * 1.5f, 30, 0x000066, true);
+			DrawOvalAA(local_location.x+(erea.x/2), local_location.y+(erea.y/2), erea.x * 0.7f-5, erea.y * 1.5f-5, 30, 0x000055, true);
+			DrawOvalAA(local_location.x+(erea.x/2), local_location.y+(erea.y/2), erea.x * 0.7f-10, erea.y * 1.5f-10, 30, 0x000044, true);
+			DrawOvalAA(local_location.x+(erea.x/2), local_location.y+(erea.y/2), erea.x * 0.7f-15, erea.y * 1.5f-15, 30, 0x000033, true);
+			DrawOvalAA(local_location.x+(erea.x/2), local_location.y+(erea.y/2), erea.x * 0.7f-20, erea.y * 1.5f-20, 30, 0x000022, true);
+			DrawOvalAA(local_location.x+(erea.x/2), local_location.y+(erea.y/2), erea.x * 0.7f-25, erea.y * 1.5f-25, 30, 0x000011, true);
+			DrawOvalAA(local_location.x+(erea.x/2), local_location.y+(erea.y/2), erea.x * 0.7f-30, erea.y * 1.5f-30, 30, 0x000000, true);
 			//デバッグ時はどこに飛ぶか分かりやすいように
-			if (debug_flg == false)DrawFormatStringF(local_location.x, local_location.y, 0x000000, "%d", next_stage);
+			DrawFormatStringF(local_location.x, local_location.y, 0xffffff, "%d", next_stage);
 
 			break;
 			//その他（無）
@@ -371,6 +385,8 @@ void Stage::Draw()const
 		case TUTOSTAGE_TWO_TRANSITION:
 		case FIRSTSTAGE_TRANSITION:
 		case BOSSSTAGE_TRANSITION:
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xffffff, true);
+
 			DrawFormatStringF(local_location.x, local_location.y, text_color[block_type], "%s", stage_string[next_stage]);
 			break;
 			//チュートリアル開始範囲

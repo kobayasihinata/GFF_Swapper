@@ -60,7 +60,7 @@ static char PlayerAction[PLAYER_INPUT_NUM][256] =
 };
 
 //画像完成までは文字で
-static char KeyString[24][256] =
+static char KeyString[26][256] =
 {
     "十字上",
     "十字下",
@@ -90,6 +90,9 @@ static char KeyString[24][256] =
     "右スティック下",
     "右スティック左",
     "右スティック右",
+    "左トリガー",
+
+    "右トリガー",
 };
 
 //オプションの表示時の大きさ

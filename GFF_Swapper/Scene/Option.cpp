@@ -81,7 +81,7 @@ void Option::Initialize()
 	//キー設定箱の位置計算
 	for (int i = 0; i < PLAYER_INPUT_NUM; i++)
 	{
-		action_box_location[i].x = right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH;
+		action_box_location[i].x = right_box_location.x + (right_box_size.x / 2) - KEY_BOX_WIDTH * 1.5f;
 		action_box_location[i].y = right_box_location.y + KEY_BOX_SHIFT + (i * KEY_BOX_HEIGHT);
 	}
 	
@@ -359,7 +359,7 @@ void Option::BackGroundUpdate()
 void Option::UpdateLeftBox()
 {
 	//カーソル上移動
-	if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
+	if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_UP) || PadInput::GetPressedButton(L_STICK_UP))
 		{
 			if (--cursor_num < 0)
 			{
@@ -369,7 +369,7 @@ void Option::UpdateLeftBox()
 		}
 
 	//カーソル下移動
-	if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
+	else if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::GetPressedButton(L_STICK_DOWN))
 		{
 			if (++cursor_num > ITEMS_NUM - 1)
 			{
@@ -397,7 +397,7 @@ void Option::UpdateVolumeSetting()
 	if (current_bar == -1)
 	{
 		//カーソル上移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP)|| PadInput::OnButton(L_STICK_UP))
+		if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_UP)|| PadInput::GetPressedButton(L_STICK_UP))
 		{
 			if (--v_cursor_num < 0)
 			{
@@ -407,7 +407,7 @@ void Option::UpdateVolumeSetting()
 		}
 
 		//カーソル下移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
+		else if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::GetPressedButton(L_STICK_DOWN))
 		{
 			if (++v_cursor_num > 2)
 			{
@@ -613,7 +613,7 @@ void Option::UpdateKeyConfig()
 	if (current_action_y == -1 && !press_flg)
 	{
 		//カーソル上移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_UP) || PadInput::OnButton(L_STICK_UP))
+		if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_UP) || PadInput::GetPressedButton(L_STICK_UP))
 		{
 			if (--action_num_y < 0)
 			{
@@ -623,7 +623,7 @@ void Option::UpdateKeyConfig()
 		}
 
 		//カーソル下移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::OnButton(L_STICK_DOWN))
+		else if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_DOWN) || PadInput::GetPressedButton(L_STICK_DOWN))
 		{
 			if (++action_num_y > PLAYER_INPUT_NUM - 1)
 			{
@@ -633,7 +633,7 @@ void Option::UpdateKeyConfig()
 		}
 
 		//カーソル右移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_RIGHT) || PadInput::OnButton(L_STICK_RIGHT))
+		else if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_RIGHT) || PadInput::GetPressedButton(L_STICK_RIGHT))
 		{
 			if (++action_num_x > 1)
 			{
@@ -643,7 +643,7 @@ void Option::UpdateKeyConfig()
 		}
 
 		//カーソル左移動
-		if (PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT) || PadInput::OnButton(L_STICK_LEFT))
+		else if (PadInput::GetPressedButton(XINPUT_BUTTON_DPAD_LEFT) || PadInput::GetPressedButton(L_STICK_LEFT))
 		{
 			if (--action_num_x < 0)
 			{
@@ -651,6 +651,7 @@ void Option::UpdateKeyConfig()
 			}
 			ResourceManager::StartSound(cursor_se);
 		}
+
 		//Bボタンが押された時に選択されている要素に切り替え
 		if (PadInput::OnButton(XINPUT_BUTTON_B))
 		{
@@ -703,21 +704,26 @@ void Option::UpdateKeyConfig()
 		//現在押されているキーを格納
 		now_input = PadInput::GetNowInput();
 
-		//選択されている時にBACKとSTART以外のボタンが押されたら、キーの割り当てを更新する
-		if (now_input != -1 && now_input != XINPUT_BUTTON_BACK && now_input != XINPUT_BUTTON_START)
+		//選択されている時にBACK以外のボタンが押されたら、キーの割り当てを更新する
+		if (now_input != -1 && now_input != XINPUT_BUTTON_BACK)
 		{
 			warning_flg = false;
+			//STARTが押されたら空白を表す10を割り振り、警告処理スキップ
+			if (now_input == XINPUT_BUTTON_START)now_input = 10;
 			//割り当てられているキーを捜索して、割り当てようとしているキーがすでにあるなら、警告を出す
-			for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+			else
 			{
-				//同じキーを発見したら、フラグを立て、位置を格納(選択されている要素はスキップ)
-				if (UserData::player_key[i][current_action_x] == now_input && current_action_y != i)
+				for (int i = 0; i < PLAYER_INPUT_NUM; i++)
 				{
-					swap_action = i;
-					warning_flg = true;
-					//5フレーム入力を受け付けない
-					wait_timer = 5;
-					break;
+					//同じキーを発見したら、フラグを立て、位置を格納(選択されている要素はスキップ)
+					if (UserData::player_key[i][current_action_x] == now_input && current_action_y != i)
+					{
+						swap_action = i;
+						warning_flg = true;
+						//5フレーム入力を受け付けない
+						wait_timer = 5;
+						break;
+					}
 				}
 			}
 
@@ -745,17 +751,6 @@ void Option::UpdateKeyConfig()
 void Option::DrawKeyConfig()const
 {
 	SetFontSize(24);
-
-	//ごり押しで現在のキー割り当て描画
-
-	/*DrawFormatString(right_box_location.x + 10, right_box_location.y + 10, 0xffffff,  "左移動:%s",		       KeyString[UserData::player_key[(int)PlayerActionKey::P_WALK_LEFT]]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 40, 0xffffff,  "右移動:%s",			   KeyString[UserData::player_key[(int)PlayerActionKey::P_WALK_RIGHT]]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 70, 0xffffff,  "ジャンプ:%s",		   KeyString[UserData::player_key[(int)PlayerActionKey::P_JUMP]]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 100, 0xffffff, "交換:%s",			   KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP]]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 130, 0xffffff, "交換カーソル上移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_UP]]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 160, 0xffffff, "交換カーソル下移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_DOWN]]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 190, 0xffffff, "交換カーソル左移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_LEFT]]);
-	DrawFormatString(right_box_location.x + 10, right_box_location.y + 220, 0xffffff, "交換カーソル右移動:%s", KeyString[UserData::player_key[(int)PlayerActionKey::P_SWAP_MOVE_RIGHT]]);*/
 
 	//現在のキー割り当て描画
 
@@ -809,12 +804,19 @@ void Option::DrawKeyConfig()const
 		if (i == action_num_y)
 		{
 			//操作一覧を格納する箱の外枠(赤、塗りつぶしなし)
-			DrawBox(action_box_location[i].x + (KEY_BOX_WIDTH*(action_num_x+1)),
+			DrawBoxAA(action_box_location[i].x + (KEY_BOX_WIDTH*(action_num_x+1)),
 				action_box_location[i].y,
 				action_box_location[i].x + (KEY_BOX_WIDTH * (action_num_x + 2)),
 				action_box_location[i].y + KEY_BOX_HEIGHT,
 				0xff0000, false);
-
+			//操作一覧を格納する箱の外枠(白、塗りつぶしあり)
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 80);
+			DrawBoxAA(action_box_location[i].x + (KEY_BOX_WIDTH * (action_num_x + 1)),
+				action_box_location[i].y,
+				action_box_location[i].x + (KEY_BOX_WIDTH * (action_num_x + 2)),
+				action_box_location[i].y + KEY_BOX_HEIGHT,
+				0xffffff, true);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		}
 	}
 	//キー割り当て処理中なら背景を暗転＆説明文を描画
@@ -825,36 +827,39 @@ void Option::DrawKeyConfig()const
 		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
-		//説明文
-		DrawString(SCREEN_WIDTH / 2-100, SCREEN_HEIGHT / 2, "割り当てたいキーを押してください", 0xffffff);
-		DrawString(SCREEN_WIDTH / 2-90, SCREEN_HEIGHT / 2+30, "Back or Startキーで取り消し", 0xffffff);
+		//説明文(警告が出たら隠す)
+		if (!warning_flg)
+		{
+			DrawString(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, "割り当てたいキーを押してください", 0xffffff);
+			DrawString(SCREEN_WIDTH / 2 - 90, SCREEN_HEIGHT / 2 + 30, "Back or Startキーで取り消し", 0xffffff);
+		}
 	}
 	//警告表示
 	if (warning_flg)
 	{
 		//警告表示箱（黒、塗りつぶしあり）
-		DrawBox((SCREEN_WIDTH / 2) - 200,
-			(SCREEN_HEIGHT / 2) - 150,
-			(SCREEN_WIDTH / 2) + 200,
-			(SCREEN_HEIGHT / 2) + 150, 0x000000, true);
+		DrawBox((SCREEN_WIDTH / 2) - 250,
+			(SCREEN_HEIGHT / 2) - 50,
+			(SCREEN_WIDTH / 2) + 250,
+			(SCREEN_HEIGHT / 2) + 50, 0x000000, true);
 
 		//警告表示箱（白、塗りつぶしなし）
-		DrawBox((SCREEN_WIDTH / 2) - 200,
-			(SCREEN_HEIGHT / 2) - 150,
-			(SCREEN_WIDTH / 2) + 200,
-			(SCREEN_HEIGHT / 2) + 150, 0xffffff, false);
+		DrawBox((SCREEN_WIDTH / 2) - 250,
+			(SCREEN_HEIGHT / 2) - 50,
+			(SCREEN_WIDTH / 2) + 250,
+			(SCREEN_HEIGHT / 2) + 50, 0xffffff, false);
 
 		//警告表示
 		DrawString((SCREEN_WIDTH / 2) - (GetDrawStringWidth("---既に割り当てられているキーです！---", strlen("---既に割り当てられているキーです！---")) / 2),
-			(SCREEN_HEIGHT / 2) - 150, "---既に割り当てられているキーです！---", 0xffffff);
+			(SCREEN_HEIGHT / 2) - 40, "---既に割り当てられているキーです！---", 0xffffff);
 
 		//該当アクション表示
 		DrawFormatString((SCREEN_WIDTH / 2) - (GetDrawStringWidth(PlayerAction[swap_action], strlen(PlayerAction[swap_action])) / 2),
-			(SCREEN_HEIGHT / 2) - 100, 0xffffff, "%s", PlayerAction[swap_action]);
+			(SCREEN_HEIGHT / 2) - 10, 0xffffff, "%s", PlayerAction[swap_action]);
 
 		//選択肢表示
-		DrawString((SCREEN_WIDTH / 2)- 200,
-			(SCREEN_HEIGHT / 2) - 50, "A = やめる      B = 交換して割り当てる", 0xffffff);
+		DrawString((SCREEN_WIDTH / 2)- 240,
+			(SCREEN_HEIGHT / 2) +20, "A = やめる      B = 交換して割り当てる", 0xffffff);
 	}
 }
 
