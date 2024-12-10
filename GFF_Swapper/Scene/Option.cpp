@@ -118,6 +118,8 @@ void Option::Finalize()
 {
 	//全てのBGMを停止
 	ResourceManager::StopAllSound();
+	//ユーザー情報格納
+	UserData::Initialize();
 }
 
 AbstractScene* Option::Update()

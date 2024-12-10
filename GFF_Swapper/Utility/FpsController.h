@@ -1,5 +1,6 @@
 #pragma once
 #include"DxLib.h"
+#include "DebugInfomation.h"
 
 class FpsController {
 private:
@@ -30,9 +31,7 @@ public:
 
     //描画処理
     void Disp() {
-        SetFontSize(10);
-        DrawFormatString(10, 10, 0xffffff, "fps:%0.1f", Fps);
-        SetFontSize(24);
+        DebugInfomation::Add("fps", Fps);
     }
     //処理をまとめたもの
     float All() {
@@ -41,6 +40,11 @@ public:
         return (Fps);
     }
 
+    //フレームレートの更新
+    void UpdateFrameRate(float RefreshRate)
+    { 
+        FrameTime = (int)(1000.0f / RefreshRate); 
+    }
 };
 
 

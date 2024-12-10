@@ -410,6 +410,7 @@ Vector2D GameMain::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) con
 
 void GameMain::UpdateGameMain()
 {
+	
 	if (PadInput::OnButton(XINPUT_BUTTON_START) && gm_state != GameMainState::Pause && !object_manager->boss_appeared_flg)
 	{
 		gm_state = GameMainState::Pause;

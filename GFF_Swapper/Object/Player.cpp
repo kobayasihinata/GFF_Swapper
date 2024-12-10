@@ -346,6 +346,8 @@ void Player::Update(ObjectManager* _manager)
 
 void Player::Draw()const
 {
+	__super::Draw();
+
 	/*SetFontSize(35);
 	DrawFormatString(0, 220, 0xff0000, "%0.1f %0.1f", location.x, location.y);*/
 
@@ -411,10 +413,6 @@ void Player::Draw()const
 	}
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-
-#ifdef _DEBUG
-	DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);
-#endif // _DEBUG
 
 }
 
