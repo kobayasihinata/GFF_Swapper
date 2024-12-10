@@ -1,9 +1,13 @@
 #pragma once
 #include "../Base/Object.h"
 #include "../../Scene/Camera.h"
+#include "../../Utility/UserData.h"
+#include "../../Scene/Option.h"
+
 #include <vector>   // std::vector を使うため
 #include <string>   // std::string を使うため
 #include <fstream>  // std::ifstream を使うため
+#include <map>
 
 class Tutorial:
 	public Object
@@ -11,6 +15,9 @@ class Tutorial:
 private:
 
 	class Camera* in_camera;
+
+	int keyCode;
+	std::string keyName[12];
 
 	int tutorial_num;		//何番目のチュートリアルか
 	int tutorial_time;		//チュートリアルが出ている時間
@@ -22,6 +29,26 @@ private:
 
 	std::string tutorial_text;
 	std::vector<std::string> tutorial_text_list;
+
+	std::map<int, std::string> keyMap = {
+		{XINPUT_BUTTON_A, "A"},
+		{XINPUT_BUTTON_B, "B"},
+		{XINPUT_BUTTON_X, "X"},
+		{XINPUT_BUTTON_Y, "Y"},
+		{18, "L"},
+		{19, "R"},
+		{XINPUT_BUTTON_DPAD_UP, "↑"},
+		{XINPUT_BUTTON_DPAD_LEFT, "←"},
+		{XINPUT_BUTTON_DPAD_RIGHT, "→"},
+		{XINPUT_BUTTON_DPAD_DOWN, "↓"},
+
+	};
+
+	//描画用
+	bool button_draw;
+	int frame;
+	int thumb_offset;
+
 
 public:
 	//コンストラクタ
@@ -51,5 +78,9 @@ public:
 	void SetOffset();
 	//flgを取得
 	bool GetTutorialFlg();
+
+	std::string GetKeyName(int keyCode);
+
+	void DrawButton()const;
 };
 

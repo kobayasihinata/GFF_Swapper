@@ -31,23 +31,28 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	//tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto1.txt"); // ファイル名を指定
 	//LoadTextFile("Resource/Dat/TutorialText.txt"); //
 
+	for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+	{
+		keyName[i] = GetKeyName(UserData::player_key[i][0]);
+	}
+
 }
 
 void Tutorial::Update(ObjectManager* _manager)
 {
+	frame++;
 	SetOffset();
 
 	// チュートリアルが進行中の場合
 	if (tutorial_flg)
 	{
-		//tutorial_time++;
+		tutorial_time++;
 		// 指定時間経過でチュートリアル終了
-		if (PadInput::OnButton(XINPUT_BUTTON_RIGHT_SHOULDER)/*tutorial_time >= 300*/)
+		if (/*PadInput::OnButton(XINPUT_BUTTON_RIGHT_SHOULDER)*/tutorial_time >= 180)
 		{
 			tutorial_flg = false;
 			tutorial_completed = true; // 完了フラグを設定
-			tutorial_time = 0;
-			tutorial_num++;
+			tutorial_time = 0;;
 		}
 
 		switch (tutorial_num)
@@ -68,6 +73,23 @@ void Tutorial::Update(ObjectManager* _manager)
 	}
 
 	
+	/*if (frame % 30 == 0)
+	{
+		button_draw = !button_draw;
+
+	}*/
+	if (frame % 3 == 0)
+	{
+		thumb_offset++;
+		if (thumb_offset > 13)
+		{
+			thumb_offset = 0;
+		}
+	}
+	if (frame > 60)
+	{
+		frame = 0;
+	}
 }
 
 void Tutorial::Draw() const
@@ -91,10 +113,14 @@ void Tutorial::Draw() const
 	if (tutorial_flg)
 	{
 		DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-		// チュートリアルテキストを描画
-		DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text.c_str());
+		// 描画
+		//DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), "%s",keyName[1].c_str());
+
+		//DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), "%s + %s",keyName[3].c_str(), keyName[0].c_str());
+		DrawButton();
 	}
 
+	//DrawTutorial();
 	DebugInfomation::Add("tuto_loc", location.x);
 	DebugInfomation::Add("tuto_num", tutorial_num);
 }
@@ -110,7 +136,7 @@ void Tutorial::Hit(Object* _object)
 		is_tutorial = true;
 	}*/
 
-	if (_object->GetObjectType() == PLAYER && !tutorial_completed)
+	if (_object->GetObjectType() == PLAYER /*&& !tutorial_completed*/)
 	{
 		tutorial_flg = true;
 		if (location.x > 2000)
@@ -126,6 +152,33 @@ void Tutorial::DrawTutorial() const
 	// チュートリアルテキストを描画
 	DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text.c_str());
 }
+
+void Tutorial::DrawButton() const
+{
+	//ボタンイメージ描画
+	SetFontSize(16);
+	if (!button_draw)
+	{
+		DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
+		DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+	}
+	/*else
+	{
+		DrawCircleAA(offset.x + 50, offset.y + 45, 20, 100, 0xff0000, TRUE);
+		DrawCircleAA(offset.x + 50, offset.y + 50, 20, 100, 0xff0000, TRUE);
+		DrawBoxAA(offset.x + 50, offset.y + 45, offset.x + 50, offset.y + 50, 0xff0000, TRUE);
+		DrawStringF(offset.x + 50 - 3, offset.y + 38, "B", 0x000000);
+	}*/
+
+	DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+
+	//スティック描画
+	DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
+	DrawCircleAA(offset.x + 170, offset.y + 50 + thumb_offset, 18, 20, 0xaaaaaa, true);
+	DrawFormatString(offset.x + 166, offset.y + 43 + thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
+
+}
+
 
 std::string Tutorial::LoadTextFile(const std::string& file_path)
 {
@@ -182,16 +235,25 @@ std::string Tutorial::LoadTextFile(const std::string& file_path)
 //}
 void Tutorial::SetOffset()
 {
-	offset.x = local_location.x - 400;
-	offset.y = local_location.y - 450;
-	offset_size.x = local_location.x + erea.x + 400;
-	offset_size.y = local_location.y + 50;
+	offset.x = local_location.x - 100;
+	offset.y = local_location.y - 100;
+	offset_size.x = local_location.x + erea.x + 100;
+	offset_size.y = local_location.y;
 }
 
 bool Tutorial::GetTutorialFlg()
 {
 	return tutorial_flg;
 }
+
+std::string Tutorial::GetKeyName(int keyCode)
+{
+	if (keyMap.find(keyCode) != keyMap.end()) {
+		return keyMap[keyCode];
+	}
+	return "不明なキー";  // マッピングされていない場合
+}
+
 
 
 
