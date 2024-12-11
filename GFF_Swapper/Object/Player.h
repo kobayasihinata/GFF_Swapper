@@ -115,6 +115,7 @@ private:
 
 	bool is_tutorial; //チュートリアル中か
 
+	int matchup_image[3];	//相性表
 public:
 	Player();
 	~Player();

@@ -62,6 +62,10 @@ Player::Player()
 	animFlg = false;	
 	circleAng = 0.f;
 
+	matchup_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_red.PNG");
+	matchup_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_green.PNG");
+	matchup_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_blue.PNG");
+
 	landing_se = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	walk_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	walk_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/walk_fire.wav");
@@ -358,7 +362,7 @@ void Player::Draw()const
 	//プレイヤー描画
 	DrawPlayerImage();
 
-	DrawPlayerFront(true);
+	//DrawPlayerFront(true);
 	for (int i = 0; i < hp; i++)
 	{
 		ResourceManager::DrawHeart({ 150.f + i * 50.f,75.f }, { 40.f,40.f });
@@ -414,6 +418,8 @@ void Player::Draw()const
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
+	//色に合わせて相性表の描画
+	DrawGraph(SCREEN_WIDTH - 320, 0, ResourceManager::GetGraph(matchup_image[GetColorNum(color)]), true);
 }
 
 void Player::Finalize()

@@ -63,6 +63,9 @@ void Title::Initialize()
 	}
 
 	//GraphFilter(ResourceManager::GetGraph(logo_img), DX_GRAPH_FILTER_GAUSS, 16, 1400);
+	player_image[0] = ResourceManager::SetDivGraph("Resource/Images/sozai/player_wait_L.PNG", 12, 4, 3, 85, 100, 5, true);
+	player_image[1] = ResourceManager::SetDivGraph("Resource/Images/sozai/player_front.PNG", 3, 3, 1, 100, 100, 0, false);
+	player_image[2] = ResourceManager::SetDivGraph("Resource/Images/sozai/player_wait_R.PNG", 12, 4, 3, 85, 100, 5, true);
 
 	swap_se = ResourceManager::SetSound("Resource/Sounds/Effect/swap.wav");
 	rise_se = ResourceManager::SetSound("Resource/Sounds/System/rise.wav");
@@ -345,7 +348,23 @@ void Title::Draw()const
 		else
 		{
 			//プレイヤー画像描画
-			DrawPlayer(current_menu);
+			//DrawPlayer(current_menu);
+			switch (current_menu)
+			{
+			case 0:
+				DrawGraph(player_location.x, player_location.y, ResourceManager::GetDivGraph(player_image[0], GetColorNum(player_color) * 4), true);
+				break;
+			case 1:
+				DrawGraph(player_location.x-10, player_location.y, ResourceManager::GetDivGraph(player_image[1], GetColorNum(player_color)), true);
+
+				break;
+			case 2:
+				DrawGraph(player_location.x, player_location.y, ResourceManager::GetDivGraph(player_image[2], GetColorNum(player_color) * 4), true);
+
+				break;
+			default:
+				break;
+			}
 			DrawBoxAA(player_location.x - 50, player_location.y + PLAYER_HEIGHT, player_location.x + PLAYER_WIDTH + 50, SCREEN_HEIGHT, 0x000000, TRUE);
 			DrawBoxAA(player_location.x - 50, player_location.y + PLAYER_HEIGHT, player_location.x + PLAYER_WIDTH + 50, SCREEN_HEIGHT + 5, 0xffffff, FALSE);
 
