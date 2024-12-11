@@ -79,23 +79,33 @@ void Tutorial::Update(ObjectManager* _manager)
 
 
     //プレイヤーの座標によって描画するものを変える
+    //(交換であるB　＋　左スティック（下交換）の描画用)
+    if (_manager->GetPlayerLocation().x < 5500)
+    {
+        draw_point = 0;
+    }
+    //(交換であるB　＋　左スティック（上交換）の描画用)
     if (_manager->GetPlayerLocation().x > 5500 && _manager->GetPlayerLocation().x < 6500 && tutorial_num == 0)
     {
         draw_point = 1;
     }
+    //(交換であるB　＋　左スティック（右交換）の描画用)
     else if (_manager->GetPlayerLocation().x > 6500 && _manager->GetPlayerLocation().x < 9500 && tutorial_num == 0)
     {
         draw_point = 2;
     }
+    //Aボタン連打（これはrange(tuto2)を配置で描画）
     else if (_manager->GetPlayerLocation().x > 9500 && tutorial_num == 1)
     {
         draw_point = 3;
     }
+    //カメラ移動
     else if (now_stage == 1)
     {
         draw_point = 4;
     }
 
+    //スティック描画アニメーション
     stick_angle += 0.05f;
     if (stick_angle > 1)
     {
@@ -139,65 +149,75 @@ void Tutorial::DrawButton() const
     {
     case 0:
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        //ボタンイメージ描画
-        if (!button_draw)
-        {
-            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
-            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-        }
+        ////ボタンイメージ描画
+        //if (!button_draw)
+        //{
+        //    DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
+        //    DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        //}
 
-        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+       /* DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
 
-        //スティック描画
-        DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
-        DrawCircleAA(offset.x + 170, offset.y + 50 + thumb_offset, 18, 20, 0xaaaaaa, true);
-        DrawFormatString(offset.x + 166, offset.y + 43 + thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
+        ////スティック描画
+        //DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
+        //DrawCircleAA(offset.x + 170, offset.y + 50 + thumb_offset, 18, 20, 0xaaaaaa, true);
+        //DrawFormatString(offset.x + 166, offset.y + 43 + thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
         break;
     case 1:
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        if (!button_draw)
+        /*if (!button_draw)
         {
             DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
             DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-        }
+        }*/
 
-        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+       /* DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
 
-        //スティック描画
-        DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
-        DrawCircleAA(offset.x + 170, offset.y + 50 - thumb_offset, 18, 20, 0xaaaaaa, true);
-        DrawFormatString(offset.x + 166, offset.y + 43 - thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
+        ////スティック描画
+        //DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
+        //DrawCircleAA(offset.x + 170, offset.y + 50 - thumb_offset, 18, 20, 0xaaaaaa, true);
+        //DrawFormatString(offset.x + 166, offset.y + 43 - thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
         break;
     case 2:
         //ボタンイメージ描画
-        DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
+        /*DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
         if (!button_draw)
         {
             DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
             DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-        }
+        }*/
 
-        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        /*DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
 
         //スティック描画
-        DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
+       /* DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
         DrawCircleAA(offset.x + 170 + thumb_offset, offset.y + 50, 18, 20, 0xaaaaaa, true);
-        DrawFormatString(offset.x + 166 + thumb_offset, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
+        DrawFormatString(offset.x + 166 + thumb_offset, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
         break;
     case 3:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
-        if (!button_draw)
-        {
-            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
-            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
-        }// チュートリアル4の処理（未実装）
+        //if (!button_draw)
+        //{
+        //    DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
+        //    DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
+        //}// チュートリアル4の処理（未実装）
+
+        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
         break;
     case 4:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
         //スティック描画
-        DrawCircleAA(offset.x + 75, offset.y + 50, 23, 20, 0xaaaaaa, false);
+        /*DrawCircleAA(offset.x + 75, offset.y + 50, 23, 20, 0xaaaaaa, false);
         DrawCircleAA(offset.x + 75 + draw_stick_shift.x, offset.y + 50 + draw_stick_shift.y, 18, 20, 0xaaaaaa, true);
+        DrawFormatString(offset.x + 71 + draw_stick_shift.x, offset.y + 43 + draw_stick_shift.y, 0xFFFFFF, "%s", keyName[1].c_str());*/
+
         DrawFormatString(offset.x + 71 + draw_stick_shift.x, offset.y + 43 + draw_stick_shift.y, 0xFFFFFF, "%s", keyName[1].c_str());
         break;
     }
