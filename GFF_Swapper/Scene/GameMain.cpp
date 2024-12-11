@@ -202,16 +202,9 @@ void GameMain::Draw() const
 	}
 
 #ifdef _DEBUG
-	SetFontSize(12);
-	
-	//DrawFormatString(100, 100, 0xffffff, "Object数:%d", object_num);
-	//DrawFormatString(100, 120, 0xffffff, "Updeteが呼ばれているObject数:%d", in_screen_object.size());
-
-	//DrawFormatString(100, 140, 0xffffff, "normal:%d", 255 - (int)(camera_location.x / 100));
-	//DrawFormatString(100, 160, 0xffffff, "noise:%d", (int)(camera_location.x / 100));
-	//チュートリアル表示テスト
-	SetFontSize(35);
-	//DrawFormatString(0, 160, 0xff0000, "%0.1f x %0.1f y",  camera_location.x + KeyInput::GetMouseCursor().x, stage_height - KeyInput::GetMouseCursor().y - camera_location.y);
+	//frame%3==0の所にアニメーション用変数(0か1かを格納する)、XINPUT_BUTTON_Aの所にキー割り当てを格納する
+	//Aボタン以降がずれているのは画像側で調整するので、XINPUT_BUTTON_Aが入力されたらAボタンの画像が出る想定で
+	DrawGraph(100, 100, ResourceManager::GetDivGraph(UserData::button_image[frame%3==0], XINPUT_BUTTON_A),TRUE);
 #endif
 }
 
@@ -975,8 +968,9 @@ void GameMain::DrawCheck()const
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 	DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+	SetFontSize(36);
 
-	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) - 240, "Are you sure?", 0xffffff);
+	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) - 240, "本当に戻りますか？", 0xffffff);
 
 	DrawBoxAA(200, 410, 500, 510, 0x000000, TRUE);
 	DrawBoxAA(200, 410, 500, 510, 0xffffff, FALSE);
