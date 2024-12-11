@@ -47,7 +47,7 @@ Player::Player()
 	damageFlg = false;
 	damageOldFlg = false;
 	hp = 5;
-	damageEffectTime = 90;
+	damageEffectTime = 90.f;
 	damageEffectFlg = false;
 	state = 0;
 	stateFlg = false;
@@ -293,7 +293,7 @@ void Player::Update(ObjectManager* _manager)
 			}
 		}
 		if (damageEffectFlg) {
-			if (damageEffectTime == 90) {
+			if ((int)damageEffectTime == 90) {
 
 				camera->SetImpact(30);
 				//HPが０なら、エフェクトをスポーンさせない
@@ -304,10 +304,13 @@ void Player::Update(ObjectManager* _manager)
 					_manager->SpawnEffect(location, erea, DamageEffect, 20, color);
 				}
 			}
-			damageEffectTime--;
+			//交換中はダメージエフェクトもゆっくり
+			if (searchFlg)damageEffectTime -= 0.1f;
+			else damageEffectTime -= 1.f;
+
 			if (damageEffectTime <= 0) {
 				damageEffectFlg = false;
-				damageEffectTime = 90;
+				damageEffectTime = 90.f;
 				damageFlg = false;
 			}
 		}
@@ -669,7 +672,7 @@ void Player::Hit(Object* _object)
 void Player::MoveActor()
 {
 	//ジャンプ
-	if (UserData::CheckActionKey((int)PlayerActionKey::P_JUMP, ON_BUTTON)) {
+	if (UserData::CheckActionKey((int)PlayerActionKey::P_JUMP, ON_BUTTON) && (damageEffectTime == 90.f || damageEffectTime <45.f)) {
 		switch (state)
 		{
 		case 0:
@@ -697,7 +700,7 @@ void Player::MoveActor()
 			velocity = saveVec;
 		}
 
-		if (UserData::CheckActionKey((int)PlayerActionKey::P_WALK_RIGHT, PRESSED)) {
+		if (UserData::CheckActionKey((int)PlayerActionKey::P_WALK_RIGHT, PRESSED) && (damageEffectTime == 90.f || damageEffectTime < 45.f)) {
 			//stick = PadInput::TipLStick(STICKL_X);
 			velocity.x += 1.f;	//スティックの角度をかけていたのを削除
 			if (velocity.x > 6.5f) {
@@ -705,7 +708,7 @@ void Player::MoveActor()
 			}
 			moveFrontFlg = true;
 		}
-		else if (UserData::CheckActionKey((int)PlayerActionKey::P_WALK_LEFT, PRESSED)) {
+		else if (UserData::CheckActionKey((int)PlayerActionKey::P_WALK_LEFT, PRESSED) && (damageEffectTime == 90.f || damageEffectTime < 45.f)) {
 			//stick = PadInput::TipLStick(STICKL_X);
 			velocity.x -= 1.f;//スティックの角度をかけていたのを削除
 			if (velocity.x < -6.5f) {
@@ -1367,7 +1370,7 @@ void Player::PlayerSound()
 			ResourceManager::StartSound(walk_se[now_riding]);
 		}
 		//ジャンプ
-		if (UserData::CheckActionKey((int)PlayerActionKey::P_JUMP, ON_BUTTON) && ((state == 0 && stageHitFlg[1][bottom]) || state == 1))
+		if (UserData::CheckActionKey((int)PlayerActionKey::P_JUMP, ON_BUTTON) && (damageEffectTime == 90.f || damageEffectTime < 45.f) && ((state == 0 && stageHitFlg[1][bottom]) || state == 1))
 		{
 			ResourceManager::StartSound(jump_se);
 		}
@@ -1457,7 +1460,7 @@ void Player::AnimStateUpdate()
 	if (moveFrontFlg)
 	{
 		//ダメージを受けていたらダメージアニメーション
-		if (damageEffectFlg)
+		if (damageEffectFlg &&damageEffectTime != 90.f && damageEffectTime > 45.f)
 		{
 			p_state = PlayerState::DAMAGE_RIGHT;
 			return;
@@ -1485,7 +1488,7 @@ void Player::AnimStateUpdate()
 	else
 	{
 		//ダメージを受けていたらダメージアニメーション
-		if (damageEffectFlg)
+		if (damageEffectFlg && damageEffectTime != 90.f && damageEffectTime > 45.f)
 		{
 			p_state = PlayerState::DAMAGE_LEFT;
 			return;
@@ -1509,7 +1512,6 @@ void Player::AnimStateUpdate()
 			}
 		}
 	}
-	DebugInfomation::Add("p_state", stageHitFlg[0][bottom]);
 }
 
 void Player::DrawPlayer() const
@@ -1751,9 +1753,12 @@ void Player::DrawPlayerImage()const
 	{//見た目
 
 	//ダメージ中描画
-		if (damageEffectFlg) {
-			if (damageEffectTime % 4 != 0) {
+		if (damageEffectFlg && damageEffectTime != 90.f && damageEffectTime > 45.f) {
+			if ((int)damageEffectTime % 4 != 0) {
 				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)), TRUE);
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 20);
+				DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xff00000, true);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 			}
 		}
 		//ジャンプ中描画
@@ -1765,6 +1770,7 @@ void Player::DrawPlayerImage()const
 		else
 		{
 			ResourceManager::DrawColorAnimGraph(local_location+(erea/2), player_image[p_state], color,false);
+			DebugInfomation::Add("p_state", (int)p_state);
 		}
 	}
 }
@@ -2017,9 +2023,12 @@ void Player::PlayerReset(ObjectManager* _manager)
 	//死亡演出のタイマーをリセットする
 	deathTimer = 0;
 	damageFlg = false;
-	 
+	
+	//ダメージ演出関連をリセットする
+	damageEffectTime = 90.f;
+	damageEffectFlg = false;
 	//HPを初期値に戻す
-	hp = 5;
+	hp = 2;
 	//プレイヤーの色を初期色に戻す
 	color = DEFAULT_PLAYER_COLOR;
 	draw_color = color;

@@ -24,7 +24,7 @@
 #include <vector>
 
 #define DEFAULT_PLAYER_COLOR GREEN
-#define DEATH_TIMER 180  //プレイヤー死亡演出の時間
+#define DEATH_TIMER 120  //プレイヤー死亡演出の時間
 
 class Player;
 

@@ -40,6 +40,9 @@ public:
 	//ユーザーデータファイルに書き込む
 	static void UpdateUserData();
 
+	//キー割り当てをデフォルトにリセットする
+	static void ResetKeyConfig();
+
 	//指定したキーが押されているか確認
 	static bool CheckActionKey(int _player_action,int _key_state);
 };
