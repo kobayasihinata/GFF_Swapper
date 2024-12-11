@@ -355,7 +355,7 @@ void GameMain::SetStage(int _stage)
 				//チュートリアル開始範囲
 			case TUTORIAL_RANGE_1:
 			case TUTORIAL_RANGE_2:
-				object_manager->CreateObject(new Tutorial(stage_data[i][j]), {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {50, 250}, stage_data[i][j]);
+				object_manager->CreateObject(new Tutorial(stage_data[i][j], now_stage), {(float)j * BOX_WIDTH ,(float)i * BOX_HEIGHT}, {50, 250}, stage_data[i][j]);
 				break;
 			case CANNON_FIRE:
 			case CANNON_WOOD:

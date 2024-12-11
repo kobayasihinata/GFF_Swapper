@@ -355,6 +355,7 @@ void Player::Draw()const
 	/*SetFontSize(35);
 	DrawFormatString(0, 220, 0xff0000, "%0.1f %0.1f", location.x, location.y);*/
 
+	DebugInfomation::Add("tuto_loc", location.x);
 	if(hp <= 0){
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deathTimer * 2));
 	}
