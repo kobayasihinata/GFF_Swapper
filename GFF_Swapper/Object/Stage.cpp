@@ -256,13 +256,13 @@ void Stage::Draw()const
 			break;
 			//地面 (白)
 		case WHITE_BLOCK:
-			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, draw_color, true);
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0x888888, true);
 			break;
 			//地面（灰）
 		case GRAY_BLOCK:
 			if (debug_flg == false)
 			{
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(ground_image, ground_mapchip), true);			
+				DrawGraphF(local_location.x, local_location.y, ResourceManager::GetDivGraph(ground_image, ground_mapchip), true);			
 			}
 			else
 			{
@@ -273,7 +273,7 @@ void Stage::Draw()const
 		case RED_BLOCK:
 			if (debug_flg == false)
 			{
-				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(fire_image, ground_mapchip), true);
+				DrawGraphF(local_location.x, local_location.y, ResourceManager::GetDivGraph(fire_image, ground_mapchip), true);
 			}
 			break;
 		case FIRE_BLOCK:

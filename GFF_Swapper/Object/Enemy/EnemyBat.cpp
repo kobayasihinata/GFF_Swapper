@@ -36,6 +36,7 @@ void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	vector = ENEMY_SPEED;
 
 	bat_image = ResourceManager::SetDivGraph("Resource/Images/sozai/bat_fly.PNG", 12, 4, 3, 145, 107, 5, true);
+	damage_image = ResourceManager::SetDivGraph("Resource/Images/sozai/bat_damage.PNG", 3, 3, 1, 145, 107, 0, false);
 
 	wing_se = ResourceManager::SetSound("Resource/Sounds/Enemy/flapping_wings.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
@@ -168,8 +169,8 @@ void EnemyBat::Draw() const
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (death_timer * 4));
 
-	//スタン状態でないなら描画、スタン状態なら３フレーム毎に描画（点滅）
-	if (bat_state != BatState::FAINT || (bat_state == BatState::FAINT && frame % 3 == 0))
+	//スタン状態か死亡状態でないなら描画
+	if (bat_state != BatState::FAINT && bat_state != BatState::DEATH)
 	{
 		if (bat_state == BatState::LEFT)
 		{
@@ -193,7 +194,7 @@ void EnemyBat::Draw() const
 		//		DrawLineAA(vertices[7].x, vertices[7].y + wing_angle, vertices[8].x + wing_angle, vertices[8].y, 0x000000);
 		//		DrawLineAA(vertices[6].x, vertices[6].y - 2, vertices[7].x, vertices[7].y - 2 + wing_angle, 0x000000);
 		//		//DrawTriangleAA(vertices[i].x - 1, vertices[i].y - 1, vertices[i + 1].x - 1, vertices[i + 1].y - 1 + wing_angle, vertices[i + 2].x + wing_angle - 1, vertices[i + 2].y - 1, 0x000000, FALSE);
-		//		DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x + wing_angle, vertices[i + 2].y, draw_color, TRUE);
+		//		DrawTriangleAA(verをtices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x + wing_angle, vertices[i + 2].y, draw_color, TRUE);
 
 		//	}
 		//	//左羽
@@ -213,6 +214,15 @@ void EnemyBat::Draw() const
 		//		i++;
 		//	}
 		//}
+	}
+	//スタンか死亡ならダメージ画像を描画
+	else
+	{
+		//点滅
+		if (frame % 3 != 0)
+		{
+			DrawGraphF(local_location.x, local_location.y, ResourceManager::GetDivGraph(damage_image, GetColorNum(color)), TRUE);
+		}
 	}
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
@@ -264,8 +274,12 @@ void EnemyBat::Hit(Object* _object)
 {
 	/*delete_object = _object;*/
 	//ブロックと当たった時の処理
-	if ((_object->GetObjectType() == BLOCK || 
-		_object->GetObjectType() == GROUND_BLOCK) /*|| _object->GetObjectType() == ENEMY*/){
+	if (_object->GetObjectType() == BLOCK || 
+		_object->GetObjectType() == GROUND_BLOCK|| 
+		(_object->GetCanSwap() == TRUE && CheckCompatibility(this, _object) == 0)
+		)
+		
+	{
 		Vector2D tmpl = location;
 		Vector2D tmpe = erea;
 		move[0] = 0;
@@ -479,7 +493,7 @@ void EnemyBat::Hit(Object* _object)
 				//プレイヤーが上にいるなら下にノックバック
 				if (this->location.y > _object->GetLocation().y)
 				{
-					vector.y = 40;
+					vector.y = 20;
 				}
 				//プレイヤーが下にいるなら上にノックバック
 				else
