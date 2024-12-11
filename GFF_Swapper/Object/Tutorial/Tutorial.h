@@ -19,8 +19,8 @@ private:
     class Camera* in_camera;
 
     // チュートリアルに関連するキーコードとキー名
-    int keyCode;
-    std::string keyName[12];
+    int keyCode[26];
+    std::string keyName[PLAYER_INPUT_NUM];
 
     // チュートリアル番号、表示時間、フラグ、完了フラグ
     int tutorial_num;        // どのチュートリアルを表示するか
@@ -42,57 +42,7 @@ private:
     std::string tutorial_text;
     std::vector<std::string> tutorial_text_list;
 
-    // ボタン操作に関連するキーのマッピング
-    /*std::map<int, std::string> keyMap = {
-        {XINPUT_BUTTON_A, "A"},
-        {XINPUT_BUTTON_B, "B"},
-        {XINPUT_BUTTON_X, "X"},
-        {XINPUT_BUTTON_Y, "Y"},
-        {18, "左スティック"},
-        {19, "右スティック"},
-        {XINPUT_BUTTON_DPAD_UP, "↑"},
-        {XINPUT_BUTTON_DPAD_LEFT, "←"},
-        {XINPUT_BUTTON_DPAD_RIGHT, "→"},
-        {XINPUT_BUTTON_DPAD_DOWN, "↓"},
-        {6,"左スティック押し込み"},
-        {7,},
-    };*/
-
-    //画像完成までは文字で
-    std::map<int, std::string> keyMap = {
-        {0, "十字上"},
-        {1, "十字下"},
-        {2, "十字左"},
-        {3, "十字右"},
-        {4,  "START"},
-
-        {5, "BACK"},
-        {6, "左スティック押し込み" },
-        {7, "右スティック押し込み"},
-        {8, "LB"},
-        {9, "RB"},
-
-        {10, " "},
-        {11, " "},
-        {12, "Aボタン"},
-        {13, "Bボタン"},
-        {14, "Xボタン"},
-
-        {15, "Yボタン"},
-        {16, "左スティック上"},
-        {17, "左スティック下"},
-        {18, "左スティック左"},
-        {19, "左スティック右"},
-
-        {20, "右スティック上"},
-        {21, "右スティック下"},
-        {22, "右スティック左"},
-        {23, "右スティック右"},
-        {24, "左トリガー"},
-
-        {25, "右トリガー"},
-    };
-
+  
 
     // 描画用のフラグと変数
     bool button_draw;        // ボタンが描画されるかどうか
@@ -142,6 +92,8 @@ public:
 
     // キーコードからキー名を取得
     std::string GetKeyName(int keyCode);
+
+    int GetKeyIndex(const std::string& keyName)const;
 
     // ボタンの描画処理
     void DrawButton() const;

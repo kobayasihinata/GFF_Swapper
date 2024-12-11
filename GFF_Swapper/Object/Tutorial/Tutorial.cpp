@@ -17,7 +17,7 @@ Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(fal
     // プレイヤーの入力に対するキー名を設定
     for (int i = 0; i < PLAYER_INPUT_NUM; i++)
     {
-        keyName[i] = GetKeyName(UserData::player_key[i][0]);;
+        keyName[i] = GetKeyName(UserData::player_key[i][0]);
     }
 }
 
@@ -47,6 +47,11 @@ void Tutorial::Update(ObjectManager* _manager)
     for (int i = 0; i < PLAYER_INPUT_NUM; i++)
     {
         keyName[i] = GetKeyName(UserData::player_key[i][0]);
+        //if (i < 26)  // 配列範囲外防止
+        //{
+            keyCode[i] = GetKeyIndex(keyName[i]);
+        //}
+        
     }
 
     // チュートリアルが進行中の場合
@@ -115,8 +120,6 @@ void Tutorial::Update(ObjectManager* _manager)
     draw_stick_shift.x = cosf(stick_angle * (float)M_PI * 2) * 5;
     draw_stick_shift.y = sinf(stick_angle * (float)M_PI * 2) * 5;
 
-
-
 }
 
 void Tutorial::Draw() const
@@ -124,11 +127,11 @@ void Tutorial::Draw() const
     if (tutorial_flg)
     {
         // チュートリアルフラグが立っている場合のみ描画
-        DrawButton();  
+        DrawButton();
     }
 
     // デバッグ情報の追加
-    
+    //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], keyCode[3]), TRUE);
 }
 
 void Tutorial::Finalize()
@@ -149,76 +152,47 @@ void Tutorial::DrawButton() const
     {
     case 0:
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        ////ボタンイメージ描画
-        //if (!button_draw)
-        //{
-        //    DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
-        //    DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-        //}
+        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
 
-        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        //DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[frame % 5 == 0], keyCode[3]), TRUE);
+        //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[0]), TRUE);
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
         DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
-        ////スティック描画
-        //DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
-        //DrawCircleAA(offset.x + 170, offset.y + 50 + thumb_offset, 18, 20, 0xaaaaaa, true);
-        //DrawFormatString(offset.x + 166, offset.y + 43 + thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
+        //DrawGraph(200, 300, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], keyCode[3]), TRUE);
+        //DrawGraph(100, 100, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], XINPUT_BUTTON_A), TRUE);
+
         break;
     case 1:
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        /*if (!button_draw)
-        {
-            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
-            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-        }*/
+        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
 
-        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        //DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
         DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
-        ////スティック描画
-        //DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
-        //DrawCircleAA(offset.x + 170, offset.y + 50 - thumb_offset, 18, 20, 0xaaaaaa, true);
-        //DrawFormatString(offset.x + 166, offset.y + 43 - thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
         break;
     case 2:
         //ボタンイメージ描画
-        /*DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        if (!button_draw)
-        {
-            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
-            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-        }*/
+        DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
+        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
 
-        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        //DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
         DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
-        //スティック描画
-       /* DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
-        DrawCircleAA(offset.x + 170 + thumb_offset, offset.y + 50, 18, 20, 0xaaaaaa, true);
-        DrawFormatString(offset.x + 166 + thumb_offset, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
         break;
     case 3:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
-        //if (!button_draw)
-        //{
-        //    DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
-        //    DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
-        //}// チュートリアル4の処理（未実装）
+        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[2]), TRUE);
 
-        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
+        //DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
+        
+
         break;
     case 4:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
-        //スティック描画
-        /*DrawCircleAA(offset.x + 75, offset.y + 50, 23, 20, 0xaaaaaa, false);
-        DrawCircleAA(offset.x + 75 + draw_stick_shift.x, offset.y + 50 + draw_stick_shift.y, 18, 20, 0xaaaaaa, true);
-        DrawFormatString(offset.x + 71 + draw_stick_shift.x, offset.y + 43 + draw_stick_shift.y, 0xFFFFFF, "%s", keyName[1].c_str());*/
-
-        //DrawFormatString(offset.x + 71, offset.y + 43, 0xFFFFFF, "%s", keyName[1].c_str());
         DrawString(offset.x + 71, offset.y + 43, "右スティック", 0xFFFFFF);
         break;
     }
@@ -247,10 +221,26 @@ bool Tutorial::GetTutorialFlg()
 
 std::string Tutorial::GetKeyName(int keyCode)
 {
-    if (keyMap.find(keyCode) != keyMap.end()) {
-        return keyMap[keyCode];  // キーコードが存在すれば対応するキー名を返す
+    if (keyCode >= 0 && keyCode < 26) {
+        return KeyString[keyCode];
     }
-    return "不明なキー";  // マッピングされていない場合は「不明なキー」を返す
+    return "不明なキー";
+}
+
+int Tutorial::GetKeyIndex(const std::string& keyName)const
+{
+    for (int i = 0; i < 26; i++) {
+        if (keyName == KeyString[i]) {
+
+            //画像と要素数のずれを調整
+            if (i > 11)
+            {
+                return i - 2;
+            }
+            return i; // 一致するインデックスを返す
+        }
+    }
+    return -1; // 不明なキー
 }
 
 std::string Tutorial::LoadTextFile(const std::string& file_path)
