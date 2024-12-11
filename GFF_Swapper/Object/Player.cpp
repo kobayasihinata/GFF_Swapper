@@ -2022,18 +2022,16 @@ void Player::PlayerReset(ObjectManager* _manager)
 	//死亡演出のタイマーをリセットする
 	deathTimer = 0;
 	damageFlg = false;
-	
 	//ダメージ演出関連をリセットする
 	damageEffectTime = 90.f;
 	damageEffectFlg = false;
 	//HPを初期値に戻す
-	hp = 2;
+	hp = 5;
 	//プレイヤーの色を初期色に戻す
 	color = DEFAULT_PLAYER_COLOR;
 	draw_color = color;
 	//プレイヤー再生成フラグを下ろす
 	_manager->player_respawn_flg = false;
-
 	//プレイヤースポーンエフェクトの生成
 	_manager->SpawnEffect({ _manager->player_respawn.x + PLAYER_WIDTH / 2 ,_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, _manager->GetPlayerColor());
 
