@@ -29,6 +29,7 @@ public:
 	 
 	static int player_key[PLAYER_INPUT_NUM][2];	//キー割り当て情報格納		
 
+	static int button_image[2];			//ボタン画像
 public:
 	//初期化
 	static void Initialize();

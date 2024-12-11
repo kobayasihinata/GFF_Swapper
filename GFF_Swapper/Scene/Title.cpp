@@ -62,6 +62,7 @@ void Title::Initialize()
 		}
 	}
 
+	ResourceManager::StopAllSound();
 	//GraphFilter(ResourceManager::GetGraph(logo_img), DX_GRAPH_FILTER_GAUSS, 16, 1400);
 	player_image[0] = ResourceManager::SetDivGraph("Resource/Images/sozai/player_wait_L.PNG", 12, 4, 3, 85, 100, 5, true);
 	player_image[1] = ResourceManager::SetDivGraph("Resource/Images/sozai/player_front.PNG", 3, 3, 1, 100, 100, 0, false);

@@ -1,6 +1,7 @@
 #include "UserData.h"
 
 #include "PadInput.h"
+#include "ResourceManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -10,10 +11,16 @@ int UserData::volume[] = {255,255,255};		//デフォルトの音量はMAXで
 
 int UserData::player_key[PLAYER_INPUT_NUM][2] = {0,0};
 
+int UserData::button_image[2];			
+
 void UserData::Initialize()
 {
 	//ファイル読み込み
 	LoadUserData();
+	//画像読み込み
+	button_image[0] = ResourceManager::SetDivGraph("Resource/Images/sozai/button1.png", 14, 7, 2, 40, 40, 0);
+	button_image[1] = ResourceManager::SetDivGraph("Resource/Images/sozai/button2.png", 14, 7, 2, 40, 40, 0);
+
 }
 
 void UserData::LoadUserData()
