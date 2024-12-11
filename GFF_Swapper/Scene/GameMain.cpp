@@ -462,12 +462,6 @@ void GameMain::UpdateGameMain()
 		boss_blind_timer = 0;
 	}
 
-#ifdef _DEBUG
-	if (!DebugInfomation::GetPhotographMode()) {
-		DrawString((SCREEN_WIDTH / 2) - 30, 0, "Mキーで撮影用モード", 0xff0000);
-	}
-#endif // _DEBUG
-
 }
 
 void GameMain::DrawGameMain()const
@@ -496,6 +490,12 @@ void GameMain::DrawGameMain()const
 		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xffffff, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	}
+#ifdef _DEBUG
+	if (!DebugInfomation::GetPhotographMode()) {
+		SetFontSize(18);
+		DrawString((SCREEN_WIDTH / 2) - 30, 0, "Mキーで撮影用モード", 0xff0000);
+	}
+#endif // _DEBUG
 }
 
 void GameMain::UpdatePause()

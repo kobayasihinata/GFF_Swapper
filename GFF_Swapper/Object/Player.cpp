@@ -365,7 +365,7 @@ void Player::Draw()const
 	//DrawPlayerFront(true);
 	for (int i = 0; i < hp; i++)
 	{
-		ResourceManager::DrawHeart({ 150.f + i * 50.f,75.f }, { 40.f,40.f });
+		ResourceManager::DrawHeart({ 50.f + i * 50.f,75.f }, { 40.f,40.f });
 	}
 
 	//色交換カーソル

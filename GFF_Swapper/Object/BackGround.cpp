@@ -44,7 +44,7 @@ void BackGround::Draw(Vector2D _camera_location)const
 	//ボスエリア以外の背景
 	if (now_stage != STAGE_NUM - 1 || is_clear)
 	{
-		DrawGraphF(shift_location.x, shift_location.y, ResourceManager::GetGraph(back_ground_image), TRUE);
+		DrawGraphF(shift_location.x, 0, ResourceManager::GetGraph(back_ground_image), TRUE);
 	}
 	//ボスエリアの背景
 	else
@@ -136,8 +136,11 @@ void BackGround::Draw(Vector2D _camera_location)const
 	//}
 
 #ifdef _DEBUG
-	DrawStringF(shift_location.x, 300.0f, "左端", 0x00ff00);
-	DrawStringF((bg_erea.x - 50) + shift_location.x, 300.0f, "右端", 0x00ff00);
+	if (!DebugInfomation::GetPhotographMode)
+	{
+		DrawStringF(shift_location.x, 300.0f, "左端", 0x00ff00);
+		DrawStringF((bg_erea.x - 50) + shift_location.x, 300.0f, "右端", 0x00ff00);
+	}
 #endif
 }
 
