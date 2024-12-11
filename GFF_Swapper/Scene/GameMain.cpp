@@ -975,8 +975,8 @@ void GameMain::DrawCheck()const
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 	DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-
-	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) - 240, "Are you sure?", 0xffffff);
+	SetFontSize(36);
+	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) - 240, "本当に戻りますか？", 0xffffff);
 
 	DrawBoxAA(200, 410, 500, 510, 0x000000, TRUE);
 	DrawBoxAA(200, 410, 500, 510, 0xffffff, FALSE);
