@@ -7,7 +7,7 @@
 #include <math.h>
 
 
-Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(false), tutorial_completed(false), button_draw(false), frame(0), thumb_offset(0), draw_point(0), stick_angle(0.0f)
+Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(false), tutorial_completed(false), button_draw(false), frame(0), thumb_offset(0), animation_flag(false),r_stick_anim(20)
 {
     in_camera = Camera::Get();  
     tutorial_num = _num - TUTORIAL_RANGE_1;  // チュートリアル番号の設定
@@ -42,40 +42,7 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 
 void Tutorial::Update(ObjectManager* _manager)
 {
-
-    // プレイヤーの入力に対するキー名を設定
-    for (int i = 0; i < PLAYER_INPUT_NUM + 1; i++)
-    {
-        for(int j = 0; j < 2;j++)
-        {
-        }
-        if (i < 27)  // 配列範囲外防止
-        {
-            keyCode[i] = GetKeyIndex(keyName[i]);
-        }
-
-        //まじで汚いけど許して
-        if (keyName[4] == "十字上")
-        {
-            keyName[4] = GetKeyName(UserData::player_key[i - 1][1]);
-        }
-        if (keyName[5] == "十字下")
-        {
-            keyName[5] = GetKeyName(UserData::player_key[i - 1][1]);
-        }
-       if (keyName[6] == "十字左")
-        {
-            keyName[6] = GetKeyName(UserData::player_key[i - 1][1]);
-        }
-        if (keyName[7] == "十字右")
-        {
-            keyName[7] = GetKeyName(UserData::player_key[i- 1][1]);
-        }
-        else
-        {
-            keyName[i] = GetKeyName(UserData::player_key[i][0]);
-        }   
-    }
+    KeyUpdate();
 
     frame++; 
     SetOffset(); 
@@ -95,14 +62,31 @@ void Tutorial::Update(ObjectManager* _manager)
     }
 
     // アニメーション用のフレーム処理
-    if (frame % 3 == 0)
+    if (frame % 20 == 0)
     {
-        thumb_offset++;  // スティックの位置を進める
-        if (thumb_offset > 10)
-        {
-            thumb_offset = 0;  // スティックの位置が最大を超えたらリセット
-        }
+        animation_flag = !animation_flag;
     }
+    //if (frame % 2 == 0)
+    //{
+    //    r_stick_anim = 23;
+    //    if (frame % 4 == 0)
+    //    {
+    //        r_stick_anim = 21;
+    //    }
+    //    if (frame % 6 == 0)
+    //    {
+    //        r_stick_anim = 22;
+    //    }
+    //    if (frame % 8 == 0)
+    //    {
+    //        r_stick_anim = 20;
+    //    }
+    //    if (frame >= 10)
+    //    {
+    //        r_stick_anim = 20;
+    //        frame = 0;
+    //    }
+    //}
     // フレームが60を超えたらリセット
     if (frame > 60)
     {
@@ -137,16 +121,6 @@ void Tutorial::Update(ObjectManager* _manager)
         draw_point = 4;
     }
 
-    //スティック描画アニメーション
-    stick_angle += 0.05f;
-    if (stick_angle > 1)
-    {
-        stick_angle = 0;
-    }
-
-    draw_stick_shift.x = cosf(stick_angle * (float)M_PI * 2) * 5;
-    draw_stick_shift.y = sinf(stick_angle * (float)M_PI * 2) * 5;
-
 }
 
 void Tutorial::Draw() const
@@ -159,6 +133,7 @@ void Tutorial::Draw() const
 
     // デバッグ情報の追加
     //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], XINPUT_BUTTON_A), TRUE);
+    DebugInfomation::Add("tuto_loc", r_stick_anim);
 }
 
 void Tutorial::Finalize()
@@ -179,8 +154,8 @@ void Tutorial::DrawButton() const
     {
     case 0: //交換（下）
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
-        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[5]), TRUE);
+        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[5]), TRUE);
         //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], GetKeyIndex(keyName[5] = GetKeyName(UserData::player_key[5][0]))), TRUE);
 
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
@@ -188,8 +163,8 @@ void Tutorial::DrawButton() const
     case 1: //交換（上）
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
-        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[4]), TRUE);
+        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[4]), TRUE);
         //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[4]), TRUE);
 
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
@@ -198,8 +173,8 @@ void Tutorial::DrawButton() const
     case 2: //交換（右）
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
-        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[7]), TRUE);
+        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[7]), TRUE);
         //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[7]), TRUE);
 
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
@@ -207,14 +182,14 @@ void Tutorial::DrawButton() const
         break;
     case 3:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 55, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[2]), TRUE);
+        DrawGraph(offset.x + 55, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[2]), TRUE);
         //DrawGraph(offset.x + 105, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[2]), TRUE);
 
         break;
     case 4:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
 
-        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], 7), TRUE);
+        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[1], r_stick_anim), TRUE);
         break;
     }
 }
@@ -238,6 +213,45 @@ void Tutorial::SetOffset()
 bool Tutorial::GetTutorialFlg()
 {
     return tutorial_flg;
+}
+
+void Tutorial::KeyUpdate()
+{
+
+    // プレイヤーの入力に対するキー名を設定
+    for (int i = 0; i < PLAYER_INPUT_NUM + 1; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+        }
+        if (i < 27)  // 配列範囲外防止
+        {
+            keyCode[i] = GetKeyIndex(keyName[i]);
+        }
+
+        //まじで汚いけど許して
+        if (keyName[4] == "十字上")
+        {
+            keyName[4] = GetKeyName(UserData::player_key[i - 1][1]);
+        }
+        if (keyName[5] == "十字下")
+        {
+            keyName[5] = GetKeyName(UserData::player_key[i - 1][1]);
+        }
+        if (keyName[6] == "十字左")
+        {
+            keyName[6] = GetKeyName(UserData::player_key[i - 1][1]);
+        }
+        if (keyName[7] == "十字右")
+        {
+            keyName[7] = GetKeyName(UserData::player_key[i - 1][1]);
+        }
+        else
+        {
+            keyName[i] = GetKeyName(UserData::player_key[i][0]);
+        }
+    }
+
 }
 
 std::string Tutorial::GetKeyName(int keyCode)

@@ -34,10 +34,6 @@ private:
     Vector2D offset;
     Vector2D offset_size;
 
-    Vector2D draw_stick_shift;
-    float stick_angle;
- 
-
     // チュートリアルのテキスト
     std::string tutorial_text;
     std::vector<std::string> tutorial_text_list;
@@ -49,6 +45,9 @@ private:
     int frame;               // フレームカウント
     int thumb_offset;        // サムスティックのオフセット
     int draw_point;
+
+    bool animation_flag;
+    int r_stick_anim;
 
 public:
     // コンストラクタ
@@ -89,6 +88,9 @@ public:
 
     // チュートリアルが進行中かどうかを取得
     bool GetTutorialFlg();
+
+    //
+    void KeyUpdate();
 
     // キーコードからキー名を取得
     std::string GetKeyName(int keyCode);
