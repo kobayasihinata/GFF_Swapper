@@ -24,7 +24,6 @@
 //オプションで選択できる要素一覧
 enum class Items {
     VOLUME_SETTING = 0, //音量調整
-    FRAME_RATE,         //ゲーム中設定
     KEY_CONFIG,         //キー割り当て設定
     BACK                //ひとつ前の画面に戻る
 
@@ -35,7 +34,6 @@ enum class Items {
 static char ItemString[ITEMS_NUM][256] =
 {
     "音量設定",
-    "ゲーム設定",
     "キー設定",
     "戻る",
 };
@@ -98,10 +96,9 @@ static char KeyString[26][256] =
 //オプションの表示時の大きさ
 static Vector2D ItemsSize[ITEMS_NUM]
 {
-    {200.0f,150.0f},
-    {200.0f,150.0f},
-    {200.0f,150.0f},
-    {200.0f,150.0f}
+    {200.0f,200.0f},
+    {200.0f,200.0f},
+    {200.0f,200.0f},
 };
 
 
@@ -195,15 +192,6 @@ public:
 
     //音量調整描画
     void DrawVolumeSetting()const;
-
-
-//////ゲーム設定関連//////
-    
-    //ゲーム設定更新
-    void UpdateGameSetting();
-
-    //ゲーム設定描画
-    void DrawGameSetting()const;
         
 //////キー割り当て関連//////
 
