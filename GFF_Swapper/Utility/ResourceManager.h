@@ -8,7 +8,7 @@
 #define DIV_IMAGE_NUM 100	//分割画像の最大数
 #define SOUND_NUM 100		//効果音の最大数
 
-#define DIV_IMAGE_MAX 13	//分割画像の最大分割数
+#define DIV_IMAGE_MAX 26	//分割画像の最大分割数
 #define ANIM_BLOCK_NUM 10   //エフェクト表示に使うブロックの数
 
 //炎エフェクト用

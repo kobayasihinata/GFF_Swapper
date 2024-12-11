@@ -204,7 +204,14 @@ void GameMain::Draw() const
 #ifdef _DEBUG
 	//frame%3==0の所にアニメーション用変数(0か1かを格納する)、XINPUT_BUTTON_Aの所にキー割り当てを格納する
 	//Aボタン以降がずれているのは画像側で調整するので、XINPUT_BUTTON_Aが入力されたらAボタンの画像が出る想定で
-	DrawGraph(100, 100, ResourceManager::GetDivGraph(UserData::button_image[frame%3==0], XINPUT_BUTTON_A),TRUE);
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			DrawGraph(100+(j*40), 100+(i*40), ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], j + (i*7)), TRUE);
+
+		}
+	}
 #endif
 }
 

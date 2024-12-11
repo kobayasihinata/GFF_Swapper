@@ -135,9 +135,6 @@ AbstractScene* Option::Update()
 	case (int)Items::VOLUME_SETTING:
 		UpdateVolumeSetting();
 		break;
-	case (int)Items::FRAME_RATE:
-		UpdateGameSetting();
-		break;
 	case (int)Items::KEY_CONFIG:
 		UpdateKeyConfig();
 		break;
@@ -227,7 +224,7 @@ void Option::Draw() const
 				item_location[i].x + ItemsSize[i].x,
 				item_location[i].y + ItemsSize[i].y, 0xffffff, true);
 			//オプション要素の文字描画（黒）
-			DrawFormatStringF(item_location[i].x,
+			DrawFormatStringF(item_location[i].x + (ItemsSize[i].x / 2)- (GetDrawStringWidth(ItemString[i], strlen(ItemString[i])) / 2),
 				item_location[i].y + (ItemsSize[i].y / 2) - 10, 0x000000, "%s", ItemString[i]);
 		}
 		//カーソルが合っていない要素なら通常表示
@@ -240,7 +237,7 @@ void Option::Draw() const
 				item_location[i].y + ItemsSize[i].y, 0xffffff, false);
 
 			//オプション要素の文字描画（白）
-			DrawFormatStringF(item_location[i].x,
+			DrawFormatStringF(item_location[i].x + (ItemsSize[i].x / 2) - (GetDrawStringWidth(ItemString[i], strlen(ItemString[i])) / 2),
 				item_location[i].y + (ItemsSize[i].y / 2) - 10, 0xffffff, "%s", ItemString[i]);
 		}
 		//カーソルが合っている要素なら少し強調表示
@@ -280,9 +277,6 @@ void Option::Draw() const
 		//ボリューム調整
 	case (int)Items::VOLUME_SETTING:
 		DrawVolumeSetting();
-		break;
-	case (int)Items::FRAME_RATE:
-		DrawGameSetting();
 		break;
 	case (int)Items::KEY_CONFIG:
 		DrawKeyConfig();
@@ -525,18 +519,18 @@ void Option::DrawVolumeSetting()const
 	SetFontSize(30);
 	for (int i = 0; i < 3; i++)
 	{
-		//選択されている要素がないなら、音量バーは半透明にする
+		//音量バーの上に文字描画
+		DrawFormatStringF(volume_bar_location[i].x + 127.5f - (GetDrawStringWidth(VolumeString[i], strlen(VolumeString[i])) / 2),
+			volume_bar_location[i].y - 40,
+			0xffffff, "%s", VolumeString[i]);
+
+		//選択されている要素でないなら、音量バーは半透明にする
 		if (current_bar != i)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 127);
 		}
 		//スティック描画用変数定義
 		Vector2D stick_inclination;
-
-		//音量バーの上に文字描画
-		DrawFormatStringF(volume_bar_location[i].x + 127.5f - (GetDrawStringWidth(VolumeString[i], strlen(VolumeString[i])) / 2),
-			volume_bar_location[i].y - 40,
-			0xffffff, "%s", VolumeString[i]);
 		
 		//音量バー
 		DrawBoxAA(volume_bar_location[i].x,
@@ -594,21 +588,6 @@ void Option::DrawVolumeSetting()const
 				volume_bar_location[i].y + VOLUME_BAR_HEIGHT, 0xffffff, false);
 		}
 	}
-}
-
-void Option::UpdateGameSetting()
-{
-
-	//Aボタンが押された時に選択されている要素を解除
-	if (PadInput::OnRelease(XINPUT_BUTTON_A))
-	{
-		current_item = -1;
-	}
-}
-
-void Option::DrawGameSetting()const
-{
-	DrawString(right_box_location.x + 10, right_box_location.y + 10, "ゲーム設定", 0xffffff);
 }
 
 void Option::UpdateKeyConfig()
