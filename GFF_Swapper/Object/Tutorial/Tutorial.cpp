@@ -157,8 +157,8 @@ void Tutorial::DrawButton() const
         //}
 
         DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-       /* DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
-        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
+        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
         ////スティック描画
         //DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
@@ -175,8 +175,8 @@ void Tutorial::DrawButton() const
         }*/
 
         DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-       /* DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
-        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
+        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
         ////スティック描画
         //DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
@@ -193,8 +193,8 @@ void Tutorial::DrawButton() const
         }*/
 
         DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
-        /*DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
-        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());*/
+        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
         //スティック描画
        /* DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
@@ -218,7 +218,8 @@ void Tutorial::DrawButton() const
         DrawCircleAA(offset.x + 75 + draw_stick_shift.x, offset.y + 50 + draw_stick_shift.y, 18, 20, 0xaaaaaa, true);
         DrawFormatString(offset.x + 71 + draw_stick_shift.x, offset.y + 43 + draw_stick_shift.y, 0xFFFFFF, "%s", keyName[1].c_str());*/
 
-        DrawFormatString(offset.x + 71 + draw_stick_shift.x, offset.y + 43 + draw_stick_shift.y, 0xFFFFFF, "%s", keyName[1].c_str());
+        //DrawFormatString(offset.x + 71, offset.y + 43, 0xFFFFFF, "%s", keyName[1].c_str());
+        DrawString(offset.x + 71, offset.y + 43, "右スティック", 0xFFFFFF);
         break;
     }
 }
