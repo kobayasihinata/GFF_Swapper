@@ -3,11 +3,22 @@
 #include "../../Utility/DebugInfomation.h"
 #include "../../Utility/PadInput.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 
-Tutorial::Tutorial(int _num) : tutorial_time(0), tutorial_flg(false), tutorial_completed(false)
+
+Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(false), tutorial_completed(false), button_draw(false), frame(0), thumb_offset(0), draw_point(0), stick_angle(0.0f)
 {
     in_camera = Camera::Get();  
     tutorial_num = _num - TUTORIAL_RANGE_1;  // チュートリアル番号の設定
+
+    now_stage = _now_stage;
+
+    // プレイヤーの入力に対するキー名を設定
+    for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+    {
+        keyName[i] = GetKeyName(UserData::player_key[i][0]);;
+    }
 }
 
 // デストラクタ
@@ -25,17 +36,18 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 
     tutorial_completed = false;  
 
-    // プレイヤーの入力に対するキー名を設定
-    for (int i = 0; i < PLAYER_INPUT_NUM; i++)
-    {
-        keyName[i] = GetKeyName(UserData::player_key[i][0]);
-    }
 }
 
 void Tutorial::Update(ObjectManager* _manager)
 {
     frame++; 
     SetOffset(); 
+
+    // プレイヤーの入力に対するキー名を設定
+    for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+    {
+        keyName[i] = GetKeyName(UserData::player_key[i][0]);
+    }
 
     // チュートリアルが進行中の場合
     if (tutorial_flg)
@@ -48,30 +60,13 @@ void Tutorial::Update(ObjectManager* _manager)
             tutorial_completed = true;  // 完了フラグを設定
             tutorial_time = 0;
         }
-
-        // チュートリアルの進行に応じたテキストの読み込み
-        switch (tutorial_num)
-        {
-        case 1:
-            tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto1.txt");  // チュートリアル1のテキスト読み込み
-            break;
-        case 2:
-            tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto2.txt");  // チュートリアル2のテキスト読み込み
-            break;
-        case 3:
-            tutorial_text = LoadTextFile("Resource/Dat/TutorialText/tuto3.txt");  // チュートリアル3のテキスト読み込み
-            break;
-        case 4:
-            // チュートリアル4の処理（未実装）
-            break;
-        }
     }
 
     // アニメーション用のフレーム処理
     if (frame % 3 == 0)
     {
         thumb_offset++;  // スティックの位置を進める
-        if (thumb_offset > 13)
+        if (thumb_offset > 10)
         {
             thumb_offset = 0;  // スティックの位置が最大を超えたらリセット
         }
@@ -81,6 +76,37 @@ void Tutorial::Update(ObjectManager* _manager)
     {
         frame = 0;
     }
+
+
+    //プレイヤーの座標によって描画するものを変える
+    if (_manager->GetPlayerLocation().x > 5500 && _manager->GetPlayerLocation().x < 6500 && tutorial_num == 0)
+    {
+        draw_point = 1;
+    }
+    else if (_manager->GetPlayerLocation().x > 6500 && _manager->GetPlayerLocation().x < 9500 && tutorial_num == 0)
+    {
+        draw_point = 2;
+    }
+    else if (_manager->GetPlayerLocation().x > 9500 && tutorial_num == 1)
+    {
+        draw_point = 3;
+    }
+    else if (now_stage == 1)
+    {
+        draw_point = 4;
+    }
+
+    stick_angle += 0.05f;
+    if (stick_angle > 1)
+    {
+        stick_angle = 0;
+    }
+
+    draw_stick_shift.x = cosf(stick_angle * (float)M_PI * 2) * 5;
+    draw_stick_shift.y = sinf(stick_angle * (float)M_PI * 2) * 5;
+
+
+
 }
 
 void Tutorial::Draw() const
@@ -88,20 +114,11 @@ void Tutorial::Draw() const
     if (tutorial_flg)
     {
         // チュートリアルフラグが立っている場合のみ描画
-        DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-
-       // if (tutorial_num == 0) {
-            DrawButton();  // チュートリアル1ボタンを描画
-        //}
-        //else if (tutorial_num == 1)
-        //{
-        //    DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text.c_str());  // テキスト描画
-        //}
+        DrawButton();  
     }
 
     // デバッグ情報の追加
-    DebugInfomation::Add("tuto_loc", location.x);
-    DebugInfomation::Add("tuto_num", tutorial_num);
+    
 }
 
 void Tutorial::Finalize()
@@ -117,28 +134,73 @@ void Tutorial::DrawTutorial() const
 
 void Tutorial::DrawButton() const
 {
-    //ボタンイメージ描画
     SetFontSize(16);
-    if (!button_draw)
+    switch (draw_point)
     {
-        DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
-        DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+    case 0:
+        DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
+        //ボタンイメージ描画
+        if (!button_draw)
+        {
+            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
+            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        }
+
+        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+
+        //スティック描画
+        DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
+        DrawCircleAA(offset.x + 170, offset.y + 50 + thumb_offset, 18, 20, 0xaaaaaa, true);
+        DrawFormatString(offset.x + 166, offset.y + 43 + thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
+        break;
+    case 1:
+        //ボタンイメージ描画
+        DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
+        if (!button_draw)
+        {
+            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
+            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        }
+
+        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+
+        //スティック描画
+        DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
+        DrawCircleAA(offset.x + 170, offset.y + 50 - thumb_offset, 18, 20, 0xaaaaaa, true);
+        DrawFormatString(offset.x + 166, offset.y + 43 - thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
+        break;
+    case 2:
+        //ボタンイメージ描画
+        DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
+        if (!button_draw)
+        {
+            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
+            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
+        }
+
+        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+
+        //スティック描画
+        DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
+        DrawCircleAA(offset.x + 170 + thumb_offset, offset.y + 50, 18, 20, 0xaaaaaa, true);
+        DrawFormatString(offset.x + 166 + thumb_offset, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
+        break;
+    case 3:
+        DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
+        if (!button_draw)
+        {
+            DrawCircleAA(offset.x + 75, offset.y + 50, 20, 100, 0xff0000, FALSE);
+            DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
+        }// チュートリアル4の処理（未実装）
+        break;
+    case 4:
+        DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
+        //スティック描画
+        DrawCircleAA(offset.x + 75, offset.y + 50, 23, 20, 0xaaaaaa, false);
+        DrawCircleAA(offset.x + 75 + draw_stick_shift.x, offset.y + 50 + draw_stick_shift.y, 18, 20, 0xaaaaaa, true);
+        DrawFormatString(offset.x + 71 + draw_stick_shift.x, offset.y + 43 + draw_stick_shift.y, 0xFFFFFF, "%s", keyName[1].c_str());
+        break;
     }
-    /*else
-    {
-        DrawCircleAA(offset.x + 50, offset.y + 45, 20, 100, 0xff0000, TRUE);
-        DrawCircleAA(offset.x + 50, offset.y + 50, 20, 100, 0xff0000, TRUE);
-        DrawBoxAA(offset.x + 50, offset.y + 45, offset.x + 50, offset.y + 50, 0xff0000, TRUE);
-        DrawStringF(offset.x + 50 - 3, offset.y + 38, "B", 0x000000);
-    }*/
-
-    DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
-
-    //スティック描画
-    DrawCircleAA(offset.x + 170, offset.y + 50, 23, 20, 0xaaaaaa, false);
-    DrawCircleAA(offset.x + 170, offset.y + 50 + thumb_offset, 18, 20, 0xaaaaaa, true);
-    DrawFormatString(offset.x + 166, offset.y + 43 + thumb_offset, 0xFFFFFF, "%s", keyName[0].c_str());
-
 }
 
 void Tutorial::Hit(Object* _object)
@@ -146,10 +208,6 @@ void Tutorial::Hit(Object* _object)
     if (_object->GetObjectType() == PLAYER)
     {
         tutorial_flg = true;  // チュートリアルを開始
-        if (location.x > 2000)
-        {
-            tutorial_num = 2;  // 特定の位置でチュートリアル番号を変更
-        }
     }
 }
 

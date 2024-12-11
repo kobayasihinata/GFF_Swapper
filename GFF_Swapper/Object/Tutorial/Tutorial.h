@@ -28,9 +28,15 @@ private:
     bool tutorial_flg;       // チュートリアルが表示中かどうか
     bool tutorial_completed; // チュートリアルが完了したかどうか
 
+    int now_stage;
+
     // 描画オフセット
     Vector2D offset;
     Vector2D offset_size;
+
+    Vector2D draw_stick_shift;
+    float stick_angle;
+ 
 
     // チュートリアルのテキスト
     std::string tutorial_text;
@@ -54,10 +60,11 @@ private:
     bool button_draw;        // ボタンが描画されるかどうか
     int frame;               // フレームカウント
     int thumb_offset;        // サムスティックのオフセット
+    int draw_point;
 
 public:
     // コンストラクタ
-    Tutorial(int _num);
+    Tutorial(int _num,int _now_stage);
     ~Tutorial();
 
     // 初期化処理
