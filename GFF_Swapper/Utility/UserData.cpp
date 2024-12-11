@@ -18,8 +18,8 @@ void UserData::Initialize()
 	//ファイル読み込み
 	LoadUserData();
 	//画像読み込み
-	button_image[0] = ResourceManager::SetDivGraph("Resource/Images/sozai/button1.png", 14, 7, 2, 40, 40, 0);
-	button_image[1] = ResourceManager::SetDivGraph("Resource/Images/sozai/button2.png", 14, 7, 2, 40, 40, 0);
+	button_image[0] = ResourceManager::SetDivGraph("Resource/Images/sozai/button1.png", 26, 7, 4, 40, 40, 0);
+	button_image[1] = ResourceManager::SetDivGraph("Resource/Images/sozai/button2.png", 26, 7, 4, 40, 40, 0);
 
 }
 
