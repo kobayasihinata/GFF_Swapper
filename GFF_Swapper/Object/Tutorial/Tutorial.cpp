@@ -17,8 +17,10 @@ Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(fal
     // プレイヤーの入力に対するキー名を設定
     for (int i = 0; i < PLAYER_INPUT_NUM; i++)
     {
-        keyName[i] = GetKeyName(UserData::player_key[i][0]);
+        //keyName[i] = GetKeyName(UserData::player_key[i][0]);
+        keyName[i] = "";
     }
+
 }
 
 // デストラクタ
@@ -40,19 +42,44 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 
 void Tutorial::Update(ObjectManager* _manager)
 {
-    frame++; 
-    SetOffset(); 
 
     // プレイヤーの入力に対するキー名を設定
-    for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+    for (int i = 0; i < PLAYER_INPUT_NUM + 1; i++)
     {
-        keyName[i] = GetKeyName(UserData::player_key[i][0]);
+        for(int j = 0; j < 2;j++)
+        {
+        }
         if (i < 27)  // 配列範囲外防止
         {
             keyCode[i] = GetKeyIndex(keyName[i]);
         }
-        
+
+        //まじで汚いけど許して
+        if (keyName[4] == "十字上")
+        {
+            keyName[4] = GetKeyName(UserData::player_key[i - 1][1]);
+        }
+        if (keyName[5] == "十字下")
+        {
+            keyName[5] = GetKeyName(UserData::player_key[i - 1][1]);
+        }
+       if (keyName[6] == "十字左")
+        {
+            keyName[6] = GetKeyName(UserData::player_key[i - 1][1]);
+        }
+        if (keyName[7] == "十字右")
+        {
+            keyName[7] = GetKeyName(UserData::player_key[i- 1][1]);
+        }
+        else
+        {
+            keyName[i] = GetKeyName(UserData::player_key[i][0]);
+        }   
     }
+
+    frame++; 
+    SetOffset(); 
+
 
     // チュートリアルが進行中の場合
     if (tutorial_flg)
@@ -90,12 +117,12 @@ void Tutorial::Update(ObjectManager* _manager)
         draw_point = 0;
     }
     //(交換であるB　＋　左スティック（上交換）の描画用)
-    if (_manager->GetPlayerLocation().x > 5500 && _manager->GetPlayerLocation().x < 6500 && tutorial_num == 0)
+    if (_manager->GetPlayerLocation().x > 5500 && _manager->GetPlayerLocation().x < 8500 && tutorial_num == 0)
     {
         draw_point = 1;
     }
     //(交換であるB　＋　左スティック（右交換）の描画用)
-    else if (_manager->GetPlayerLocation().x > 6500 && _manager->GetPlayerLocation().x < 9500 && tutorial_num == 0)
+    else if (_manager->GetPlayerLocation().x > 8500 && _manager->GetPlayerLocation().x < 9500 && tutorial_num == 0)
     {
         draw_point = 2;
     }
@@ -150,51 +177,44 @@ void Tutorial::DrawButton() const
     SetFontSize(16);
     switch (draw_point)
     {
-    case 0:
+    case 0: //交換（下）
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
-        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[0]), TRUE);
+        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[5]), TRUE);
+        //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], GetKeyIndex(keyName[5] = GetKeyName(UserData::player_key[5][0]))), TRUE);
 
-        //DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[frame % 5 == 0], keyCode[3]), TRUE);
-        //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[0]), TRUE);
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
-        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
-
-        //DrawGraph(200, 300, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], keyCode[3]), TRUE);
-        //DrawGraph(100, 100, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], XINPUT_BUTTON_A), TRUE);
-
         break;
-    case 1:
+    case 1: //交換（上）
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[4]), TRUE);
+        //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[4]), TRUE);
 
-        //DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
-        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
         break;
-    case 2:
+    case 2: //交換（右）
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[7]), TRUE);
+        //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[7]), TRUE);
 
-        //DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[3].c_str());
         DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
-        DrawFormatString(offset.x + 166, offset.y + 43, 0xFFFFFF, "%s", keyName[0].c_str());
 
         break;
     case 3:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[2]), TRUE);
-
-        //DrawFormatString(offset.x + 75 - 3, offset.y + 43, 0xff0000, "%s", keyName[2].c_str());
-        
+        DrawGraph(offset.x + 55, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[2]), TRUE);
+        //DrawGraph(offset.x + 105, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[2]), TRUE);
 
         break;
     case 4:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawString(offset.x + 71, offset.y + 43, "右スティック", 0xFFFFFF);
+
+        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], 18), TRUE);
         break;
     }
 }
