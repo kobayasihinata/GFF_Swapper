@@ -10,7 +10,12 @@ void ObjectManager::Initialize()
 	effect_spawner->Initialize();
 
 	change_state = GameMainState::Null;
+
+	boss_appeared_skip = false;
+	boss_appeared_set_once = false;
+
 	change_stage = -1;
+	boss_appeared_flg = false;
 }
 
 void ObjectManager::Update(GameMain* _g)
@@ -69,8 +74,23 @@ void ObjectManager::Update(GameMain* _g)
 	//更新処理
 	InScreenUpdate();
 
-	//プレイヤー更新
-	PlayerUpdate(_g);
+	//ボス演出中以外なら、プレイヤーを更新する
+	if (!boss_appeared_flg)
+	{
+		//プレイヤー更新
+		PlayerUpdate(_g);
+		//再度入っても大丈夫なようにフラグを下げる
+		boss_appeared_set_once = false;
+	}
+	//一回だけプレイヤーを更新　ステートの更新のため
+	else if (!boss_appeared_set_once)
+	{
+		//プレイヤー更新
+		PlayerUpdate(_g);
+
+		//フラグを立てる
+		boss_appeared_set_once = true;
+	}
 
 
 	//画面内のオブジェクトを更新する処理
@@ -104,7 +124,7 @@ void ObjectManager::Update(GameMain* _g)
 		HitCheck();
 
 		//ボスの更新
-		if (boss_object != nullptr)BossUpdate();
+		BossUpdate();
 	}
 
 	//管理クラスの更新
@@ -180,6 +200,13 @@ void ObjectManager::Draw()const
 		if (boss_object != nullptr)boss_object->Draw();
 	}
 
+	//ボス演出スキップが可能なら、スキップボタンを教える
+	if (boss_appeared_skip && boss_appeared_flg)
+	{
+		DrawBox(0, SCREEN_HEIGHT - GetFontSize(), GetDrawStringWidth("B = スキップ", strlen("B = スキップ")), SCREEN_HEIGHT, 0x000000, true);
+		DrawBox(0, SCREEN_HEIGHT - GetFontSize(), GetDrawStringWidth("B = スキップ", strlen("B = スキップ")), SCREEN_HEIGHT, 0xffffff, false);
+		DrawString(1, SCREEN_HEIGHT - GetFontSize(), "B = スキップ", 0xffffff);
+	}
 	//エフェクトの描画
 	effect_spawner->Draw();
 
@@ -224,6 +251,12 @@ void ObjectManager::DeleteObject(Object* _object)
 	delete_object.push_back(_object);
 }
 
+void ObjectManager::DeleteBoss()
+{
+	boss_object->Finalize();
+	boss_object = nullptr;
+	boss_blind_flg = true;
+}
 void ObjectManager::DeleteAllObject(bool _player_delete)
 {
 	//完全消去
@@ -354,6 +387,7 @@ void ObjectManager::BossUpdate()
 		boss_object->SetScreenPosition(camera->GetCameraLocation());
 		boss_object->Update(this);
 		move_object_num++;
+		if (boss_object == nullptr)return;
 		for (const auto& in_screen_object : in_screen_object)
 		{
 			//各オブジェクトとの当たり判定

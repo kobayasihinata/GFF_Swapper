@@ -62,6 +62,10 @@ Player::Player()
 	animFlg = false;	
 	circleAng = 0.f;
 
+	matchup_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_red.PNG");
+	matchup_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_green.PNG");
+	matchup_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_blue.PNG");
+
 	landing_se = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	walk_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	walk_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/walk_fire.wav");
@@ -102,7 +106,6 @@ void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int
 
 void Player::Update(ObjectManager* _manager)
 {
-
 	if (!is_tutorial) {
 		__super::Update(_manager);
 
@@ -341,10 +344,14 @@ void Player::Update(ObjectManager* _manager)
 		}
 	}
 
+	//ボス演出中ならプレイヤーを停止させる
+	if (_manager->boss_appeared_flg)p_state = PlayerState::IDLE_RIGHT;
 }
 
 void Player::Draw()const
 {
+	__super::Draw();
+
 	/*SetFontSize(35);
 	DrawFormatString(0, 220, 0xff0000, "%0.1f %0.1f", location.x, location.y);*/
 
@@ -356,10 +363,10 @@ void Player::Draw()const
 	//プレイヤー描画
 	DrawPlayerImage();
 
-	DrawPlayerFront(true);
+	//DrawPlayerFront(true);
 	for (int i = 0; i < hp; i++)
 	{
-		ResourceManager::DrawHeart({ 150.f + i * 50.f,75.f }, { 40.f,40.f });
+		ResourceManager::DrawHeart({ 50.f + i * 50.f,75.f }, { 40.f,40.f });
 	}
 
 	//色交換カーソル
@@ -412,10 +419,8 @@ void Player::Draw()const
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
-#ifdef _DEBUG
-	DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);
-#endif // _DEBUG
-
+	//色に合わせて相性表の描画
+	DrawGraph(SCREEN_WIDTH - 320, 0, ResourceManager::GetGraph(matchup_image[GetColorNum(color)]), true);
 }
 
 void Player::Finalize()

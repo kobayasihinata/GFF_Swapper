@@ -4,8 +4,6 @@
 
 void SceneManager::Initialize()
 {
-	//ユーザー情報の格納
-	UserData::Initialize();
 	//シーンの初期化
 	mScene->Initialize();
 }
@@ -42,6 +40,4 @@ AbstractScene* SceneManager::Update() {
 void SceneManager::Draw() const {
 
 	mScene->Draw();
-	//デバッグ表示の更新
-	DebugInfomation::Draw();
 };

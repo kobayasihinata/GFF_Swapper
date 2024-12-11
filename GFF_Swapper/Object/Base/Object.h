@@ -2,6 +2,7 @@
 #include"BoxCollider.h"
 #include"ColorData.h"
 #include "../../Utility/DebugInfomation.h"
+#include "../../Utility/UserData.h"
 
 #define BLOCK 0			//Objectの種類用
 #define PLAYER 1		//Objectの種類用
@@ -45,8 +46,14 @@ public:
 
 	virtual void Draw()const
 	{
-		//当たり判定描画
-		DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);
+#ifdef _DEBUG
+		//撮影モードなら判定描画は無し
+		if (!DebugInfomation::GetPhotographMode())
+		{
+			//当たり判定描画
+			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);
+		}
+#endif // _DEBUG
 	}
 
 	virtual void Finalize() = 0;

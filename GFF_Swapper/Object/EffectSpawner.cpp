@@ -143,6 +143,26 @@ void EffectSpawner::Update(ObjectManager* _manager)
 					effect[i].spawn_flg = false;
 				}
 				break;
+
+				//光が集まる
+			case 8:
+				effect[i].location.x += effect[i].speed * cosf(effect[i].angle);
+				effect[i].location.y += effect[i].speed * sinf(effect[i].angle);
+
+				//ゴールに近づいたら削除
+				if (effect[i].location.x > effect[i].goal_location.x - 1 &&
+					effect[i].location.x < effect[i].goal_location.x + 1 &&
+					effect[i].location.y > effect[i].goal_location.y - 1 &&
+					effect[i].location.y < effect[i].goal_location.y + 1)
+				{
+					effect[i].spawn_flg = false;
+				}
+				//一定時間経過しても削除
+				//if (effect[i].timer > effect[i].effect_time)
+				//{
+				//	effect[i].spawn_flg = false;
+				//}
+				break;
 			default:
 				break;
 			}
@@ -284,6 +304,13 @@ void EffectSpawner::Draw()const
 					break;
 				}
 				break;
+
+				//光が集まる
+			case 8:
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, (sqrtf(powf(effect[i].location.x - effect[i].goal_location.x, 2) + powf(effect[i].location.y - effect[i].goal_location.y,2)))*4);
+				ResourceManager::DrawRotaBox(effect[i].local_location.x, effect[i].local_location.y, effect[i].erea.x, effect[i].erea.y, effect[i].local_location.x, effect[i].local_location.y, (float)effect[i].timer * 10, effect[i].color, TRUE);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+				break;
 			default:
 				break;
 			}
@@ -358,6 +385,7 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 			SpawnParticle(
 				_location,
 				_erea,
+				{0,0},
 				2,
 				_time,
 				2,
@@ -371,6 +399,7 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 		SpawnParticle(
 			{ _location.x + GetRand((int)(_erea.x)),_location.y + GetRand((int)(_erea.y))},
 			_erea,
+			{0,0},
 			3,
 			_time,
 			1,
@@ -383,6 +412,7 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 		SpawnParticle(
 			{ _location.x + GetRand((int)(_erea.x)),_location.y + GetRand((int)(_erea.y))},
 			_erea,
+			{0,0},
 			4,
 			_time,
 			1,
@@ -397,6 +427,7 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 			SpawnParticle(
 				{ _location.x + (_erea.x / 2) + GetRand(10),_location.y + _erea.y },
 				{ 10,5 },
+				{0,0},
 				5,
 				_time,
 				5,
@@ -410,6 +441,7 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 		SpawnParticle(
 			_location,
 			_erea,
+			{0,0},
 			6,
 			_time,
 			1,
@@ -424,6 +456,7 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 			SpawnParticle(
 				{ _location.x + GetRand((int)_erea.x),_location.y + GetRand((int)_erea.y) },
 				{ 7,7 },
+				{0,0},
 				7,
 				_time,
 				1,
@@ -431,6 +464,20 @@ void EffectSpawner::SpawnEffect(Vector2D _location, Vector2D _erea,int _effect_t
 				_angle
 			);
 		}
+		break;
+
+		//光が集まるエフェクト
+	case LightGathers:
+		SpawnParticle(
+			{ _location.x -(_erea.x/2) + GetRand((int)_erea.x),_location.y-(_erea.y/2) + GetRand((int)_erea.y)},
+			{ 5,5 },
+			_location,
+			8,
+			_time,
+			1,
+			_color,
+			_angle
+		);
 		break;
 	default:
 		break;
@@ -516,7 +563,7 @@ int EffectSpawner::Swap(Object* _object1, Object* _object2)
 	return swap_anim[0].timer;
 }
 
-void EffectSpawner::SpawnParticle(Vector2D _location, Vector2D _erea, int _type, int _time, float _speed,int _color, float _angle)
+void EffectSpawner::SpawnParticle(Vector2D _location, Vector2D _erea, Vector2D _goal_location, int _type, int _time, float _speed,int _color, float _angle)
 {
 	for (int i = 0; i < EFFECT_NUM; i++)
 	{
@@ -526,11 +573,17 @@ void EffectSpawner::SpawnParticle(Vector2D _location, Vector2D _erea, int _type,
 			effect[i].spawn_flg = true;
 			effect[i].location = _location;
 			effect[i].erea = _erea;
+			effect[i].goal_location = _goal_location;
 			effect[i].effect_type = _type;
 			effect[i].effect_time = _time;
 			effect[i].speed = _speed;
 			effect[i].color = _color;
 			effect[i].angle = _angle;
+			//光が集まるエフェクトだけここで角度計算
+			if (_type == 8)
+			{
+				effect[i].angle = atan2f(effect[i].goal_location.y - effect[i].location.y, effect[i].goal_location.x - effect[i].location.x);
+			}
 			break;
 		}
 	}

@@ -11,7 +11,9 @@
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"
 
-#define  APPEARED_TIME 300		//登場演出の時間
+#define APPEARED_TIME 300			//登場演出の時間
+#define BOSS_DEATH_TIME 300			//死亡演出の時間
+
 static float WOOD_SPAWN[6][3]{
 	{570,610,650},
 	{315,355,395},
@@ -58,8 +60,9 @@ private:
 	bool stop_flg;					//ボスの動作を止めておくか判断
 	bool damage_flg;				//ダメージを受けたとき
 	int damage_effect_time = 60;	//ダメージエフェクトの持続時間
-	bool damage_effect_flg = false; // ダメージエフェクトのフラグ
-
+	bool damage_effect_flg = false; //ダメージエフェクトのフラグ
+	bool death_flg;					//死亡演出中か
+	int death_timer;				//死亡演出の時間測定
 	bool damage_anim_flg;
 	int damage_anim_time;
 	int shake_anim;
@@ -105,6 +108,7 @@ private:
 
 	int damage_se;	//被ダメージSE
 	int appeared_se;	//登場SE
+	int bgm_abnormal;	//ボス曲格納
 
 public:
 	Boss();

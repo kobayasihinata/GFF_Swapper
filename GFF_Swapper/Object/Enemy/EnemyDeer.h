@@ -34,6 +34,7 @@ private:
 		right
 	};
 
+	Vector2D old_location;	//1フレーム前の座標
 	Vector2D velocity;		//加速度
 	DeerState deer_state;
 	DeerState old_deer_state;	//ひとつ前のステートを保管

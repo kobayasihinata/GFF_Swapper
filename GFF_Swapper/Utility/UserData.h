@@ -28,14 +28,6 @@ public:
 	static int volume[3];					//音量 0=全体 1=BGM 2=SE
 	 
 	static int player_key[PLAYER_INPUT_NUM][2];	//キー割り当て情報格納		
-	//static int PLAYER_WALK_LEFT;			//左移動
-	//static int PLAYER_WALK_RIGHT;			//右移動
-	//static int PLAYER_JUMP;					//ジャンプ
-	//static int PLAYER_SWAP;					//交換
-	//static int PLAYER_SWAP_MOVE_UP;			//交換中のカーソル移動（上）
-	//static int PLAYER_SWAP_MOVE_DOWN;		//交換中のカーソル移動（下）
-	//static int PLAYER_SWAP_MOVE_LEFT;		//交換中のカーソル移動（左）
-	//static int PLAYER_SWAP_MOVE_RIGHT;		//交換中のカーソル移動（右）
 
 public:
 	//初期化

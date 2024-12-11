@@ -34,6 +34,7 @@ class GameMain :
 private:
     class Camera* camera;                                      //カメラ座標
 
+    bool stop_flg;                          //停止
     int frame;                                           //フレーム測定
     int stage_data[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH];   //ステージデータ格納
     int stage_block_pos[MAX_STAGE_HEIGHT][MAX_STAGE_WIDTH] = { -1 };     //Object配列の何番目に格納されたかを保存
@@ -50,18 +51,18 @@ private:
     BackGround* back_ground;                        //背景描画用
     TutorialText tutorial_text;
 
-    int old_stage;          //ひとつ前のステージ
-    int now_stage;          //現在のステージ
-    int stage_width_num;    //ステージの横のブロック数
-    int stage_height_num;   //ステージの縦のブロック数
-    int stage_width;        //ステージの横の大きさ
-    int stage_height;       //ステージの縦の大きさ
+    int old_stage;              //ひとつ前のステージ
+    int now_stage;              //現在のステージ
+    int stage_width_num;        //ステージの横のブロック数
+    int stage_height_num;       //ステージの縦のブロック数
+    int stage_width;            //ステージの横の大きさ
+    int stage_height;           //ステージの縦の大きさ
 
     int fps = 0;
     int now_weather;            //現在の天気(0=通常　1=雨　2=火　3=木)
-    int weather_timer;      //天気オブジェクトを生成するスパン
-    bool boss_battle_flg;   //ボス戦が始まっているか判断
-    bool player_flg;	    //プレイヤーを生成したか
+    int weather_timer;          //天気オブジェクトを生成するスパン
+    bool boss_battle_flg;       //ボス戦が始まっているか判断
+    bool player_flg;	        //プレイヤーを生成したか
     bool create_once;           //一回だけ壁を作る
     bool fadein_flg;            //遷移してきたときのフェードイン演出
 

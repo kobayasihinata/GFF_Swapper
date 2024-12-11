@@ -7,6 +7,11 @@
 #define PLAYER_WIDTH 70
 #define PLAYER_HEIGHT 100
 
+#define RED 0xff0000    //色（赤）
+#define GREEN 0x00ff00  //色（緑）
+#define BLUE 0x0000ff   //色（青）
+#define WHITE 0xffffff  //色（白）
+
 #define OBJECT_NUM	10000		//１ステージに存在できるプレイヤー、ブロック、敵の合計数
 #define MAX_STAGE_HEIGHT 500	//ステージのブロックの縦の最大個数
 #define MAX_STAGE_WIDTH  750	//ステージのブロックの横の最大個数

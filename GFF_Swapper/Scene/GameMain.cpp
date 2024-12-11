@@ -15,7 +15,7 @@
 #include "Help.h"
 #include "Option.h"
 
-GameMain::GameMain(int _stage) :frame(0), stage_data{ 0 }, now_stage(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), player_object(0), boss_object(0), weather_timer(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), death_timer(0),clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
+GameMain::GameMain(int _stage) :frame(0), stop_flg(false),stage_data{ 0 }, now_stage(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), player_object(0), boss_object(0), weather_timer(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), death_timer(0),clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
 {
 	old_stage = -1;	//ひとつ前のステージは存在しないため-1
 	now_stage = _stage;
@@ -88,7 +88,7 @@ AbstractScene* GameMain::Update()
 	{
 		ResourceManager::StartSound(bgm_normal);
 	}
-	else if(!boss_blind_flg)
+	else if(!boss_blind_flg && !object_manager->boss_appeared_flg)
 	{
 		ResourceManager::StartSound(bgm_abnormal);
 	}
@@ -261,10 +261,10 @@ void GameMain::SetStage(int _stage)
 {
 	bool first_flg = false;	//ゲームメインに最初に入った時の呼び出しかを格納
 	boss_blind_flg = false;
+	object_manager->boss_appeared_flg = false;
 
 	//プレイヤー以外のすべてのオブジェクトを削除
 	object_manager->DeleteAllObject(false);
-
 	//ひとつ前のステージがない(ゲームメインに最初に入った時の呼び出し)なら、プレイヤーを生成する
 	if (old_stage == -1)
 	{
@@ -409,10 +409,22 @@ Vector2D GameMain::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) con
 
 void GameMain::UpdateGameMain()
 {
-	if (PadInput::OnButton(XINPUT_BUTTON_START) && gm_state != GameMainState::Pause)
+	
+	if (PadInput::OnButton(XINPUT_BUTTON_START) && gm_state != GameMainState::Pause && !object_manager->boss_appeared_flg)
 	{
-		gm_state = GameMainState::Pause;
+		//撮影モード中にスタートボタンを押すと、ポーズではなく画面が停止する
+		if (DebugInfomation::GetPhotographMode())
+		{
+			stop_flg = !stop_flg;
+		}
+		else
+		{
+			gm_state = GameMainState::Pause;
+		}
 	}
+
+	//停止中なら処理終了
+	if (stop_flg)return;
 
 	if (PadInput::OnRelease(XINPUT_BUTTON_B) && pause_after_flg)
 	{
@@ -439,7 +451,6 @@ void GameMain::UpdateGameMain()
 		object_manager->CreateObject(new Stage(1), { 120,560 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		object_manager->CreateObject(new Stage(1), { 120,600 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		object_manager->CreateObject(new Stage(1), { 120,640 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		ResourceManager::StartSound(bgm_abnormal);
 		boss_blind_timer = 10;
 		boss_blind_flg = false;
 		create_once = true;
@@ -450,6 +461,7 @@ void GameMain::UpdateGameMain()
 	{
 		boss_blind_timer = 0;
 	}
+
 }
 
 void GameMain::DrawGameMain()const
@@ -478,6 +490,12 @@ void GameMain::DrawGameMain()const
 		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xffffff, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	}
+#ifdef _DEBUG
+	if (!DebugInfomation::GetPhotographMode()) {
+		SetFontSize(18);
+		DrawString((SCREEN_WIDTH / 2) - 30, 0, "Mキーで撮影用モード", 0xff0000);
+	}
+#endif // _DEBUG
 }
 
 void GameMain::UpdatePause()

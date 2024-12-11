@@ -1,6 +1,7 @@
 #pragma once
 #include "AbstractScene.h"
 #include"../Object/Base/BoxCollider.h"
+#include "../Utility/common.h"
 #include "eNum/BackGroundStruct.h"
 #include "DxLib.h"
 #include<vector>
@@ -80,6 +81,7 @@ private:
 
     float circleAng;    //カーソル回転用
     
+    int player_image[3];        //タイトルのプレイヤー
 public:
     //コンストラクタ
     Title();
@@ -111,6 +113,24 @@ public:
     //座標の回転
     //引数:もとになる座標、回転させたい座標、回転させたい角度
     Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
+
+    //色情報を0~3で受け取る
+    int GetColorNum(int c)const
+    {
+        switch (c)
+        {
+        case RED:
+            return 0;
+        case GREEN:
+            return 1;
+        case BLUE:
+            return 2;
+        case WHITE:
+            return 3;
+        default:
+            return -1;
+        }
+    }
 };
 
 

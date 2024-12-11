@@ -12,25 +12,28 @@ enum EffectList {
 	DeathEffect,
 	LandingEffect,
 	ExplosionEffect,
-	DamageEffect
+	DamageEffect,
+	LightGathers,
 };
 
 class GameMain;
 
 struct EffectAnim{
-	int timer = 0;					//経過時間
-	Vector2D location = { 0,0 };			//座標
+	int timer = 0;						//経過時間
+	Vector2D location = { 0,0 };		//座標
 	Vector2D local_location = { 0,0 };	//ローカル座標
-	Vector2D erea = { 0,0 };					//大きさ
-	bool spawn_flg = false;		//エフェクトがスポーンしているかどうか
-	int  effect_type = 0;			//エフェクトの種類
+	Vector2D erea = { 0,0 };			//大きさ
+	Vector2D goal_location;				//目的地の絶対座標
+	bool spawn_flg = false;				//エフェクトがスポーンしているかどうか
+	int  effect_type = 0;				//エフェクトの種類
 	bool touch_ground = false;			//地面に触れたか
-	float angle = 0.0f;				//移動方向
-	int effect_time = 0;			//消えるまでの時間測定用
-	float speed = 0.0f;				//移動速度
-	int color = 0;					//色
+	float angle = 0.0f;					//移動方向
+	int effect_time = 0;				//消えるまでの時間測定用
+	float speed = 0.0f;					//移動速度
+	int color = 0;						//色
+
 	Vector2D effect_shift[2] = {0,0};	//輝きエフェクトのずれ格納用
-	int shine_timer = 0;			//輝きエフェクトの時間測定用
+	int shine_timer = 0;				//輝きエフェクトの時間測定用
 	float rad = 0.0f;					//輝きエフェクトの回転方向
 };
 
@@ -87,7 +90,7 @@ public:
 	int Swap(Object* _object1, Object* _object2);
 
 	//エフェクトを構成するパーティクルをスポーンさせる _location=座標 _erea=大きさ _type=パーティクルの種類 _time=消えるまでのフレーム数 _speed=速度 _color=エフェクトの色 _angle=進行方向
-	void SpawnParticle(Vector2D _location, Vector2D _erea, int _type, int _time, float _speed, int _color, float _angle);
+	void SpawnParticle(Vector2D _location, Vector2D _erea, Vector2D _goal_location, int _type, int _time, float _speed, int _color, float _angle);
 
 };
 

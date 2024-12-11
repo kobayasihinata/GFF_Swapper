@@ -2,14 +2,22 @@
 #include "KeyInput.h"
 
 std::unordered_map<const char*, float>DebugInfomation::draw_list;
-bool DebugInfomation::draw_flg;							
+bool DebugInfomation::draw_flg = false;							
+bool DebugInfomation::photograph_mode = false;
 
 void DebugInfomation::Update()
 {
+	//描画するテキストをリセットする
 	draw_list.clear();
+	//Xキーでデバッグ表示を切り替え
 	if (KeyInput::OnKey(KEY_INPUT_X))
 	{
 		draw_flg = !draw_flg;
+	}
+	//Mキーで撮影モード
+	if (KeyInput::OnKey(KEY_INPUT_M))
+	{
+		photograph_mode = !photograph_mode;
 	}
 }
 
@@ -54,4 +62,9 @@ void DebugInfomation::Add(const char* _c, int _num)
 void DebugInfomation::Add(const char* _c, bool _num)
 {
 	draw_list.insert(std::make_pair(_c, (float)_num));
+}
+
+bool DebugInfomation::GetPhotographMode()
+{
+	return photograph_mode;
 }

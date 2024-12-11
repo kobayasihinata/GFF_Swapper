@@ -1,6 +1,8 @@
 #include "DxLib.h"
 #include "Scene/SceneManager.h"
 #include "Utility/FpsController.h"
+#include "Utility/UserData.h"
+#include "Utility/DebugInfomation.h"
 #include "Utility/PadInput.h"
 #include "Utility/KeyInput.h"
 #include "Utility/ResourceManager.h"
@@ -42,6 +44,9 @@ int WINAPI WinMain(_In_ HINSTANCE  hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     //ステージアニメーション初期化
     ResourceManager::StageAnimInitialize();
 
+    //ユーザー情報格納
+    UserData::Initialize();
+
     //フォント変更 候補:"Franklin Gothic" "HGS創英角ｺﾞｼｯｸUB" "HGｺﾞｼｯｸE" ステージ後半で変更"Wingdings"
     ChangeFont("Franklin Gothic");
 
@@ -67,6 +72,9 @@ int WINAPI WinMain(_In_ HINSTANCE  hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 #ifdef _DEBUG
             FPSC->Disp();
 #endif
+
+            //デバッグ表示の更新
+            DebugInfomation::Draw();
 
             //強制終了
             //Escapeキーまたはバックボタンを押したら強制終了

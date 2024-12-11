@@ -37,6 +37,7 @@ private:
 	float faint_timer;	//スタン時間測定
 	int death_timer;	//死亡演出
 
+	int bat_image;		//コウモリ画像格納
 	int wing_se;		//羽SE
 	int damage_se[3];	//被ダメージSE格納
 
