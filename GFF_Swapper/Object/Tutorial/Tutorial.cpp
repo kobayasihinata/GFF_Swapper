@@ -47,10 +47,10 @@ void Tutorial::Update(ObjectManager* _manager)
     for (int i = 0; i < PLAYER_INPUT_NUM; i++)
     {
         keyName[i] = GetKeyName(UserData::player_key[i][0]);
-        //if (i < 26)  // 配列範囲外防止
-        //{
+        if (i < 27)  // 配列範囲外防止
+        {
             keyCode[i] = GetKeyIndex(keyName[i]);
-        //}
+        }
         
     }
 
@@ -131,7 +131,7 @@ void Tutorial::Draw() const
     }
 
     // デバッグ情報の追加
-    //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], keyCode[3]), TRUE);
+    //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], XINPUT_BUTTON_A), TRUE);
 }
 
 void Tutorial::Finalize()
@@ -153,6 +153,7 @@ void Tutorial::DrawButton() const
     case 0:
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
         DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[3]), TRUE);
+        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[0]), TRUE);
 
         //DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[frame % 5 == 0], keyCode[3]), TRUE);
         //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[0]), TRUE);
@@ -232,11 +233,6 @@ int Tutorial::GetKeyIndex(const std::string& keyName)const
     for (int i = 0; i < 26; i++) {
         if (keyName == KeyString[i]) {
 
-            //画像と要素数のずれを調整
-            if (i > 11)
-            {
-                return i - 2;
-            }
             return i; // 一致するインデックスを返す
         }
     }

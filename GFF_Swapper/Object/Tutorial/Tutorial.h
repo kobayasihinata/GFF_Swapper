@@ -19,7 +19,7 @@ private:
     class Camera* in_camera;
 
     // チュートリアルに関連するキーコードとキー名
-    int keyCode[26];
+    int keyCode[27];
     std::string keyName[PLAYER_INPUT_NUM];
 
     // チュートリアル番号、表示時間、フラグ、完了フラグ
