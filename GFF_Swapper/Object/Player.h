@@ -78,7 +78,7 @@ private:
 	bool damageFlg;						 //ダメージを受けたとき
 	bool damageOldFlg;					 //ダメージを受けたとき(1フレーム前)
 	int hp;								 //体力
-	int damageEffectTime;				 //ダメージエフェクトが出ている時間
+	float damageEffectTime;				 //ダメージエフェクトが出ている時間
 	bool damageEffectFlg;				 //ダメージエフェクト中か判断
 	bool effect_once;					 //エフェクトを一回だけ出す用
 	int state;							 //水中とか火の中とかの状態を管理

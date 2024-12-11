@@ -60,6 +60,25 @@ void UserData::UpdateUserData()
 	}
 }
 
+void UserData::ResetKeyConfig()
+{
+	const char* a = "Resource/Dat/DefaultUserData.txt";
+
+	std::ifstream file(a);
+	int dammy;	//音量は変えない為、ダミーに格納する
+	//ファイルが読み込めていたなら
+	if (file)
+	{
+		file >> dammy;
+		file >> dammy;
+		file >> dammy;
+
+		for (int i = 0; i < PLAYER_INPUT_NUM; i++)
+		{
+			file >> player_key[i][0] >> player_key[i][1];
+		}
+	}
+}
 bool UserData::CheckActionKey(int _player_action, int _key_state)
 {
 	//指定したアクションに割り当てられているキーの内、いずれかが指定の状態を満たしていたら、真を返す

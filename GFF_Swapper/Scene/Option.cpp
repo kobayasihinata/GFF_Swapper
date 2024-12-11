@@ -9,22 +9,22 @@
 #include "../Utility/DebugInfomation.h"
 #include "Title.h"
 
-Option::Option(AbstractScene* _old_scene):
+Option::Option(AbstractScene* _old_scene) :
 	frame(0),
-	item_location{0},
+	item_location{ 0 },
 	current_item(-1),	//何も選択していない事を示す-1
 	cursor_num(0),
-	right_box_location{0},
-	right_box_size{0},
+	right_box_location{ 0 },
+	right_box_size{ 0 },
 	current_bar(-1),	//何も選択していない事を示す-1
 	v_cursor_num(0),
-	volume_bar_location{0},
-	volume_control_bar{0},
+	volume_bar_location{ 0 },
+	volume_control_bar{ 0 },
 	stick_loc(0),
 	stick_angle(0.f),
 	stick_radian(0.f),
 	move_stick(false),
-	action_box_location{0},
+	action_box_location{ 0 },
 	now_input(0),
 	action_num_x(0),
 	action_num_y(0),
@@ -34,6 +34,7 @@ Option::Option(AbstractScene* _old_scene):
 	warning_flg(false),
 	swap_action(-1),	//何も選択していない事を示す-1
 	press_flg(false),
+	anim_flg(false),
 	back_cursor(0),
 	cursor_se(0)
 {
@@ -128,6 +129,9 @@ AbstractScene* Option::Update()
 	DebugInfomation::Add("state", PadInput::GetNowInput());
 
 	frame++;
+
+	//アニメーション用フラグ更新
+	if (frame % 20 == 0)anim_flg = !anim_flg;
 
 	//選択されている要素に応じて処理を変える
 	switch (current_item)
@@ -654,6 +658,12 @@ void Option::UpdateKeyConfig()
 			press_flg = true;
 			warning_flg = false;
 		}
+
+		//STARTボタンが押された時にキー割り当てをリセット
+		if (PadInput::OnButton(XINPUT_BUTTON_START))
+		{
+			UserData::ResetKeyConfig();
+		}
 	}
 	//キーの割り当て処理
 	else if(!press_flg)
@@ -770,8 +780,11 @@ void Option::DrawKeyConfig()const
 			action_box_location[i].y + KEY_BOX_HEIGHT,
 			0xffffff, false);
 
-		//一つ目のキーを描画する（今は文字）
-		DrawFormatString(action_box_location[i].x + 10 + KEY_BOX_WIDTH,
+		//一つ目のキーを描画する
+		DrawGraph(action_box_location[i].x + 10 + KEY_BOX_WIDTH,
+			action_box_location[i].y + 5, 
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], UserData::player_key[i][0]), TRUE);
+		DrawFormatString(action_box_location[i].x + 50 + KEY_BOX_WIDTH,
 			action_box_location[i].y + 10,
 			0xffffff, "%s", KeyString[UserData::player_key[i][0]]);
 
@@ -782,8 +795,11 @@ void Option::DrawKeyConfig()const
 			action_box_location[i].y + KEY_BOX_HEIGHT,
 			0xffffff, false);
 
-		//二つ目のキーを描画する（今は文字）
-		DrawFormatString(action_box_location[i].x + 10 + KEY_BOX_WIDTH+ KEY_BOX_WIDTH,
+		//二つ目のキーを描画する
+		DrawGraph(action_box_location[i].x + 10 + KEY_BOX_WIDTH+ KEY_BOX_WIDTH,
+			action_box_location[i].y + 5,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], UserData::player_key[i][1]), TRUE);
+		DrawFormatString(action_box_location[i].x + 50 + KEY_BOX_WIDTH+ KEY_BOX_WIDTH,
 			action_box_location[i].y + 10,
 			0xffffff, "%s", KeyString[UserData::player_key[i][1]]);
 
@@ -818,8 +834,14 @@ void Option::DrawKeyConfig()const
 		if (!warning_flg)
 		{
 			DrawString(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, "割り当てたいキーを押してください", 0xffffff);
-			DrawString(SCREEN_WIDTH / 2 - 90, SCREEN_HEIGHT / 2 + 30, "BACKキーで取り消し", 0xffffff);
-			DrawString(SCREEN_WIDTH / 2 - 90, SCREEN_HEIGHT / 2 + 60, "STARTキーで割り当て解除", 0xffffff);
+			DrawGraph(SCREEN_WIDTH / 2 - 90, 
+				SCREEN_HEIGHT / 2 + 20,
+				ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_BACK), TRUE);
+			DrawString(SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 30, " = 取り消し", 0xffffff);
+			DrawGraph(SCREEN_WIDTH / 2 - 90,
+				SCREEN_HEIGHT / 2 + 50,
+				ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_START), TRUE);
+			DrawString(SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 60, " = 割り当て解除", 0xffffff);
 		}
 	}
 	//警告表示
@@ -846,8 +868,14 @@ void Option::DrawKeyConfig()const
 			(SCREEN_HEIGHT / 2) - 10, 0xffffff, "%s", PlayerAction[swap_action]);
 
 		//選択肢表示
+		DrawGraph((SCREEN_WIDTH / 2) - 250,
+			(SCREEN_HEIGHT / 2)+10,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_A), TRUE);
+		DrawGraph((SCREEN_WIDTH / 2) - 55,
+			(SCREEN_HEIGHT / 2)+10,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_B), TRUE);
 		DrawString((SCREEN_WIDTH / 2)- 240,
-			(SCREEN_HEIGHT / 2) +20, "A = やめる      B = 交換して割り当てる", 0xffffff);
+			(SCREEN_HEIGHT / 2) +20, "   = やめる       = 交換して割り当てる", 0xffffff);
 	}
 }
 
@@ -922,11 +950,11 @@ void Option::DrawBack()const
 	SetFontSize(40);
 
 	//描画文字
-	DrawString((SCREEN_WIDTH / 2) - (GetDrawStringWidth("変更を保存しますか？", strlen("変更を保存しますか？"))/2), (SCREEN_HEIGHT / 2) - 70, "変更を保存しますか？", 0xffffff, true);
-	
+	DrawString((SCREEN_WIDTH / 2) - (GetDrawStringWidth("変更を保存しますか？", strlen("変更を保存しますか？")) / 2), (SCREEN_HEIGHT / 2) - 70, "変更を保存しますか？", 0xffffff, true);
+
 	//選択要素描画
 	SetFontSize(24);
-	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) , "保存して終了", 0xffffff);
+	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2), "保存して終了", 0xffffff);
 	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) + 24, "保存せず終了", 0xffffff);
 	DrawString((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) + 48, "キャンセル", 0xffffff);
 
@@ -937,9 +965,6 @@ void Option::DrawBack()const
 		(SCREEN_HEIGHT / 2) + 6 + (back_cursor * 24),
 		(SCREEN_WIDTH / 2) - 190,
 		(SCREEN_HEIGHT / 2) + 12 + (back_cursor * 24), 0xffffff, true);
-
-	//上下とBボタンで何か選択する事を描画（画像差し替え予定）
-	DrawStringF((SCREEN_WIDTH / 2) - 150, (SCREEN_HEIGHT / 2) + 90, "上下　＆　B", 0xffffff, true);
 }
 
 AbstractScene* Option::CheckReturnOldScene()
@@ -979,17 +1004,71 @@ int Option::GetColor(int i, int j)
 void Option::DrawUserGuide()const
 {
 	SetFontSize(24);
-	//何も選択していない時の表示
-	if (current_item == -1)
+	//キー割り当ての表示がない時は描画
+	if (current_action_y == -1)
 	{
-		//上下とBボタンで何か選択する事を描画（画像差し替え予定）
-		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 24, "上下 ＆ B = 選択", 0xffffff, true);
+		//上下とBボタンで何か選択する事を描画
+		DrawGraph(right_box_location.x,
+			right_box_location.y + right_box_size.y - 40,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_DPAD_UP), TRUE);
+		DrawGraph(right_box_location.x + 40,
+			right_box_location.y + right_box_size.y - 40,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_DPAD_DOWN), TRUE);
+		DrawGraph(right_box_location.x + 80,
+			right_box_location.y + right_box_size.y - 40,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], L_STICK_UP), TRUE);
+		DrawGraph(right_box_location.x + 120,
+			right_box_location.y + right_box_size.y - 40,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], L_STICK_DOWN), TRUE);
+		DrawStringF(right_box_location.x + 170,
+			right_box_location.y + right_box_size.y - 30,
+			"＆", 0xffffff, true);
+		DrawGraph(right_box_location.x + 200,
+			right_box_location.y + right_box_size.y - 40,
+			ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_B), TRUE);
+		DrawStringF(right_box_location.x + 240,
+			right_box_location.y + right_box_size.y - 30,
+			" = 選択", 0xffffff, true);
+		//何か選択しているときの表示
+		if (current_item != -1)
+		{
+			//Aボタンで選択解除
+			DrawGraph(right_box_location.x + 350,
+				right_box_location.y + right_box_size.y - 40,
+				ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_A), TRUE);
+			DrawStringF(right_box_location.x + 390,
+				right_box_location.y + right_box_size.y - 30,
+				" = 戻る", 0xffffff, true);
+
+			//音量調整中なら左スティックと十字横で調整出来る事を教える
+			if (current_bar != -1)
+			{
+				//Aボタンで選択解除
+				DrawGraph(right_box_location.x + 680,
+					right_box_location.y + 90 + (current_bar * 210), 
+					ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_DPAD_LEFT), TRUE);
+				DrawGraph(right_box_location.x + 720,
+					right_box_location.y + 90 + (current_bar * 210),
+					ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_DPAD_RIGHT), TRUE);
+				DrawGraph(right_box_location.x + 760,
+					right_box_location.y + 90 + (current_bar * 210),
+					ResourceManager::GetDivGraph(UserData::button_image[0], L_STICK_DOWN), TRUE);
+				DrawStringF(right_box_location.x + 800,
+					right_box_location.y + 100 + (current_bar * 210),
+					" = 調整", 0xffffff, true);
+			}
+			//キー割り当て画面では更にSTARTで割り当てリセット出来る事を描画
+			if (current_item == (int)Items::KEY_CONFIG)
+			{
+				//Aボタンで選択解除
+				DrawGraph(right_box_location.x + 500,
+					right_box_location.y + right_box_size.y - 40,
+					ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], XINPUT_BUTTON_START), TRUE);
+				DrawStringF(right_box_location.x + 540,
+					right_box_location.y + right_box_size.y - 30,
+					" = リセット", 0xffffff, true);
+			}
+		}
 	}
-	//何か選択している時の表示
-	else
-	{
-		//上下とBボタンで何か選択する事を描画（画像差し替え予定）
-		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 48, "上下 ＆ B = 選択", 0xffffff, true);
-		DrawStringF(right_box_location.x, right_box_location.y + right_box_size.y - 24, "A = 戻る", 0xffffff, true);
-	}
+		
 }

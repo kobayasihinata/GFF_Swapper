@@ -141,6 +141,7 @@ private:
     bool warning_flg;                 //既に割り振られている事の警告表示を出すか
     int swap_action;                  //交換するアクション
     bool press_flg;                   //キーを押して、何かしらのアクションを起こしたら真
+    bool anim_flg;                     //アニメーション1枚目か2枚目か
 
     //画面遷移関連
     int back_cursor;                  //戻る画面のカーソル
