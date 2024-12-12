@@ -21,12 +21,16 @@ private:
     int fast_forward;           //早送り用
 
     //コウモリ用
-    Vector2D bat_loction;
+    Vector2D bat_location;
+    Vector2D bat_erea;
     int up;             //加算用
+    int bat_image;
 
     //シカ用
 
     Vector2D deer_location;
+    Vector2D deer_erea;
+    int deer_image;
     float leg_angle[4];
     float deer_speed;
 
@@ -35,6 +39,8 @@ private:
     Vector2D frog_speed;
     Vector2D frog_erea;
     float face_angle;
+    int frog_image;		 //カエル画像格納
+    int jump_image;
 
     //ボス用
     Vector2D boss_location;
@@ -66,6 +72,7 @@ private:
     Title* t;
 
     //プレイヤー
+    int player_image[PLAYER_STATE_NUM];
     Vector2D player_location;
     Vector2D player_erea;
     float player_angle[4];

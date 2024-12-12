@@ -199,7 +199,7 @@ void Tutorial::DrawButton() const
     case 4:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
 
-        DrawGraphF(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[1], r_stick_anim), TRUE);
+        DrawGraphF(offset.x + 55, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[1], r_stick_anim), TRUE);
         break;
     }
 }
