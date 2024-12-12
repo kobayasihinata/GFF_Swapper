@@ -1378,7 +1378,7 @@ void Player::PlayerSound()
 		}
 
 		//ダメージ
-		if (damageFlg && !damageOldFlg && now_riding > 0 && damageEffectTime >45.f) {
+		if (damageFlg && !damageOldFlg) {
 			ResourceManager::StartSound(damage_se[GetColorNum(this->color)]);
 			ResourceManager::StartSound(base_damage_se);
 		}
