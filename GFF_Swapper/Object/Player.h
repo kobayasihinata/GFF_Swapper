@@ -120,7 +120,6 @@ private:
 	bool is_tutorial; //チュートリアル中か
 	bool spawn_anim_flg;	//スポーン演出中か判断
 	int  spawn_anim_timer;	//スポーン演出時間測定
-	bool warp_anim_flg;		//ステージ遷移演出中か判断
 	int  warp_anim_timer;	//ステージ遷移演出時間測定
 	int matchup_image[3];	//相性表
 public:

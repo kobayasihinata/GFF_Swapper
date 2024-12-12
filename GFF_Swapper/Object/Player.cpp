@@ -64,7 +64,6 @@ Player::Player()
 
 	spawn_anim_flg = true;
 	spawn_anim_timer = 0;
-	warp_anim_flg = false;
 	warp_anim_timer = 0;
 
 	matchup_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_red.PNG");
@@ -129,6 +128,19 @@ void Player::Update(ObjectManager* _manager)
 			spawn_anim_timer = 0;
 		}
 		//スポーン演出中はプレイヤーのアップデートはしない
+		return;
+	}
+	//遷移演出処理
+	if (_manager->player_warp_flg)
+	{
+		//演出が終了したら
+		if (++warp_anim_timer > WARP_ANIM_TIME)
+		{
+			//フラグを下げて、タイマーをリセット
+			_manager->player_warp_flg = false;
+			warp_anim_timer = 0;
+		}
+		//遷移演出中はプレイヤーのアップデートはしない
 		return;
 	}
 	if (!is_tutorial) {
@@ -386,6 +398,11 @@ void Player::Draw()const
 		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 25, oval_size * 1.5f - 25, 30, 0x000011, true);
 		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 30, oval_size * 1.5f - 30, 30, 0x000000, true);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, spawn_anim_timer*2.5f-20);
+	}
+	//遷移演出中の描画
+	if (warp_anim_timer > 0)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - warp_anim_timer * 2.5f);
 	}
 	__super::Draw();
 

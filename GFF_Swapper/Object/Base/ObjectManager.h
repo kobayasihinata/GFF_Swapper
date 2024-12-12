@@ -48,6 +48,7 @@ public:
 
 	bool boss_appeared_flg;						//ボス演出中か格納
 	bool boss_appeared_skip;					//ボスに二回目以降挑戦するなら、演出スキップが出来るようにする
+	bool player_warp_flg;						//プレイヤーのステージ遷移演出実行中か格納
 
 public:
 	void Initialize();				//初期化処理

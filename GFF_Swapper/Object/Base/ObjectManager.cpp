@@ -16,6 +16,8 @@ void ObjectManager::Initialize()
 
 	change_stage = -1;
 	boss_appeared_flg = false;
+
+	player_warp_flg = false;
 }
 
 void ObjectManager::Update(GameMain* _g)
@@ -139,8 +141,8 @@ void ObjectManager::Update(GameMain* _g)
 		_g->UpdateState(change_state);
 		change_state = GameMainState::Null;
 	}
-	//ステージの変更があるなら変更
-	if (change_stage != -1)
+	//ステージの変更があるなら変更　プレイヤーの遷移演出中は変更しない
+	if (change_stage != -1 && !player_warp_flg)
 	{
 		_g->SetStage(change_stage);
 		change_stage = -1;
@@ -190,9 +192,9 @@ void ObjectManager::Draw()const
 	{
 		can_swap_object->Draw();
 	}
-
 	//プレイヤーの描画
 	player_object->Draw();
+
 
 	//ボスの描画
 	if (!boss_blind_flg)

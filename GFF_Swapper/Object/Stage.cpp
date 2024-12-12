@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), hit_timer(-1), weather(0), change_weather_flg(false), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4), fire_on_top(false)
+Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_flg(false), debug_flg(false), anim(0), hit_flg(false), set_once(false), hit_timer(-1), weather(0), change_weather_flg(false), draw_wood_flg(false), set_respawn_flg(false), respawn_color(WHITE), touch_object(0), change_fire(0), change_water(0), change_wood(0), se_play_once(false), check_ignore_flg(false), ground_mapchip(4), fire_on_top(false)
 {
 	block_type = _type;
 	next_stage = _next_stage - TUTOSTAGE_ONE_TRANSITION;
@@ -150,17 +150,19 @@ void Stage::Update(ObjectManager* _manager)
 		old_color = color;
 	}
 
-	//ステージの遷移ブロックは判断
+	//ステージの遷移ブロックを判断
 	if (block_type == TUTOSTAGE_ONE_TRANSITION || block_type == TUTOSTAGE_TWO_TRANSITION || block_type == FIRSTSTAGE_TRANSITION || block_type == BOSSSTAGE_TRANSITION)
 	{
 		if (frame % 10 == 0)
 		{
 			_manager->SpawnEffect({ location.x + (erea.x / 2) , location.y + (erea.y / 2) }, erea * 3.f, LightGathers, 3, 0xffffff);
 		}
-		//ステージ遷移ブロックに触れたら遷移
-		if (hit_flg == true)
+		//ステージ遷移ブロックに触れたら遷移ステージ設定＆プレイヤー演出フラグを立てる
+		if (hit_flg && !set_once)
 		{
+			_manager->player_warp_flg = true;
 			_manager->change_stage = next_stage;
+			set_once = true;
 		}
 	}
 

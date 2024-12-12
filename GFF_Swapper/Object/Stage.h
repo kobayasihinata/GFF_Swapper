@@ -117,6 +117,7 @@ private:
 	bool debug_flg;						//EditScene用表示をするかどうか
 	int anim;							//アニメーション用
 	bool hit_flg;						//何かが当たった時用
+	bool set_once;						//ステージ遷移の設定を一回だけ
 	int hit_timer;						//何かが当たった時のアニメーション用
 	int stage_height;					//ステージ全体の高さ
 	bool check_ignore_flg;				//このステージブロックの更新、当たり判定処理をしなくても良いか判断
