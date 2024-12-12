@@ -62,7 +62,6 @@ Player::Player()
 	animFlg = false;	
 	circleAng = 0.f;
 
-	spawn_anim_flg = true;
 	spawn_anim_timer = 0;
 	warp_anim_timer = 0;
 
@@ -70,6 +69,8 @@ Player::Player()
 	matchup_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_green.PNG");
 	matchup_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_blue.PNG");
 
+	spawn_se = ResourceManager::SetSound("Resource/Sounds/Player/player_warp.wav");
+	warphole_se = ResourceManager::SetSound("Resource/Sounds/Effect/warphole_spawn.wav");
 	landing_se = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	walk_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	walk_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/walk_fire.wav");
@@ -81,6 +82,7 @@ Player::Player()
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/damage_fire.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_grass.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
+	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
 
 	//プレイヤーの画像の読み込み
 	LoadPlayerImage();
@@ -90,6 +92,9 @@ Player::Player()
 
 	emoteFlg = false;
 	emoteCnt = 0;
+
+	//スポーン演出開始
+	spawn_anim_flg = true;
 }
 
 Player::~Player()
@@ -120,6 +125,17 @@ void Player::Update(ObjectManager* _manager)
 	//スポーン演出処理
 	if (spawn_anim_flg)
 	{
+		//各SEの再生
+		if (spawn_anim_timer == 2)
+		{
+			//スポーン演出の効果音再生
+			ResourceManager::StartSound(warphole_se);
+		}
+		if (spawn_anim_timer == PLAYER_SPAWN_ANIM)
+		{
+			//スポーン演出の効果音再生
+			ResourceManager::StartSound(spawn_se);
+		}
 		//演出が終了したら
 		if (++spawn_anim_timer > SPAWN_ANIM_TIME)
 		{
@@ -143,6 +159,7 @@ void Player::Update(ObjectManager* _manager)
 		//遷移演出中はプレイヤーのアップデートはしない
 		return;
 	}
+
 	if (!is_tutorial) {
 		__super::Update(_manager);
 
@@ -368,13 +385,17 @@ void Player::Update(ObjectManager* _manager)
 		if (circleAng++ >= 360.f) {
 			circleAng = 0.f;
 		}
-		//ゲームオーバー
+		//HP0か落下でゲームオーバー
 		if (hp <= 0 || location.y > camera->GetStageSize().y +100) {
 			
 			searchFlg = false;
 			velocity.x = 0.f;
 			velocity.y = 0.f;
-			if (deathTimer++ == 0)_manager->UpdateState(GameMainState::GameOver);
+			if (deathTimer++ == 0)
+			{
+				ResourceManager::StartSound(fall_se);
+				_manager->UpdateState(GameMainState::GameOver);
+			}
 		}
 	}
 
@@ -397,7 +418,7 @@ void Player::Draw()const
 		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 20, oval_size * 1.5f - 20, 30, 0x000022, true);
 		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 25, oval_size * 1.5f - 25, 30, 0x000011, true);
 		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 30, oval_size * 1.5f - 30, 30, 0x000000, true);
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, spawn_anim_timer*2.5f-20);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, spawn_anim_timer*2.5f- PLAYER_SPAWN_ANIM);
 	}
 	//遷移演出中の描画
 	if (warp_anim_timer > 0)

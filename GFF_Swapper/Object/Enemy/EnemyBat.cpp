@@ -29,6 +29,7 @@ EnemyBat::~EnemyBat()
 
 void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
+	camera = Camera::Get();
 	location = { _location };//x座標 ,y座標 //590 ,400
 	erea = { _erea };		//高さ、幅	//100,150
 	color = _color_data;
@@ -44,6 +45,8 @@ void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
+	faint_se = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_faint.wav");
+	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
 }
 
 void EnemyBat::Update(ObjectManager* _manager)
@@ -141,7 +144,12 @@ void EnemyBat::Update(ObjectManager* _manager)
 		if (vector.y < 0)vector.y++;
 	}
 	
-
+	//落下死処理
+	if (location.y > camera->GetStageSize().y)
+	{
+		bat_state = BatState::DEATH;
+		ResourceManager::StartSound(fall_se);
+	}
 	for (int i = 0; i < 4; i++) {
 		stageHitFlg[0][i] = false;
 		stageHitFlg[1][i] = false;
@@ -572,6 +580,8 @@ void EnemyBat::Hit(Object* _object)
 				}
 				//自身をスタン状態にする
 				bat_state = BatState::FAINT;
+				//スタンSE再生
+				ResourceManager::StartSound(faint_se);
 			}
 			break;
 			//あいこの場合

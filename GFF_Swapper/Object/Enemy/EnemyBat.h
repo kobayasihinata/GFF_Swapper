@@ -23,6 +23,7 @@ private:
 		left,
 		right
 	};
+	class Camera* camera;				 //カメラ情報
 	Vector2D vector; //コウモリのベクトル
 	BatState bat_state;	//コウモリの状態
 	//Object* delete_object;//消すオブジェクト
@@ -41,6 +42,8 @@ private:
 	int damage_image;	//コウモリダメージ画像格納
 	int wing_se;		//羽SE
 	int damage_se[3];	//被ダメージSE格納
+	int faint_se;			//スタンSE
+	int fall_se;			//落下SE
 
 	bool se_once;		//一回だけ再生	
 

@@ -115,9 +115,13 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 	LoadPosition();  // 初期化時に座標を読み込む
 
 	//SE、BGM読み込み
+	warphole_se = ResourceManager::SetSound("Resource/Sounds/Effect/warphole_spawn.wav");
+	spawn_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_warp.wav");
 	damage_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_damage.wav");
 	appeared_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_ap.wav");
-	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1129870_ゲームのボス戦など向け大迫力BGM.wav", false);
+	death_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_death.wav");
+	death_expro_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_expro.wav");
+	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainAbnormal.wav", false);
 }
 
 void Boss::Update(ObjectManager* _manager)
@@ -151,7 +155,16 @@ void Boss::Update(ObjectManager* _manager)
 	{
 		//マネージャー側に演出開始を伝える
 		_manager->boss_appeared_flg = true;
-		//一回だけSE再生
+		//一回だけSE再生()
+		if (boss_appeared_timer == 0)
+		{
+			ResourceManager::StartSound(warphole_se);
+		}
+		if (boss_appeared_timer == 80)
+		{
+			ResourceManager::StartSound(spawn_se);
+		}
+		//一回だけSE再生(波動)
 		if (boss_appeared_timer == 300)
 		{
 			ResourceManager::StartSound(appeared_se);
@@ -191,10 +204,21 @@ void Boss::Update(ObjectManager* _manager)
 			BossAtack(_manager);
 			break;
 		case BossState::DEATH:
+			//死亡時SEを再生
+			if (death_timer == 0)
+			{
+				ResourceManager::StartSound(death_se);
+			}
+			//クリア画面へ
 			if (++death_timer > BOSS_DEATH_TIME)
 			{
 				_manager->DeleteBoss();
 				_manager->UpdateState(GameMainState::GameClear);
+			}
+			//死亡中、ランダムで爆破SEを鳴らす
+			if (GetRand(30) == 0)
+			{
+				ResourceManager::StartSound(death_expro_se);
 			}
 			shake_anim = GetRand(death_timer) - (death_timer/2);
 			break;
@@ -288,6 +312,7 @@ void Boss::Update(ObjectManager* _manager)
 		damage_flg = true;
 		damage_anim_flg = true;
 		boss_state = BossState::DEATH;
+		ResourceManager::StopAllSound();
 	}
 	if (KeyInput::OnKey(KEY_INPUT_Z))
 	{
@@ -366,7 +391,7 @@ void Boss::Draw() const
 	{
 		//登場（300フレーム）
 		if (boss_appeared_timer < 300)
-		{
+		{	
 			float circle_size = boss_appeared_timer * 10;
 			if (circle_size > 300)circle_size = 300;
 			if (boss_appeared_timer > 240)circle_size = 300 - (boss_appeared_timer-240)*5;
@@ -504,7 +529,6 @@ void Boss::Draw() const
 
 void Boss::Finalize()
 {
-	ResourceManager::StopSound(bgm_abnormal);
 }
 
 void Boss::Move()
@@ -550,6 +574,7 @@ void Boss::Hit(Object* _object)
 		// バリアがなくなった場合の処理
 		if (barrier_num == 0) {
 			boss_state = BossState::DEATH;
+			ResourceManager::StopAllSound();
 		}
 	}
 }
