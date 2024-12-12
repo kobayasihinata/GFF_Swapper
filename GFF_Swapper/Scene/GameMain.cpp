@@ -37,7 +37,8 @@ void GameMain::Initialize()
 	object_manager->Initialize();
 
 	bgm_title =  ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav",false);
-	bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNormal.wav", false);
+	//bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNormal.wav", false);
+	bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1209233_無機質でミステリアスなファンタジーBGM.wav", false);
 	//bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1228555_RPGや冒険を思わせるチップチューン.wav", false);
 	bgm_noise =  ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNoise.wav", false);
 	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainAbnormal.wav", false);
@@ -88,10 +89,10 @@ AbstractScene* GameMain::Update()
 	{
 		ResourceManager::StartSound(bgm_normal);
 	}
-	else if(!boss_blind_flg && !object_manager->boss_appeared_flg)
-	{
-		ResourceManager::StartSound(bgm_abnormal);
-	}
+	//else if(!boss_blind_flg && !object_manager->boss_appeared_flg)
+	//{
+	//	ResourceManager::StartSound(bgm_abnormal);
+	//}
 
 	//カメラの更新
 	camera->Update(now_stage, object_manager->GetPlayerLocation());
