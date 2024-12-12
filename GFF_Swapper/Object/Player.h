@@ -7,6 +7,7 @@
 #define PLAYER_STATE_NUM 8	//プレイヤーの状態の数
 
 #define SPAWN_ANIM_TIME 90	//スポーン演出時間
+#define PLAYER_SPAWN_ANIM 40 //プレイヤー出現時間
 #define WARP_ANIM_TIME 120	//ステージ遷移演出時間
 
 //画像のパス一覧(playerState順に並べる)
@@ -102,14 +103,18 @@ private:
 
 	int player_image[PLAYER_STATE_NUM];	//プレイヤー画像の格納場所
 	int player_front_image;				//プレイヤーが色交換を成功させた時の画像格納
-	int landing_se;		//着地SE
-	int walk_se[4];		//歩行SE格納
-	int jump_se;		//ジャンプSE格納
-	int damage_se[3];	//被ダメージSE格納
-	int base_damage_se;	//基礎被ダメージSE格納(属性に)
-	int cursor_se;		//色交換カーソルSE格納
 
-	int now_riding;		//今乗っているブロックに応じて再生するSEを変える
+
+	int landing_se;						//着地SE
+	int walk_se[4];						//歩行SE格納
+	int jump_se;						//ジャンプSE格納
+	int damage_se[3];					//被ダメージSE格納
+	int base_damage_se;					//基礎被ダメージSE格納(属性に)
+	int cursor_se;						//色交換カーソルSE格納
+	int spawn_se;						//スポーン演出SE
+	int warphole_se;					//スポーン演出SE
+	int fall_se;						//落下SE
+	int now_riding;						//今乗っているブロックに応じて再生するSEを変える
 
 	int deathTimer = 0;
 	int stickTimer[2] = { 0,0 };
@@ -117,11 +122,11 @@ private:
 	bool emoteFlg;
 	int emoteCnt;
 
-	bool is_tutorial; //チュートリアル中か
-	bool spawn_anim_flg;	//スポーン演出中か判断
-	int  spawn_anim_timer;	//スポーン演出時間測定
-	int  warp_anim_timer;	//ステージ遷移演出時間測定
-	int matchup_image[3];	//相性表
+	bool is_tutorial;					//チュートリアル中か
+	bool spawn_anim_flg;				//スポーン演出中か判断
+	int  spawn_anim_timer;				//スポーン演出時間測定
+	int  warp_anim_timer;				//ステージ遷移演出時間測定
+	int matchup_image[3];				//相性表
 public:
 	Player();
 	~Player();

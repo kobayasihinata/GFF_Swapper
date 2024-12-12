@@ -66,6 +66,7 @@ EnemyDeer::~EnemyDeer()
 
 void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
+	camera = Camera::Get();
 	//一旦引数はパス 鹿がどこにでるかの座標 
 	//地面と完全に座標が一致していると地面に引っかかって動かなくなる 859
 	location = _location;
@@ -80,6 +81,8 @@ void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
+	faint_se = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_faint.wav");
+	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
 }
 
 void EnemyDeer::Update(ObjectManager* _manager)
@@ -118,6 +121,12 @@ void EnemyDeer::Update(ObjectManager* _manager)
 		d_leg_rad[0]--;
 	}*/
 
+	//落下死処理
+	if (location.y > camera->GetStageSize().y)
+	{
+		deer_state = DeerState::DEATH;
+		ResourceManager::StartSound(fall_se);
+	}
 	if (deer_state == DeerState::DEATH)
 	{
 		if (++deer_death_timer > 60)
@@ -251,6 +260,10 @@ void EnemyDeer::Draw()const
 			{
 				//徐々に透明に
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
+			}
+			if (deer_state == DeerState::FAINT || deer_state == DeerState::DEATH)
+			{
+
 				//ダメージ画像描画
 				DrawRotaGraphF(local_location.x + (erea.x / 2),
 					local_location.y + (erea.y / 2),
@@ -261,9 +274,11 @@ void EnemyDeer::Draw()const
 					true);
 				//透明をリセットする
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-				return;
 			}
-			ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, false);
+			else
+			{
+				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, false);
+			}
 		}
 		//左移動
 		else
@@ -272,6 +287,10 @@ void EnemyDeer::Draw()const
 			{
 				//徐々に透明に
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
+			}
+			if (deer_state == DeerState::FAINT || deer_state == DeerState::DEATH)
+			{
+
 				//ダメージ画像描画
 				DrawRotaGraphF(local_location.x + (erea.x / 2),
 					local_location.y + (erea.y / 2),
@@ -282,9 +301,11 @@ void EnemyDeer::Draw()const
 					false);
 				//透明をリセットする
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-				return;
 			}
-			ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, true);
+			else
+			{
+				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, false);
+			}
 		}
 	}
 }
@@ -559,6 +580,8 @@ void EnemyDeer::Hit(Object* _object)
 			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)
 			{
 				ChangeDeerState(DeerState::FAINT);
+				//スタンSE再生
+				ResourceManager::StartSound(faint_se);
 			}
 			break;
 			//あいこの場合

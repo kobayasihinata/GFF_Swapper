@@ -33,7 +33,7 @@ private:
 		left,
 		right
 	};
-
+	class Camera* camera;				 //カメラ情報
 	Vector2D old_location;	//1フレーム前の座標
 	Vector2D velocity;		//加速度
 	DeerState deer_state;
@@ -62,6 +62,8 @@ private:
 
 	int walk_se;		//歩行効果音
 	int damage_se[3];	//被ダメージSE格納
+	int faint_se;			//スタンSE
+	int fall_se;			//落下SE
 
 	int anim_fps;
 	float leg_angle[4];
