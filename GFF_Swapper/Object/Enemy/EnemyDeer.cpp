@@ -525,6 +525,9 @@ void EnemyDeer::Hit(Object* _object)
 		}
 	}
 
+	//ボス攻撃なら処理終わり
+	if (_object->GetIsBossAttack())return;
+
 	//ダメージゾーンを上書きする
 	if ((this->color == GREEN && _object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE) ||
 		(this->color == BLUE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE) ||
