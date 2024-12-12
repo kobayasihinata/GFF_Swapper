@@ -840,6 +840,7 @@ void GameMain::UpdateGameOver()
 			ResourceManager::StartSound(decision_se);
 			SetStage(now_stage);
 			gm_state = GameMainState::S_GameMain;
+			object_manager->UpdateState(GameMainState::Null);
 			pause_after_flg = true;
 			ResourceManager::StopSound(bgm_title);
 			//BGMの再生(ボスステージ以外)
