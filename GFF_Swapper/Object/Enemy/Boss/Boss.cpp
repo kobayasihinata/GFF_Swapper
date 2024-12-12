@@ -121,7 +121,7 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _
 	appeared_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_ap.wav");
 	death_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_death.wav");
 	death_expro_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/boss_expro.wav");
-	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainAbnormal.wav", false);
+	bgm_abnormal = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1129870_ゲームのボス戦など向け大迫力BGM.wav", false);
 }
 
 void Boss::Update(ObjectManager* _manager)

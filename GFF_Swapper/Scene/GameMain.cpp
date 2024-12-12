@@ -15,6 +15,7 @@
 #include "Help.h"
 #include "Option.h"
 
+
 GameMain::GameMain(int _stage) :frame(0), stop_flg(false),stage_data{ 0 }, now_stage(0), stage_width_num(0), stage_height_num(0), stage_width(0), stage_height(0), player_object(0), boss_object(0), weather_timer(0), boss_blind_flg(false), boss_blind_timer(0), player_flg(false), fadein_flg(true), create_once(false),pause_after_flg(false), cursor(0), death_timer(0),clear_timer(0), set_sound_once(false), gm_state(GameMainState::S_GameMain), now_scene(this), blackout(0)
 {
 	old_stage = -1;	//ひとつ前のステージは存在しないため-1
@@ -36,7 +37,8 @@ void GameMain::Initialize()
 	object_manager = new ObjectManager();
 	object_manager->Initialize();
 
-	bgm_title =  ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav",false);
+	//bgm_title =  ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false);
+	bgm_title = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false);
 	//bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/GameMainNormal.wav", false);
 	bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1209233_無機質でミステリアスなファンタジーBGM.wav", false);
 	//bgm_normal = ResourceManager::SetSound("Resource/Sounds/BGM/AS_1228555_RPGや冒険を思わせるチップチューン.wav", false);
@@ -85,16 +87,6 @@ AbstractScene* GameMain::Update()
 
 	//シーン遷移用変数のリセット
 	now_scene = this;
-
-	//BGMが再生されていなければ、再生する
-	if (now_stage != STAGE_NUM - 1)
-	{
-		ResourceManager::StartSound(bgm_normal);
-	}
-	else if(!boss_blind_flg && !object_manager->boss_appeared_flg)
-	{
-		ResourceManager::StartSound(bgm_abnormal);
-	}
 
 	//カメラの更新
 	camera->Update(now_stage, object_manager->GetPlayerLocation());
@@ -413,6 +405,15 @@ Vector2D GameMain::RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) con
 
 void GameMain::UpdateGameMain()
 {
+	//BGMが再生されていなければ、再生する
+	if (now_stage != STAGE_NUM - 1)
+	{
+		ResourceManager::StartSound(bgm_normal);
+	}
+	else if (!boss_blind_flg && !object_manager->boss_appeared_flg)
+	{
+		ResourceManager::StartSound(bgm_abnormal);
+	}
 	
 	if (PadInput::OnButton(XINPUT_BUTTON_START) && gm_state != GameMainState::Pause && !object_manager->boss_appeared_flg)
 	{
@@ -805,15 +806,16 @@ void GameMain::UpdateGameOver()
 		return;
 	}
 
-	ResourceManager::StopAllSound();
-	ResourceManager::StartSound(bgm_title);
+	/*ResourceManager::StopAllSound();
+	ResourceManager::StartSound(bgm_title);*/
 	cursorOld = cursor;
 	if (set_sound_once == false)
 	{
 		ResourceManager::StopAllSound();
-		ResourceManager::StartSound(bgm_title);
+		//ResourceManager::StartSound(bgm_title);
 		set_sound_once = true;
 	}
+
 
 	if (PadInput::TipLStick(STICKL_X) < -0.5f || PadInput::OnButton(XINPUT_BUTTON_DPAD_LEFT))
 	{
