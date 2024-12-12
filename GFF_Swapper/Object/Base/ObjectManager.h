@@ -48,6 +48,7 @@ public:
 
 	bool boss_appeared_flg;						//ボス演出中か格納
 	bool boss_appeared_skip;					//ボスに二回目以降挑戦するなら、演出スキップが出来るようにする
+	bool player_warp_flg;						//プレイヤーのステージ遷移演出実行中か格納
 
 public:
 	void Initialize();				//初期化処理
@@ -75,6 +76,7 @@ public:
 	Vector2D GetPlayerLocalLocation()const;				//プレイヤーローカル座標取得
 	Vector2D GetPlayerErea()const;						//プレイヤー大きさ取得
 	int GetPlayerColor()const;							//プレイヤーの色取得
+	bool GetBlindFlg()const;							//暗転中か取得
 
 	Vector2D GetBossLocation()const;					//ボスの位置取得
 	void UpdateState(GameMainState _state);				//ゲームメインの状態更新

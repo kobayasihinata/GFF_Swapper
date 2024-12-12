@@ -62,6 +62,10 @@ Player::Player()
 	animFlg = false;	
 	circleAng = 0.f;
 
+	spawn_anim_flg = true;
+	spawn_anim_timer = 0;
+	warp_anim_timer = 0;
+
 	matchup_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_red.PNG");
 	matchup_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_green.PNG");
 	matchup_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_blue.PNG");
@@ -72,9 +76,10 @@ Player::Player()
 	walk_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/walk_grass.wav");
 	walk_se[3] = ResourceManager::SetSound("Resource/Sounds/Player/walk_water.wav");
 	jump_se = ResourceManager::SetSound("Resource/Sounds/Player/player_jump.wav");
-	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/damage_fire.wav");
-	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/damage_grass.wav");
-	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_water.wav");
+	base_damage_se = ResourceManager::SetSound("Resource/Sounds/Player/player_damage.wav");
+	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/damage_water.wav");
+	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/damage_fire.wav");
+	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_grass.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 
 	//プレイヤーの画像の読み込み
@@ -106,6 +111,38 @@ void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int
 
 void Player::Update(ObjectManager* _manager)
 {
+	//ステージ遷移時のリセット処理
+	if (_manager->player_respawn_flg)
+	{
+		PlayerReset(_manager);
+	}
+
+	//スポーン演出処理
+	if (spawn_anim_flg)
+	{
+		//演出が終了したら
+		if (++spawn_anim_timer > SPAWN_ANIM_TIME)
+		{
+			//フラグを下げてタイマーをリセット
+			spawn_anim_flg = false;
+			spawn_anim_timer = 0;
+		}
+		//スポーン演出中はプレイヤーのアップデートはしない
+		return;
+	}
+	//遷移演出処理
+	if (_manager->player_warp_flg)
+	{
+		//演出が終了したら
+		if (++warp_anim_timer > WARP_ANIM_TIME)
+		{
+			//フラグを下げて、タイマーをリセット
+			_manager->player_warp_flg = false;
+			warp_anim_timer = 0;
+		}
+		//遷移演出中はプレイヤーのアップデートはしない
+		return;
+	}
 	if (!is_tutorial) {
 		__super::Update(_manager);
 
@@ -122,12 +159,6 @@ void Player::Update(ObjectManager* _manager)
 		if (velocity.x != 0 || velocity.y != 0)
 		{
 			_manager->SpawnEffect(location, erea, ShineEffect, 20, color);
-		}
-
-		//ステージ遷移時のリセット処理
-		if (_manager->player_respawn_flg)
-		{
-			PlayerReset(_manager);
 		}
 
 		if (stageHitFlg[1][bottom] != true) { //重力
@@ -195,7 +226,7 @@ void Player::Update(ObjectManager* _manager)
 				objSelectNumTmp = 0;
 
 				//描画する色を白に
-				draw_color = WHITE;
+				//draw_color = WHITE;
 			}
 			else
 			{
@@ -353,6 +384,26 @@ void Player::Update(ObjectManager* _manager)
 
 void Player::Draw()const
 {
+	//登場演出の描画
+	if (spawn_anim_flg)
+	{
+		int oval_size = (spawn_anim_timer * 2);
+		if (oval_size > 40)oval_size = 40;
+		//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(0, 0, GetRand(255)), true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f,      oval_size * 1.5f, 30, 0x000066, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 5,  oval_size * 1.5f - 5, 30, 0x000055, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 10, oval_size * 1.5f - 10, 30, 0x000044, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 15, oval_size * 1.5f - 15, 30, 0x000033, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 20, oval_size * 1.5f - 20, 30, 0x000022, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 25, oval_size * 1.5f - 25, 30, 0x000011, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 30, oval_size * 1.5f - 30, 30, 0x000000, true);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, spawn_anim_timer*2.5f-20);
+	}
+	//遷移演出中の描画
+	if (warp_anim_timer > 0)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - warp_anim_timer * 2.5f);
+	}
 	__super::Draw();
 
 	/*SetFontSize(35);
@@ -624,7 +675,13 @@ void Player::Hit(Object* _object)
 	//不利な属性のブロックかダメージゾーンと当たった時の処理
 	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER) && CheckCompatibility(this, _object) == -1)
 	{
-		damageFlg = true;
+		//演出中ならダメージを受けない
+		if (!damageEffectFlg)
+		{
+			damageFlg = true;
+		}
+		//触れた色に応じてSEを変える
+		now_riding = GetColorNum(_object->GetColorData());
 	}
 
 	//ダメージゾーンを上書きする
@@ -1375,8 +1432,9 @@ void Player::PlayerSound()
 		}
 
 		//ダメージ
-		if (damageFlg && !damageOldFlg && now_riding > 0) {
-			ResourceManager::StartSound(damage_se[now_riding-1]);
+		if (damageFlg && !damageOldFlg) {
+			ResourceManager::StartSound(damage_se[GetColorNum(this->color)]);
+			ResourceManager::StartSound(base_damage_se);
 		}
 	}
 }
@@ -1743,7 +1801,7 @@ void Player::DrawPlayer() const
 
 void Player::DrawPlayerImage()const
 {
-	if (emoteFlg) {
+	if (emoteFlg || spawn_anim_flg) {
 		//プレイヤー正面描画
 		DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_front_image, GetColorNum(color)), TRUE);
 
@@ -1752,7 +1810,7 @@ void Player::DrawPlayerImage()const
 	{//見た目
 
 	//ダメージ中描画
-		if (damageEffectFlg && damageEffectTime != 90.f && damageEffectTime > 45.f) {
+		if ((p_state == PlayerState::DAMAGE_LEFT || p_state == PlayerState::DAMAGE_RIGHT) && damageEffectTime > 45.f) {
 			if ((int)damageEffectTime % 4 != 0) {
 				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)), TRUE);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 20);
@@ -1768,8 +1826,10 @@ void Player::DrawPlayerImage()const
 		//通常描画
 		else
 		{
-			ResourceManager::DrawColorAnimGraph(local_location+(erea/2), player_image[p_state], color,false);
-			DebugInfomation::Add("p_state", (int)p_state);
+			//ダメージ後の無敵中なら点滅
+			if ((int)damageEffectTime % 4 != 0) {
+				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), player_image[p_state], color, false);
+			}
 		}
 	}
 }
@@ -2033,7 +2093,9 @@ void Player::PlayerReset(ObjectManager* _manager)
 	//プレイヤー再生成フラグを下ろす
 	_manager->player_respawn_flg = false;
 	//プレイヤースポーンエフェクトの生成
-	_manager->SpawnEffect({ _manager->player_respawn.x + PLAYER_WIDTH / 2 ,_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, _manager->GetPlayerColor());
+	//_manager->SpawnEffect({ _manager->player_respawn.x + PLAYER_WIDTH / 2 ,_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, _manager->GetPlayerColor());
 
-	
+	//プレイヤースポーン演出の開始
+	spawn_anim_flg = true;
+	spawn_anim_timer = 0;
 }

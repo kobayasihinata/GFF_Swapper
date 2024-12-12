@@ -16,6 +16,8 @@ void ObjectManager::Initialize()
 
 	change_stage = -1;
 	boss_appeared_flg = false;
+
+	player_warp_flg = false;
 }
 
 void ObjectManager::Update(GameMain* _g)
@@ -132,15 +134,15 @@ void ObjectManager::Update(GameMain* _g)
 
 	//暗転フラグの更新	
 	boss_blind_flg = _g->GetBlindFlg();
-
+	
 	//ゲームメインステートの変更をする必要があるなら変更
 	if (change_state != GameMainState::Null)
 	{
 		_g->UpdateState(change_state);
 		change_state = GameMainState::Null;
 	}
-	//ステージの変更があるなら変更
-	if (change_stage != -1)
+	//ステージの変更があるなら変更　プレイヤーの遷移演出中は変更しない
+	if (change_stage != -1 && !player_warp_flg)
 	{
 		_g->SetStage(change_stage);
 		change_stage = -1;
@@ -190,9 +192,9 @@ void ObjectManager::Draw()const
 	{
 		can_swap_object->Draw();
 	}
-
 	//プレイヤーの描画
 	player_object->Draw();
+
 
 	//ボスの描画
 	if (!boss_blind_flg)
@@ -203,9 +205,11 @@ void ObjectManager::Draw()const
 	//ボス演出スキップが可能なら、スキップボタンを教える
 	if (boss_appeared_skip && boss_appeared_flg)
 	{
-		DrawBox(0, SCREEN_HEIGHT - GetFontSize(), GetDrawStringWidth("B = スキップ", strlen("B = スキップ")), SCREEN_HEIGHT, 0x000000, true);
-		DrawBox(0, SCREEN_HEIGHT - GetFontSize(), GetDrawStringWidth("B = スキップ", strlen("B = スキップ")), SCREEN_HEIGHT, 0xffffff, false);
-		DrawString(1, SCREEN_HEIGHT - GetFontSize(), "B = スキップ", 0xffffff);
+		DrawBox(0, SCREEN_HEIGHT - 40, GetDrawStringWidth("B     = スキップ", strlen("B     = スキップ")), SCREEN_HEIGHT, 0x000000, true);
+		DrawBox(0, SCREEN_HEIGHT - 40, GetDrawStringWidth("B     = スキップ", strlen("B     = スキップ")), SCREEN_HEIGHT, 0xffffff, false);
+		DrawGraph(0, SCREEN_HEIGHT - 40,
+			ResourceManager::GetDivGraph(UserData::button_image[0], XINPUT_BUTTON_B), TRUE);
+		DrawString(40, SCREEN_HEIGHT - 30, " = スキップ", 0xffffff);
 	}
 	//エフェクトの描画
 	effect_spawner->Draw();
@@ -428,6 +432,11 @@ Vector2D ObjectManager::GetPlayerErea()const
 int ObjectManager::GetPlayerColor()const
 {
 	return player_object->GetColorData(); 
+}
+
+bool ObjectManager::GetBlindFlg()const
+{
+	return boss_blind_flg;
 }
 
 Vector2D ObjectManager::GetBossLocation()const

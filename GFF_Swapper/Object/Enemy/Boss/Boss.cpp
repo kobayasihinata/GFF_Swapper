@@ -152,12 +152,12 @@ void Boss::Update(ObjectManager* _manager)
 		//マネージャー側に演出開始を伝える
 		_manager->boss_appeared_flg = true;
 		//一回だけSE再生
-		if (boss_appeared_timer == 125)
+		if (boss_appeared_timer == 300)
 		{
 			ResourceManager::StartSound(appeared_se);
 		}
 		//ボス振動
-		if (boss_appeared_timer > 125)
+		if (boss_appeared_timer > 300)
 		{
 			shake_anim = GetRand(30) - 15;
 		}
@@ -307,16 +307,113 @@ void Boss::Update(ObjectManager* _manager)
 
 void Boss::Draw() const
 {
-	//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, color, FALSE);
+	//停止中で無いなら、エフェクトの描画
+	if (!stop_flg)
+	{
+		//色変化エフェクト描画
+		if (cnt > 0 && cnt < 240)
+		{
+			int delay1 = cnt + 5;
+			int delay2 = cnt + 10;
+			int delay3 = cnt + 15;
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt % 20) * 10) - 2, 6, 0xffffff, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1 % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1 % 20) * 10) - 2, 6, 0xffffff, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2 % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2 % 20) * 10) - 2, 6, 0xffffff, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3 % 20) * 10), 6, next_color, false);
+			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3 % 20) * 10) - 2, 6, 0xffffff, false);
+		}
+		else
+		{
+			//攻撃の強さによって出る線が変わる
+			for (int i = 0; i < attack_count / 4 + 1; i++)
+			{
+				DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25, 6, color, false);
+				DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25 - 2, 6, 0xffffff, false);
+			}
+		}
 
-	////本体
-	//DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 35, 0x000000, TRUE);
-	//DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 35, 34, 0xFFFFFF, FALSE, 3.0f);
-	//DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, 36, 36, color, FALSE, 2.0f);
+		//火攻撃のターゲット線＆照準
+		if (attack == 0 && cnt >= 240)
+		{
+			//ターゲット線
+			DrawLineAA(local_location.x + (erea.x / 2),
+				local_location.y + (erea.y / 2),
+				local_location.x + (erea.x / 2) + (velocity.x * 1000),
+				local_location.y + (erea.y / 2) + (velocity.y * 1000), 0xff0000, true);
 
-	//羽描画
-	//DrawWings();
+			int line = 50;
+			//照準
+			DrawCircleAA(player_local_location.x + (PLAYER_WIDTH / 2),
+				player_local_location.y + (PLAYER_HEIGHT / 2),
+				PLAYER_HEIGHT / 2, 50, 0xffffff, false);
 
+			DrawLineAA(player_local_location.x - line,
+				player_local_location.y + (PLAYER_HEIGHT / 2),
+				player_local_location.x + PLAYER_WIDTH + line,
+				player_local_location.y + (PLAYER_HEIGHT / 2), 0xffffff);
+
+			DrawLineAA(player_local_location.x + (PLAYER_WIDTH / 2),
+				player_local_location.y - line,
+				player_local_location.x + (PLAYER_WIDTH / 2),
+				player_local_location.y + PLAYER_HEIGHT + line, 0xffffff);
+		}
+	}
+	//停止中（演出）の描画
+	else if (boss_appeared_timer > 1)
+	{
+		//登場（300フレーム）
+		if (boss_appeared_timer < 300)
+		{
+			float circle_size = boss_appeared_timer * 10;
+			if (circle_size > 300)circle_size = 300;
+			if (boss_appeared_timer > 240)circle_size = 300 - (boss_appeared_timer-240)*5;
+			//ワープホール描画
+			DrawCircleAA(local_location.x + (erea.x / 2),
+				local_location.y + (erea.y / 2),
+				circle_size,
+				30,
+				0x000000,
+				true);/*
+			for (int x = 0; x < appearance_size.x; x += 40)
+			{
+				for (int y = 0; y < appearance_size.y; y += 40)
+				{
+					if (GetRand(3) == 0)
+					{
+						DrawBoxAA(local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x,
+							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y,
+							local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x + 41,
+							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y + 41, 0x000000, true);
+					}
+				}
+			}*/
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, (boss_appeared_timer * 3)-260);
+			//DrawBox(local_location.x + (erea.x / 2) - (appearance_size.x / 2),
+			//	local_location.y + (erea.y / 2) - (appearance_size.y / 2),
+			//	local_location.x + (erea.x / 2) + (appearance_size.x / 2),
+			//	local_location.y + (erea.y / 2) + (appearance_size.y / 2),
+			//	0x000000, TRUE);
+
+
+		}
+		//暗転(一瞬)
+		else if (boss_appeared_timer < 305)
+		{
+			DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true); \
+		}
+		//覇気
+		else
+		{
+			for (int i = 0; i < 200; i += 20)
+			{
+				DrawCircleAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), (boss_appeared_timer + i) * 30 % 1000, 100, 0xffffff, FALSE);
+
+			}
+		}
+	}
 	// フラグがTRUEだったらバリアを点滅させる
 	if (damage_effect_flg)
 	{
@@ -393,104 +490,8 @@ void Boss::Draw() const
 	//	DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, barrier_rad[i], 50, barrier_color, FALSE, 5.f);
 	//}
 
-	//停止中で無いなら、エフェクトの描画
-	if (!stop_flg)
-	{
-		//色変化エフェクト描画
-		if (cnt > 0 && cnt < 240)
-		{
-			int delay1 = cnt + 5;
-			int delay2 = cnt + 10;
-			int delay3 = cnt + 15;
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt % 20) * 10), 6, next_color, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((cnt % 20) * 10) - 2, 6, 0xffffff, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1 % 20) * 10), 6, next_color, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay1 % 20) * 10) - 2, 6, 0xffffff, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2 % 20) * 10), 6, next_color, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay2 % 20) * 10) - 2, 6, 0xffffff, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3 % 20) * 10), 6, next_color, false);
-			DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (BOSS_SIZE * 1.5) - ((delay3 % 20) * 10) - 2, 6, 0xffffff, false);
-		}
-		else
-		{
-			//攻撃の強さによって出る線が変わる
-			for (int i = 0; i < attack_count / 4 + 1; i++)
-			{
-				DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25, 6, color, false);
-				DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25 - 2, 6, 0xffffff, false);
-			}
-		}
-
-		//火攻撃のターゲット線＆照準
-		if (attack == 0 && cnt >= 240)
-		{
-			//ターゲット線
-			DrawLineAA(local_location.x + (erea.x / 2),
-				local_location.y + (erea.y / 2),
-				local_location.x + (erea.x / 2) + (velocity.x * 1000),
-				local_location.y + (erea.y / 2) + (velocity.y * 1000), 0xff0000, true);
-
-			int line = 50;
-			//照準
-			DrawCircleAA(player_local_location.x + (PLAYER_WIDTH / 2),
-				player_local_location.y + (PLAYER_HEIGHT / 2),
-				PLAYER_HEIGHT / 2, 50, 0xffffff, false);
-
-			DrawLineAA(player_local_location.x - line,
-				player_local_location.y + (PLAYER_HEIGHT / 2),
-				player_local_location.x + PLAYER_WIDTH + line,
-				player_local_location.y + (PLAYER_HEIGHT / 2), 0xffffff);
-
-			DrawLineAA(player_local_location.x + (PLAYER_WIDTH / 2),
-				player_local_location.y - line,
-				player_local_location.x + (PLAYER_WIDTH / 2),
-				player_local_location.y + PLAYER_HEIGHT + line, 0xffffff);
-		}
-	}
-	//停止中（演出）の描画
-	else if (boss_appeared_timer > 1)
-	{
-		//登場（２秒）
-		if (boss_appeared_timer < 120)
-		{
-			for (int x = 0; x < appearance_size.x; x += 40)
-			{
-				for (int y = 0; y < appearance_size.y; y += 40)
-				{
-					if (GetRand(3) == 0)
-					{
-						DrawBoxAA(local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x,
-							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y,
-							local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x + 41,
-							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y + 41, 0x000000, true);
-					}
-				}
-			}
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (boss_appeared_timer*2));
-			DrawBox(local_location.x + (erea.x / 2) - (appearance_size.x / 2),
-				local_location.y + (erea.y / 2) - (appearance_size.y / 2),
-				local_location.x + (erea.x / 2) + (appearance_size.x / 2),
-				local_location.y + (erea.y / 2) + (appearance_size.y / 2),
-				0x000000, TRUE);
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-
-
-		}
-		//暗転(一瞬)
-		else if (boss_appeared_timer < 125)
-		{
-			DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);\
-		}
-		//覇気
-		else
-		{
-			for (int i = 0; i < 200; i += 20)
-			{
-				DrawCircleAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), (boss_appeared_timer + i) * 30 % 1000, 100, 0xffffff, FALSE);
-
-			}
-		}
-	}
+	//透明なら元に戻す
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
 	//やられる演出
 	if (boss_state == BossState::DEATH)
