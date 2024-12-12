@@ -3,12 +3,14 @@
 #include "../../Utility/ResourceManager.h"
 #include<math.h>
 
+#include "../../Utility/DebugInfomation.h"
+
 
 #define _PI 3.141592654f
 
 #define ENEMY_SPEED 2.f
 
-EnemyBat::EnemyBat() :up(0), bat_state(BatState::LEFT), wing_angle(0.0f), vector{ 0.0f }, faint_timer(0), death_timer(0), se_once(false)
+EnemyBat::EnemyBat() :up(0), bat_state(BatState::LEFT), wing_angle(0.0f), vector{ 0.0f }, faint_timer(0), death_timer(0), se_once(false),bat_state_num(0)
 {
 	type = ENEMY;
 	can_swap = TRUE;
@@ -47,6 +49,7 @@ void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 void EnemyBat::Update(ObjectManager* _manager)
 {
 	__super::Update(_manager);
+
 
 	up += 1;
 	// 羽の角度を変化させる
@@ -149,6 +152,9 @@ void EnemyBat::Draw() const
 
 	//各頂点をlocal_locationに置き換えた
 
+	DebugInfomation::Add("bat_state", vector.x);
+
+
 	const std::vector<Vector2D> vertices = {
 		// 耳
 		{local_location.x + 46, local_location.y}, {local_location.x + 46, local_location.y + 19}, {local_location.x + 55, local_location.y + 9},
@@ -221,7 +227,16 @@ void EnemyBat::Draw() const
 		//点滅
 		if (frame % 3 != 0)
 		{
-			DrawGraphF(local_location.x, local_location.y, ResourceManager::GetDivGraph(damage_image, GetColorNum(color)), TRUE);
+			if (bat_state == BatState::LEFT)
+			{
+				DrawRotaGraphF(local_location.x + (erea.x / 2),
+					local_location.y + (erea.y / 2),
+					1.0f,
+					0,
+					ResourceManager::GetDivGraph(damage_image, GetColorNum(color)),
+					TRUE,
+					true);
+			}
 		}
 	}
 	
@@ -240,34 +255,73 @@ void EnemyBat::Finalize()
 void EnemyBat::Move(ObjectManager* _manager)
 {
 	//加速度を固定
-	vector.x = ENEMY_SPEED;
-	//左移動
-	if (bat_state == BatState::LEFT) {
-		location.x -= vector.x;
-		location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
+	//vector.x = ENEMY_SPEED;
 
-	}
-	//右移動
-	if (bat_state == BatState::RIGHT) {
-		location.x += vector.x;
+	switch (bat_state)
+	{
+	case BatState::IDLE:
+		break;
+	case BatState::LEFT:
+		vector.x = -ENEMY_SPEED;
+		//location.x -= vector.x;
 		location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
-	}
-
-	if (bat_state == BatState::DEATH) {
+		bat_state_num = 1;
+		break;
+	case BatState::RIGHT:
+		vector.x = ENEMY_SPEED;
+		//location.x += vector.x;
+		location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
+		bat_state_num = 2;
+		break;
+	case BatState::FAINT:
+		bat_state_num = 3;
+		break;
+	case BatState::DEATH:
 		//自分の色が青のとき吸われてく
+		bat_state_num = 4;
+		vector.x = 0;
 
 		if (++death_timer > 60) {
 			if (this != nullptr) {
 				_manager->DeleteObject(this);
 			}
 		}
-		
-		/*else {
-			if (this != nullptr) {
-				_manager->DeleteObject(this);
-			}
-		}*/
+		break;
+	default:
+		break;
 	}
+
+	location.x += vector.x;
+	////左移動
+	//if (bat_state == BatState::LEFT) {
+	//	location.x -= vector.x;
+	//	location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
+	//	bat_state_num = 1;
+
+	//}
+	////右移動
+	//if (bat_state == BatState::RIGHT) {
+	//	location.x += vector.x;
+	//	location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
+	//	bat_state_num = 2;
+	//}
+
+	//if (bat_state == BatState::DEATH) {
+	//	//自分の色が青のとき吸われてく
+	//	bat_state_num = 4;
+
+	//	if (++death_timer > 60) {
+	//		if (this != nullptr) {
+	//			_manager->DeleteObject(this);
+	//		}
+	//	}
+	//	
+	//	/*else {
+	//		if (this != nullptr) {
+	//			_manager->DeleteObject(this);
+	//		}
+	//	}*/
+	//}
 }
 
 void EnemyBat::Hit(Object* _object)
@@ -293,7 +347,7 @@ void EnemyBat::Hit(Object* _object)
 		erea.x = tmpe.x - 15.f;
 
 		//プレイヤー上方向の判定
-		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][top]) {
+		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][top] && bat_state != BatState::DEATH) {
 			stageHitFlg[0][top] = true;
 			stageHitFlg[1][top] = true;
 		}
@@ -303,7 +357,7 @@ void EnemyBat::Hit(Object* _object)
 
 		//プレイヤー下方向の判定
 		location.y += tmpe.y + 1;
-		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][bottom]) {
+		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][bottom] && bat_state != BatState::DEATH) {
 			stageHitFlg[0][bottom] = true;
 			stageHitFlg[1][bottom] = true;
 		}
@@ -341,7 +395,7 @@ void EnemyBat::Hit(Object* _object)
 		erea.x = 1;
 
 		//プレイヤー左方向の判定
-		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][left]) {
+		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][left] && bat_state != BatState::DEATH) {
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
 			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
@@ -353,7 +407,7 @@ void EnemyBat::Hit(Object* _object)
 
 		//プレイヤー右方向の判定
 		location.x = tmpl.x + tmpe.x + 1;
-		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right]) {
+		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right] && bat_state != BatState::DEATH) {
 			stageHitFlg[0][right] = true;
 			stageHitFlg[1][right] = true;
 		}
@@ -526,8 +580,11 @@ void EnemyBat::Hit(Object* _object)
 			//{
 			//	vector.y = -20;
 			//}
-			vector.x = -10;
-			vector.y = -20;
+			if(bat_state != BatState::DEATH)
+			{ 
+				vector.x = -10;
+				vector.y = -20;
+			}
 			break;
 			//有利の場合
 		case 1:

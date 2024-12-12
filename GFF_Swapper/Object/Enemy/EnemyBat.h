@@ -44,6 +44,8 @@ private:
 
 	bool se_once;		//一回だけ再生	
 
+	int bat_state_num;
+
 public:
 	EnemyBat();
 	~EnemyBat();
