@@ -75,6 +75,7 @@ public:
 	Vector2D GetPlayerLocalLocation()const;				//プレイヤーローカル座標取得
 	Vector2D GetPlayerErea()const;						//プレイヤー大きさ取得
 	int GetPlayerColor()const;							//プレイヤーの色取得
+	bool GetBlindFlg()const;							//暗転中か取得
 
 	Vector2D GetBossLocation()const;					//ボスの位置取得
 	void UpdateState(GameMainState _state);				//ゲームメインの状態更新

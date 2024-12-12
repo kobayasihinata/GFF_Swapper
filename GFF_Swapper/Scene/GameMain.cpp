@@ -388,6 +388,7 @@ void GameMain::SetStage(int _stage)
 		ResourceManager::StopAllSound();
 
 		boss_blind_flg = true;
+		back_ground->SetIsBlind(true);
 	}
 }
 
@@ -437,24 +438,22 @@ void GameMain::UpdateGameMain()
 	//各オブジェクトの更新
 	object_manager->Update(this);
 
-	//背景の更新
-	back_ground->Update();
-
-	//プレイヤーがボスエリアに入ったら退路を閉じる
+	//背景を暗転させるか判断
+	if (now_stage == -STAGE_NUM - 1 && boss_blind_flg == true)
+	{
+		back_ground->SetIsBlind(true);
+	}
+	//プレイヤーがボスエリアに入ったらボス演出開始
 	if (now_stage == STAGE_NUM-1 && object_manager->GetPlayerLocalLocation().x > 160 && object_manager->GetPlayerLocalLocation().x < 200 && create_once == false)
 	{
-		object_manager->CreateObject(new Stage(2), { 160,520 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		object_manager->CreateObject(new Stage(2), { 160,560 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		object_manager->CreateObject(new Stage(2), { 160,600 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		object_manager->CreateObject(new Stage(2), { 160,640 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		object_manager->CreateObject(new Stage(1), { 120,520 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		object_manager->CreateObject(new Stage(1), { 120,560 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		object_manager->CreateObject(new Stage(1), { 120,600 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
-		object_manager->CreateObject(new Stage(1), { 120,640 }, { BOX_WIDTH,BOX_HEIGHT }, 0);
 		boss_blind_timer = 10;
 		boss_blind_flg = false;
 		create_once = true;
+		back_ground->SetIsBlind(false);
 	}
+
+	//背景の更新
+	back_ground->Update();
 
 	//一定時間暗転
 	if (--boss_blind_timer < 0)
@@ -478,7 +477,7 @@ void GameMain::DrawGameMain()const
 	//オブジェクトの描画
 	object_manager->Draw();
 
-	//暗転
+	//完全暗転
 	if (boss_blind_timer > 0)
 	{
 		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);

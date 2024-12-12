@@ -62,6 +62,11 @@ Player::Player()
 	animFlg = false;	
 	circleAng = 0.f;
 
+	spawn_anim_flg = true;
+	spawn_anim_timer = 0;
+	warp_anim_flg = false;
+	warp_anim_timer = 0;
+
 	matchup_image[0] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_red.PNG");
 	matchup_image[1] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_green.PNG");
 	matchup_image[2] = ResourceManager::SetGraph("Resource/Images/sozai/matchup_blue.PNG");
@@ -107,6 +112,25 @@ void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int
 
 void Player::Update(ObjectManager* _manager)
 {
+	//ステージ遷移時のリセット処理
+	if (_manager->player_respawn_flg)
+	{
+		PlayerReset(_manager);
+	}
+
+	//スポーン演出処理
+	if (spawn_anim_flg)
+	{
+		//演出が終了したら
+		if (++spawn_anim_timer > SPAWN_ANIM_TIME)
+		{
+			//フラグを下げてタイマーをリセット
+			spawn_anim_flg = false;
+			spawn_anim_timer = 0;
+		}
+		//スポーン演出中はプレイヤーのアップデートはしない
+		return;
+	}
 	if (!is_tutorial) {
 		__super::Update(_manager);
 
@@ -123,12 +147,6 @@ void Player::Update(ObjectManager* _manager)
 		if (velocity.x != 0 || velocity.y != 0)
 		{
 			_manager->SpawnEffect(location, erea, ShineEffect, 20, color);
-		}
-
-		//ステージ遷移時のリセット処理
-		if (_manager->player_respawn_flg)
-		{
-			PlayerReset(_manager);
 		}
 
 		if (stageHitFlg[1][bottom] != true) { //重力
@@ -354,6 +372,21 @@ void Player::Update(ObjectManager* _manager)
 
 void Player::Draw()const
 {
+	//登場演出の描画
+	if (spawn_anim_flg)
+	{
+		int oval_size = (spawn_anim_timer * 2);
+		if (oval_size > 40)oval_size = 40;
+		//DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(0, 0, GetRand(255)), true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f,      oval_size * 1.5f, 30, 0x000066, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 5,  oval_size * 1.5f - 5, 30, 0x000055, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 10, oval_size * 1.5f - 10, 30, 0x000044, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 15, oval_size * 1.5f - 15, 30, 0x000033, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 20, oval_size * 1.5f - 20, 30, 0x000022, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 25, oval_size * 1.5f - 25, 30, 0x000011, true);
+		DrawOvalAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), oval_size * 0.7f - 30, oval_size * 1.5f - 30, 30, 0x000000, true);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, spawn_anim_timer*2.5f-20);
+	}
 	__super::Draw();
 
 	/*SetFontSize(35);
@@ -625,7 +658,11 @@ void Player::Hit(Object* _object)
 	//不利な属性のブロックかダメージゾーンと当たった時の処理
 	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER) && CheckCompatibility(this, _object) == -1)
 	{
-		damageFlg = true;
+		//演出中ならダメージを受けない
+		if (!damageEffectFlg)
+		{
+			damageFlg = true;
+		}
 		//触れた色に応じてSEを変える
 		now_riding = GetColorNum(_object->GetColorData());
 	}
@@ -1747,7 +1784,7 @@ void Player::DrawPlayer() const
 
 void Player::DrawPlayerImage()const
 {
-	if (emoteFlg) {
+	if (emoteFlg || spawn_anim_flg) {
 		//プレイヤー正面描画
 		DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_front_image, GetColorNum(color)), TRUE);
 
@@ -2039,7 +2076,9 @@ void Player::PlayerReset(ObjectManager* _manager)
 	//プレイヤー再生成フラグを下ろす
 	_manager->player_respawn_flg = false;
 	//プレイヤースポーンエフェクトの生成
-	_manager->SpawnEffect({ _manager->player_respawn.x + PLAYER_WIDTH / 2 ,_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, _manager->GetPlayerColor());
+	//_manager->SpawnEffect({ _manager->player_respawn.x + PLAYER_WIDTH / 2 ,_manager->player_respawn.y + PLAYER_HEIGHT / 2 }, { 20,20 }, PlayerSpawnEffect, 30, _manager->GetPlayerColor());
 
-	
+	//プレイヤースポーン演出の開始
+	spawn_anim_flg = true;
+	spawn_anim_timer = 0;
 }

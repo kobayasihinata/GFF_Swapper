@@ -11,7 +11,7 @@
 #include "BossAttackWater.h"
 #include "BossAttackWood.h"
 
-#define APPEARED_TIME 300			//登場演出の時間
+#define APPEARED_TIME 500			//登場演出の時間
 #define BOSS_DEATH_TIME 300			//死亡演出の時間
 
 static float WOOD_SPAWN[6][3]{

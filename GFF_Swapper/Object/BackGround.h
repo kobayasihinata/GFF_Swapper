@@ -7,9 +7,10 @@ private:
 	Vector2D stage_erea;	//ステージの幅
 	int now_stage;			//現在のステージ数
 	bool is_clear;			//クリア演出中か
+	bool is_blind;			//ボス開始前の暗転中か
 	int font_handle[2];        //使用フォント
 	int bg_handle;			//背景保存
-
+	int boss_bg_image;		//ボス背景
 	int back_ground_image;	//背景画像格納用
 	int mountain_handle;	//山描画保存用
 	int cloud_handle;		//雲描画保存用
@@ -26,4 +27,5 @@ public:
 	void DrawCloud(Vector2D _shift_location, Vector2D _erea,float _move_speed, int _bg_color)const;
 	void SetNowStage(int _now_stage) { now_stage = _now_stage; }
 	void SetIsClear(bool _flg) { is_clear = _flg; }
+	void SetIsBlind(bool _flg) { is_blind = _flg; }
 };

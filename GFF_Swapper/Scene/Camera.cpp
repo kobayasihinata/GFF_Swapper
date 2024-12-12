@@ -20,8 +20,8 @@ void Camera::Update(int _now_stage, Vector2D _player_location)
 	//カメラ更新（通常ステージ）
 	else
 	{
-		//カメラY座標が初期値の時だけプレイヤーへ移動させ、後はゆっくりプレイヤーを追従するようにする
-		if (camera_location.y == 0)
+		//カメラY座標が初期値の時、もしくはプレイヤーとカメラが離れすぎている時にプレイヤーへ移動させ、後はゆっくりプレイヤーを追従するようにする
+		if (camera_location.y == 0 || fabsf(camera_location.y - player_location.y) > 700.f)
 		{
 			before_moving_camera.y = _player_location.y - (SCREEN_HEIGHT / 2);
 		}
