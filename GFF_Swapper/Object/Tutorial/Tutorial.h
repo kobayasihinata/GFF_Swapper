@@ -46,8 +46,9 @@ private:
     int thumb_offset;        // サムスティックのオフセット
     int draw_point;
 
-    bool animation_flag;
+    bool anim_flg;
     int r_stick_anim;
+    int anim_cnt;
 
 public:
     // コンストラクタ

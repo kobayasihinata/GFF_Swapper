@@ -2,7 +2,7 @@
 #include "../../Utility/ResourceManager.h"
 #include "../../Scene/GameMain.h"
 #include "EnemyDeer.h"
-#include<math.h>
+#include <math.h>
 
 EnemyDeer::EnemyDeer()
 {
@@ -383,7 +383,7 @@ void EnemyDeer::Hit(Object* _object)
 		erea.x = tmpe.x - 20.f;
 
 		//プレイヤー上方向の判定
-		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][top]) {
+		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][top] && deer_state != DeerState::DEATH) {
 			stageHitFlg[0][top] = true;
 			stageHitFlg[1][top] = true;
 		}
@@ -443,7 +443,7 @@ void EnemyDeer::Hit(Object* _object)
 		erea.x = 1;
 
 		//プレイヤー左方向の判定
-		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][left]) {
+		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][left] && deer_state != DeerState::DEATH) {
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
 			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
@@ -456,7 +456,7 @@ void EnemyDeer::Hit(Object* _object)
 
 		//プレイヤー右方向の判定
 		location.x = tmpl.x + tmpe.x + 1;
-		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right]) {
+		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right] && deer_state != DeerState::DEATH) {
 			stageHitFlg[0][right] = true;
 			stageHitFlg[1][right] = true;
 			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)ChangeDeerState(DeerState::LEFT);

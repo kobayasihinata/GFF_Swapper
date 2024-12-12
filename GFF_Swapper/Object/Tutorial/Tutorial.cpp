@@ -7,7 +7,8 @@
 #include <math.h>
 
 
-Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(false), tutorial_completed(false), button_draw(false), frame(0), thumb_offset(0), animation_flag(false),r_stick_anim(20)
+
+Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(false), tutorial_completed(false), button_draw(false), frame(0), thumb_offset(0), anim_flg(false),r_stick_anim(0), anim_cnt(0), draw_point(0)
 {
     in_camera = Camera::Get();  
     tutorial_num = _num - TUTORIAL_RANGE_1;  // チュートリアル番号の設定
@@ -19,6 +20,10 @@ Tutorial::Tutorial(int _num,int _now_stage) : tutorial_time(0), tutorial_flg(fal
     {
         //keyName[i] = GetKeyName(UserData::player_key[i][0]);
         keyName[i] = "";
+    }
+    for (int i = 0; i < 27; i++)
+    {
+        keyCode[i] = 0;
     }
 
 }
@@ -37,6 +42,8 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
     type = TUTORIAL;  
 
     tutorial_completed = false;  
+
+    r_stick_anim = 20;
 
 }
 
@@ -64,29 +71,32 @@ void Tutorial::Update(ObjectManager* _manager)
     // アニメーション用のフレーム処理
     if (frame % 20 == 0)
     {
-        animation_flag = !animation_flag;
+        anim_flg = !anim_flg;
     }
-    //if (frame % 2 == 0)
-    //{
-    //    r_stick_anim = 23;
-    //    if (frame % 4 == 0)
-    //    {
-    //        r_stick_anim = 21;
-    //    }
-    //    if (frame % 6 == 0)
-    //    {
-    //        r_stick_anim = 22;
-    //    }
-    //    if (frame % 8 == 0)
-    //    {
-    //        r_stick_anim = 20;
-    //    }
-    //    if (frame >= 10)
-    //    {
-    //        r_stick_anim = 20;
-    //        frame = 0;
-    //    }
-    //}
+
+
+    anim_cnt++;
+    if (anim_cnt % 3 == 0)
+    {
+        r_stick_anim = 23;
+        if (anim_cnt % 6 == 0)
+        {
+            r_stick_anim = 21;
+        }
+        if (anim_cnt % 9 == 0)
+        {
+            r_stick_anim = 22;
+        }
+        if (anim_cnt % 12 == 0)
+        {
+            r_stick_anim = 20;
+        }
+        if (anim_cnt >= 15)
+        {
+            r_stick_anim = 20;
+            anim_cnt = 0;
+        }
+    }
     // フレームが60を超えたらリセット
     if (frame > 60)
     {
@@ -144,7 +154,7 @@ void Tutorial::DrawTutorial() const
 {
     DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
     // チュートリアルテキストを描画
-    DrawFormatString(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text.c_str());
+    DrawFormatStringF(offset.x + 20, offset.y + 30, GetColor(255, 255, 255), tutorial_text.c_str());
 }
 
 void Tutorial::DrawButton() const
@@ -154,42 +164,42 @@ void Tutorial::DrawButton() const
     {
     case 0: //交換（下）
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[3]), TRUE);
-        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[5]), TRUE);
+        DrawGraphF(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], keyCode[3]), TRUE);
+        DrawGraphF(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], keyCode[5]), TRUE);
         //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], GetKeyIndex(keyName[5] = GetKeyName(UserData::player_key[5][0]))), TRUE);
 
-        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawStringF(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
         break;
     case 1: //交換（上）
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[3]), TRUE);
-        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[4]), TRUE);
+        DrawGraphF(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], keyCode[3]), TRUE);
+        DrawGraphF(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], keyCode[4]), TRUE);
         //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[4]), TRUE);
 
-        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawStringF(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
 
         break;
     case 2: //交換（右）
         //ボタンイメージ描画
         DrawBoxAA(offset.x, offset.y, offset_size.x, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[3]), TRUE);
-        DrawGraph(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[7]), TRUE);
+        DrawGraphF(offset.x + 40, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], keyCode[3]), TRUE);
+        DrawGraphF(offset.x + 166, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], keyCode[7]), TRUE);
         //DrawGraph(offset.x + 216, offset.y + 30, ResourceManager::GetDivGraph(UserData::button_image[frame % 10 == 0], keyCode[7]), TRUE);
 
-        DrawString(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
+        DrawStringF(offset.x + 116, offset.y + 43, "&", 0xFFFFFF);
 
         break;
     case 3:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
-        DrawGraph(offset.x + 55, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[(int)animation_flag], keyCode[2]), TRUE);
+        DrawGraphF(offset.x + 55, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[(int)anim_flg], keyCode[2]), TRUE);
         //DrawGraph(offset.x + 105, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[0], keyCode[2]), TRUE);
 
         break;
     case 4:
         DrawBoxAA(offset.x, offset.y, offset_size.x - 100, offset_size.y, GetColor(0, 0, 0), TRUE);
 
-        DrawGraph(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[1], r_stick_anim), TRUE);
+        DrawGraphF(offset.x + 75, offset.y + 35, ResourceManager::GetDivGraph(UserData::button_image[1], r_stick_anim), TRUE);
         break;
     }
 }
