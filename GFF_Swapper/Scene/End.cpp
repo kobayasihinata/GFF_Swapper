@@ -143,10 +143,14 @@ void End::Initialize()
 
 	swap_se = ResourceManager::SetSound("Resource/Sounds/Effect/swap.wav");
 
+	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false));
+
+
 }
 
 void End::Finalize()
 {
+	ResourceManager::StopAllSound();
 
 }
 

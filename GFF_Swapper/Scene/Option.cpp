@@ -112,7 +112,7 @@ void Option::Initialize()
 	ResourceManager::StopAllSound();
 
 	//オプション画面のBGM再生
-	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/Title.wav", false));
+	ResourceManager::StartSound(ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false));
 }
 
 void Option::Finalize()
