@@ -84,6 +84,7 @@ int WINAPI WinMain(_In_ HINSTANCE  hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                 {
                     break;
                 }
+                SetFontSize(24);
                 DrawFormatString((SCREEN_WIDTH / 2) - 50, (SCREEN_HEIGHT / 2), 0xffffff, "ゲーム終了まで...%d", 20 - break_timer);
             }
             else

@@ -72,9 +72,10 @@ Player::Player()
 	walk_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/walk_grass.wav");
 	walk_se[3] = ResourceManager::SetSound("Resource/Sounds/Player/walk_water.wav");
 	jump_se = ResourceManager::SetSound("Resource/Sounds/Player/player_jump.wav");
-	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/damage_fire.wav");
-	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/damage_grass.wav");
-	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_water.wav");
+	base_damage_se = ResourceManager::SetSound("Resource/Sounds/Player/player_damage.wav");
+	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Player/damage_water.wav");
+	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Player/damage_fire.wav");
+	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_grass.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 
 	//プレイヤーの画像の読み込み
@@ -195,7 +196,7 @@ void Player::Update(ObjectManager* _manager)
 				objSelectNumTmp = 0;
 
 				//描画する色を白に
-				draw_color = WHITE;
+				//draw_color = WHITE;
 			}
 			else
 			{
@@ -626,6 +627,8 @@ void Player::Hit(Object* _object)
 	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER) && CheckCompatibility(this, _object) == -1)
 	{
 		damageFlg = true;
+		//触れた色に応じてSEを変える
+		now_riding = GetColorNum(_object->GetColorData());
 	}
 
 	//ダメージゾーンを上書きする
@@ -1376,8 +1379,9 @@ void Player::PlayerSound()
 		}
 
 		//ダメージ
-		if (damageFlg && !damageOldFlg && now_riding > 0) {
-			ResourceManager::StartSound(damage_se[now_riding-1]);
+		if (damageFlg && !damageOldFlg && now_riding > 0 && damageEffectTime >45.f) {
+			ResourceManager::StartSound(damage_se[GetColorNum(this->color)]);
+			ResourceManager::StartSound(base_damage_se);
 		}
 	}
 }
@@ -1753,7 +1757,7 @@ void Player::DrawPlayerImage()const
 	{//見た目
 
 	//ダメージ中描画
-		if (damageEffectFlg && damageEffectTime != 90.f && damageEffectTime > 45.f) {
+		if ((p_state == PlayerState::DAMAGE_LEFT || p_state == PlayerState::DAMAGE_RIGHT) && damageEffectTime > 45.f) {
 			if ((int)damageEffectTime % 4 != 0) {
 				DrawGraph(local_location.x, local_location.y, ResourceManager::GetDivGraph(player_image[p_state], GetColorNum(color)), TRUE);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 20);
@@ -1769,8 +1773,10 @@ void Player::DrawPlayerImage()const
 		//通常描画
 		else
 		{
-			ResourceManager::DrawColorAnimGraph(local_location+(erea/2), player_image[p_state], color,false);
-			DebugInfomation::Add("p_state", (int)p_state);
+			//ダメージ後の無敵中なら点滅
+			if ((int)damageEffectTime % 4 != 0) {
+				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), player_image[p_state], color, false);
+			}
 		}
 	}
 }
