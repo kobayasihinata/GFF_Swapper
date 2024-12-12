@@ -28,6 +28,7 @@ EnemyFrog::~EnemyFrog()
 
 void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
 {
+	camera = Camera::Get();
 	location = _location;
 	erea = _erea;
 	color = _color_data;
@@ -52,6 +53,8 @@ void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
+	faint_se = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_faint.wav");
+	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
 }
 
 void EnemyFrog::Update(ObjectManager* _manager)
@@ -79,6 +82,12 @@ void EnemyFrog::Update(ObjectManager* _manager)
 			effect_once = true;
 		}
 		velocity.y = 0.f;
+	}
+	//落下死処理
+	if (location.y > camera->GetStageSize().y)
+	{
+		frog_state = FrogState::DEATH;
+		ResourceManager::StartSound(fall_se);
 	}
 	UpdataState(_manager);
 	//カエルの状態に応じて更新
@@ -258,6 +267,8 @@ void EnemyFrog::Hit(Object* _object)
 			{
 				//スタン状態になる
 				SetFrogState(FrogState::FAINT);
+				//スタンSE再生
+				ResourceManager::StartSound(faint_se);
 			}
 			//プレイヤーが左にいるなら右にノックバック
 			if (this->location.x > _object->GetLocation().x)

@@ -3,6 +3,7 @@
 #include"ColorData.h"
 #include "../../Utility/DebugInfomation.h"
 #include "../../Utility/UserData.h"
+#include "../../Scene/Camera.h"
 
 #define BLOCK 0			//Objectの種類用
 #define PLAYER 1		//Objectの種類用

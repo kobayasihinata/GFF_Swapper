@@ -106,9 +106,13 @@ private:
 	float attackWood[6];
 	int woodNum = 0;
 
+	int warphole_se;	//ワープホールSE
+	int spawn_se;		//登場SE
 	int damage_se;	//被ダメージSE
 	int appeared_se;	//登場SE
 	int bgm_abnormal;	//ボス曲格納
+	int death_se;		//死亡SE
+	int death_expro_se;	//死亡爆破SE
 
 public:
 	Boss();
