@@ -96,16 +96,19 @@ void EnemyBat::Update(ObjectManager* _manager)
 			dx /= length;
 			dy /= length;
 
-			if (dx > 0)
+			if (dx > 0.2)
 			{
 				bat_state = BatState::RIGHT;
+				vector.x = ENEMY_SPEED;
 			}
 			else
 			{
 				bat_state = BatState::LEFT;
+				vector.x = -ENEMY_SPEED;
 			}
 
 			// 移動する
+			//location.x += vector.x;
 			location.x += dx * (vector.x);
 			location.y += dy * (vector.y);
 
@@ -227,8 +230,7 @@ void EnemyBat::Draw() const
 		//点滅
 		if (frame % 3 != 0)
 		{
-			if (bat_state == BatState::LEFT)
-			{
+			if (vector.x < 0) {
 				DrawRotaGraphF(local_location.x + (erea.x / 2),
 					local_location.y + (erea.y / 2),
 					1.0f,
@@ -237,6 +239,17 @@ void EnemyBat::Draw() const
 					TRUE,
 					true);
 			}
+			else
+			{
+				DrawRotaGraphF(local_location.x + (erea.x / 2),
+					local_location.y + (erea.y / 2),
+					1.0f,
+					0,
+					ResourceManager::GetDivGraph(damage_image, GetColorNum(color)),
+					TRUE,
+					false);
+			}
+			
 		}
 	}
 	
@@ -275,12 +288,15 @@ void EnemyBat::Move(ObjectManager* _manager)
 		break;
 	case BatState::FAINT:
 		bat_state_num = 3;
-		break;
 	case BatState::DEATH:
 		//自分の色が青のとき吸われてく
 		bat_state_num = 4;
-		vector.x = 0;
-
+		if (vector.x > 0) {
+			vector.x = 0.5f;
+		}
+		else {
+			vector.x = -0.5f;
+		}
 		if (++death_timer > 60) {
 			if (this != nullptr) {
 				_manager->DeleteObject(this);
