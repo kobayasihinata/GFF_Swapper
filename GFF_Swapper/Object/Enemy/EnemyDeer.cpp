@@ -304,7 +304,7 @@ void EnemyDeer::Draw()const
 			}
 			else
 			{
-				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, false);
+				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, true);
 			}
 		}
 	}
@@ -468,7 +468,7 @@ void EnemyDeer::Hit(Object* _object)
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
 			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
-			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)ChangeDeerState(DeerState::RIGHT);
+			if (deer_state != DeerState::FAINT  && deer_state != DeerState::DEATH)ChangeDeerState(DeerState::RIGHT);
 		}
 		else {
 			stageHitFlg[0][left] = false;
