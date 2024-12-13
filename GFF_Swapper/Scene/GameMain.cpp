@@ -963,6 +963,7 @@ void GameMain::UpdateCheck()
 		case 1:
 			ResourceManager::StartSound(decision_se);
 			now_scene = new Title();
+			ResourceManager::StopSound(bgm_normal);
 			break;
 		default:
 			break;
