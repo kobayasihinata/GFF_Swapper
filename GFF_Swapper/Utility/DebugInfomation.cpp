@@ -9,6 +9,7 @@ void DebugInfomation::Update()
 {
 	//描画するテキストをリセットする
 	draw_list.clear();
+#ifdef _DEBUG
 	//Xキーでデバッグ表示を切り替え
 	if (KeyInput::OnKey(KEY_INPUT_X))
 	{
@@ -19,6 +20,7 @@ void DebugInfomation::Update()
 	{
 		photograph_mode = !photograph_mode;
 	}
+#endif // _DEBUG
 }
 
 void DebugInfomation::Draw()
