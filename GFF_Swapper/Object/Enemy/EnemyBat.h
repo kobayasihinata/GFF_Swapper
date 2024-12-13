@@ -45,6 +45,10 @@ private:
 	int faint_se;			//スタンSE
 	int fall_se;			//落下SE
 
+	float len = 0.0f;
+	bool wall_hit_flg = false;
+	int wall_hit_timer = 0;
+
 	bool se_once;		//一回だけ再生	
 
 	int bat_state_num;

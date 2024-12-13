@@ -94,20 +94,21 @@ void EnemyBat::Update(ObjectManager* _manager)
 		float length = sqrtf(dx * dx + dy * dy);
 
 		//プレイヤーの一定範囲内に入ったら
-		if (length < 450 && bat_state != BatState::DEATH) {
+		if (length < 450 && bat_state != BatState::DEATH && !wall_hit_flg) {
 			// 移動方向を決定
 			dx /= length;
 			dy /= length;
-
-			if (dx > 0.2)
+			
+			len = dx;
+			if (dx > 0)
 			{
 				bat_state = BatState::RIGHT;
-				vector.x = ENEMY_SPEED;
+				//vector.x = ENEMY_SPEED;
 			}
 			else
 			{
 				bat_state = BatState::LEFT;
-				vector.x = -ENEMY_SPEED;
+				//vector.x = -ENEMY_SPEED;
 			}
 
 			// 移動する
@@ -120,6 +121,8 @@ void EnemyBat::Update(ObjectManager* _manager)
 			if (vector.x < ENEMY_SPEED)vector.x++;
 			if (vector.y > ENEMY_SPEED)vector.y--;
 			if (vector.y < ENEMY_SPEED)vector.y++;
+
+			wall_hit_timer = 0;
 		}
 		else
 		{
@@ -155,6 +158,16 @@ void EnemyBat::Update(ObjectManager* _manager)
 		stageHitFlg[1][i] = false;
 	}
 
+	if (wall_hit_flg)
+	{
+		wall_hit_timer++;
+		if (wall_hit_timer > 60)
+		{
+			wall_hit_timer = 0;
+			wall_hit_flg = false;
+		}
+	}
+
 }
 
 void EnemyBat::Draw() const
@@ -163,7 +176,8 @@ void EnemyBat::Draw() const
 
 	//各頂点をlocal_locationに置き換えた
 
-	DebugInfomation::Add("bat_state", vector.x);
+	DebugInfomation::Add("bat_state", len);
+	DebugInfomation::Add("time", wall_hit_timer);
 
 
 	const std::vector<Vector2D> vertices = {
@@ -238,7 +252,7 @@ void EnemyBat::Draw() const
 		//点滅
 		if (frame % 3 != 0)
 		{
-			if (vector.x < 0) {
+			if (len < 0) {
 				DrawRotaGraphF(local_location.x + (erea.x / 2),
 					local_location.y + (erea.y / 2),
 					1.0f,
@@ -296,14 +310,15 @@ void EnemyBat::Move(ObjectManager* _manager)
 		break;
 	case BatState::FAINT:
 		bat_state_num = 3;
+		break;
 	case BatState::DEATH:
 		//自分の色が青のとき吸われてく
 		bat_state_num = 4;
 		if (vector.x > 0) {
-			vector.x = 0.5f;
+			vector.x = 0.2f;
 		}
 		else {
-			vector.x = -0.5f;
+			vector.x = -0.2f;
 		}
 		if (++death_timer > 60) {
 			if (this != nullptr) {
@@ -454,9 +469,10 @@ void EnemyBat::Hit(Object* _object)
 			if (t != 0) {
 				vector.x = 0.f;
 				move[left] = t;
-				if (bat_state != BatState::FAINT)
+				if (bat_state != BatState::FAINT && _object->GetObjectType() != PLAYER)
 				{
 					bat_state = BatState::RIGHT;
+					wall_hit_flg = true;
 				}
 			}
 		}
@@ -467,9 +483,10 @@ void EnemyBat::Hit(Object* _object)
 			if (t != 0) {
 				vector.x = 0.f;
 				move[right] = t;
-				if (bat_state != BatState::FAINT)
+				if (bat_state != BatState::FAINT && _object->GetObjectType() != PLAYER)
 				{
 					bat_state = BatState::LEFT;
+					wall_hit_flg = true;
 				}
 			}
 		}
