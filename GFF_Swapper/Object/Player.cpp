@@ -137,7 +137,7 @@ void Player::Update(ObjectManager* _manager)
 			ResourceManager::StartSound(spawn_se);
 		}
 		//演出が終了したら
-		if (++spawn_anim_timer > SPAWN_ANIM_TIME)
+		if (++spawn_anim_timer > SPAWN_ANIM_TIME || PadInput::OnButton(XINPUT_BUTTON_B))
 		{
 			//フラグを下げてタイマーをリセット
 			spawn_anim_flg = false;
