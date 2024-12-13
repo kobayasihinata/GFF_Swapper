@@ -64,6 +64,7 @@ private:
 	int damage_se[3];	//被ダメージSE格納
 	int faint_se;			//スタンSE
 	int fall_se;			//落下SE
+	int hit_se;				//ぶつかるSE
 
 	int anim_fps;
 	float leg_angle[4];
@@ -72,6 +73,7 @@ private:
 
 	int deer_image;		//鹿アニメーション格納
 	int damage_image;	//鹿ダメージ格納
+
 public:
 
 	EnemyDeer();

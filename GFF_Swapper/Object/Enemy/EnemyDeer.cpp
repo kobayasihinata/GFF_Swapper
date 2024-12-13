@@ -55,8 +55,6 @@ EnemyDeer::EnemyDeer()
 	}
 	speed = 1.0f;
 
-	deer_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_walk.PNG", 12, 4, 3, 88, 90, 5, TRUE);
-	damage_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_damage.PNG", 3, 3, 1, 89, 90, 0, FALSE);
 }
 
 EnemyDeer::~EnemyDeer()
@@ -77,12 +75,16 @@ void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 
 	object_pos = _object_pos;
 
+	deer_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_walk.PNG", 12, 4, 3, 88, 90, 5, TRUE);
+	damage_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_damage.PNG", 3, 3, 1, 89, 90, 0, FALSE);
+
 	walk_se = ResourceManager::SetSound("Resource/Sounds/Player/walk_normal.wav");
 	damage_se[0] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_fire.wav");
 	damage_se[1] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_grass.wav");
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
 	faint_se = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_faint.wav");
 	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
+	hit_se = ResourceManager::SetSound("Resource/Sounds/System/hit.wav");
 }
 
 void EnemyDeer::Update(ObjectManager* _manager)
@@ -423,6 +425,7 @@ void EnemyDeer::Hit(Object* _object)
 				if (deer_state != DeerState::DEATH)
 				{
 					ChangeDeerState(DeerState::LEFT);
+
 				}
 				deer_spawn = true;
 			}
@@ -468,7 +471,14 @@ void EnemyDeer::Hit(Object* _object)
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
 			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
-			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)ChangeDeerState(DeerState::RIGHT);
+			//スタン中か死亡中でなければ
+			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)
+			{
+				//右移動に変更
+				ChangeDeerState(DeerState::RIGHT);
+				//ぶつかるSE再生
+				ResourceManager::StartSound(hit_se);
+			}
 		}
 		else {
 			stageHitFlg[0][left] = false;
@@ -480,7 +490,14 @@ void EnemyDeer::Hit(Object* _object)
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][right] && deer_state != DeerState::DEATH) {
 			stageHitFlg[0][right] = true;
 			stageHitFlg[1][right] = true;
-			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)ChangeDeerState(DeerState::LEFT);
+			//スタン中か死亡中でなければ
+			if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)
+			{
+				//左移動に変更
+				ChangeDeerState(DeerState::LEFT);
+				//ぶつかるSE再生
+				ResourceManager::StartSound(hit_se);
+			}
 		}
 		else {
 			stageHitFlg[0][right] = false;
@@ -582,6 +599,8 @@ void EnemyDeer::Hit(Object* _object)
 				ChangeDeerState(DeerState::FAINT);
 				//スタンSE再生
 				ResourceManager::StartSound(faint_se);
+				//ぶつかるSE再生
+				ResourceManager::StartSound(hit_se);
 			}
 			break;
 			//あいこの場合
@@ -624,13 +643,23 @@ void EnemyDeer::Hit(Object* _object)
 			if (this->location.x > _object->GetLocation().x)
 			{
 				//スタン状態か死亡状態でないなら方向転換
-				if(deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)deer_state = DeerState::RIGHT;
+				if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)
+				{
+					deer_state = DeerState::RIGHT;
+					//ぶつかるSE再生
+					ResourceManager::StartSound(hit_se);
+				}
 			}
 			//エネミーが右にいるなら左に方向転換
 			else
 			{
 				//スタン状態か死亡状態でないなら方向転換
-				if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)deer_state = DeerState::LEFT;
+				if (deer_state != DeerState::FAINT && deer_state != DeerState::DEATH)
+				{
+					deer_state = DeerState::LEFT;
+					//ぶつかるSE再生
+					ResourceManager::StartSound(hit_se);
+				}
 			}
 			//敵が上にいるなら下にノックバック
 			if (this->location.y > _object->GetLocation().y)

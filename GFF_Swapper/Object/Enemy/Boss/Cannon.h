@@ -24,6 +24,8 @@ private:
     int cannon_type;        //打ち出す弾の種類 0=赤 1=緑 2=青
     int cannon_angle;       //打ち出す弾の向き 4方向　東西南北
 	bool cannon_stop;		//弾を撃つか判断
+
+	int cannon_image;		//砲台の画像
 public:
 	/// <summary>
 	/// コンストラクタ

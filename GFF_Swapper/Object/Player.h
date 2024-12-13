@@ -114,6 +114,7 @@ private:
 	int spawn_se;						//スポーン演出SE
 	int warphole_se;					//スポーン演出SE
 	int fall_se;						//落下SE
+	int hit_se;							//壁か敵にぶつかるSE
 	int now_riding;						//今乗っているブロックに応じて再生するSEを変える
 
 	int deathTimer = 0;

@@ -55,6 +55,8 @@ struct SoundData {
 	char* sound_filepath;		//音源パス格納用
 	int sound_handle;			//音源格納用
 	bool bgm_or_se;				//BGMかSEか false = BGM  true = SE
+	int play_time = 0;				//再生時間
+	bool play_once;				//１フレームで同時に再生しないように
 };
 
 class ResourceManager

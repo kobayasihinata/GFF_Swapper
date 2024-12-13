@@ -47,6 +47,8 @@ void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
 	faint_se = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_faint.wav");
 	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
+	hit_se = ResourceManager::SetSound("Resource/Sounds/System/hit.wav");
+
 }
 
 void EnemyBat::Update(ObjectManager* _manager)
@@ -416,6 +418,7 @@ void EnemyBat::Hit(Object* _object)
 			if (t != 0) {
 				vector.y = 0.f;
 				move[top] = t;
+
 			}
 		}
 
@@ -599,35 +602,19 @@ void EnemyBat::Hit(Object* _object)
 				bat_state = BatState::FAINT;
 				//スタンSE再生
 				ResourceManager::StartSound(faint_se);
+				//ぶつかるSE再生
+				ResourceManager::StartSound(hit_se);
 			}
 			break;
 			//あいこの場合
 		case 0:
-			////プレイヤーが左にいるなら右にノックバック
-			//if (this->location.x > _object->GetLocation().x)
-			//{
-			//	vector.x = -10;
-			//}
-			////プレイヤーが右にいるなら左にノックバック
-			//else
-			//{
-			//	vector.x = -10;
-			//}
-			////プレイヤーが上にいるなら下にノックバック(プレイヤーを壁内に追いやらないように強め)
-			//if (this->location.y > _object->GetLocation().y)
-			//{
-			//	vector.y = -20;
-			//}
-			////プレイヤーが下にいるなら上にノックバック
-			//else
-			//{
-			//	vector.y = -20;
-			//}
 			if(bat_state != BatState::DEATH)
 			{ 
 				vector.x = -10;
-				vector.y = -20;
+				vector.y = 10;
 			}
+			//ぶつかるSE再生
+			ResourceManager::StartSound(hit_se);
 			break;
 			//有利の場合
 		case 1:

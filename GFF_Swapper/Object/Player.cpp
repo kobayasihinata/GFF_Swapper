@@ -83,6 +83,7 @@ Player::Player()
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Player/damage_grass.wav");
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
+	hit_se = ResourceManager::SetSound("Resource/Sounds/System/hit.wav");
 
 	//プレイヤーの画像の読み込み
 	LoadPlayerImage();
@@ -544,6 +545,9 @@ void Player::Hit(Object* _object)
 			{
 				velocity.x = -10;
 			}
+			//ぶつかったSE再生
+			ResourceManager::StartSound(hit_se);
+
 			break;
 			//有利の場合
 		case 1:
