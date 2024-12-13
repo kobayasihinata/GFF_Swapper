@@ -306,7 +306,7 @@ void EnemyDeer::Draw()const
 			}
 			else
 			{
-				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, false);
+				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), deer_image, color, true);
 			}
 		}
 	}
