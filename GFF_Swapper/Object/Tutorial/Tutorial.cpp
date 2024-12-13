@@ -45,6 +45,7 @@ void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, i
 
     r_stick_anim = 20;
 
+    erea.y = _erea.y + 200;
 }
 
 void Tutorial::Update(ObjectManager* _manager)
@@ -135,6 +136,7 @@ void Tutorial::Update(ObjectManager* _manager)
 
 void Tutorial::Draw() const
 {
+    //DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, GetColor(255, 255, 255), FALSE);
     if (tutorial_flg)
     {
         // チュートリアルフラグが立っている場合のみ描画
