@@ -84,6 +84,7 @@ Player::Player()
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
 	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
 	hit_se = ResourceManager::SetSound("Resource/Sounds/System/hit.wav");
+	hit_se = ResourceManager::SetSound("Resource/Sounds/System/hit.wav");
 
 	//プレイヤーの画像の読み込み
 	LoadPlayerImage();
@@ -150,6 +151,12 @@ void Player::Update(ObjectManager* _manager)
 	//遷移演出処理
 	if (_manager->player_warp_flg)
 	{
+		//SE再生
+		if (warp_anim_timer == 0)
+		{
+			//スポーン演出の効果音再生
+			ResourceManager::StartSound(warphole_se);
+		}
 		//演出が終了したら
 		if (++warp_anim_timer > WARP_ANIM_TIME)
 		{
@@ -406,6 +413,11 @@ void Player::Update(ObjectManager* _manager)
 
 void Player::Draw()const
 {
+
+	for (int i = 0; i < hp; i++)
+	{
+		ResourceManager::DrawHeart({ 50.f + i * 50.f,75.f }, { 40.f,40.f });
+	}
 	//登場演出の描画
 	if (spawn_anim_flg)
 	{
@@ -439,10 +451,6 @@ void Player::Draw()const
 	DrawPlayerImage();
 
 	//DrawPlayerFront(true);
-	for (int i = 0; i < hp; i++)
-	{
-		ResourceManager::DrawHeart({ 50.f + i * 50.f,75.f }, { 40.f,40.f });
-	}
 
 	//色交換カーソル
 	if (searchedObj != nullptr && searchFlg) {
