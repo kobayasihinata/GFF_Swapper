@@ -5,7 +5,7 @@
 
 #include "../Utility/DebugInfomation.h"
 
-#define STOP_TITLE 3000
+#define STOP_TITLE 2000
 
 
 End::End() :
@@ -293,12 +293,12 @@ void End::Draw()const
 		DrawString(535, 1520 + 300 - shift_y, "「Audiostock」", 0xffffff);
 
 
-		DrawString(550, 1720 + 300 - shift_y, "Title Music", 0x00ff00);
-		DrawString(450, 1760 + 300 - shift_y, "sound jewel 「Good Night」", 0xffffff);
-		
+		//DrawString(550, 1720 + 300 - shift_y, "Title Music", 0x00ff00);
+		//DrawString(450, 1760 + 300 - shift_y, "sound jewel 「Good Night」", 0xffffff);
+		//
 
-		DrawString(520, 1950 + 300 - shift_y, "GameMain Music", 0x00ff00);
-		DrawString(400, 1990 + 300 - shift_y, "Dynamedion 「A Chill in the air」", 0xffffff);
+		//DrawString(520, 1950 + 300 - shift_y, "GameMain Music", 0x00ff00);
+		//DrawString(400, 1990 + 300 - shift_y, "Dynamedion 「A Chill in the air」", 0xffffff);
 	}
 }
 

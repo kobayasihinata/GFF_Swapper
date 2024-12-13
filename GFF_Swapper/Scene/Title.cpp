@@ -258,6 +258,8 @@ AbstractScene* Title::Update()
 				{
 				case 0:
 					//オプション画面
+					ResourceManager::StopSound(ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false));
+
 					return new Option();
 					break;
 				case 1:

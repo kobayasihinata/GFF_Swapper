@@ -972,10 +972,15 @@ AbstractScene* Option::CheckReturnOldScene()
 	//ひとつ前のシーンがないならタイトル画面に戻る
 	if (GetOldScene() == nullptr)
 	{
+		//全てのBGMを停止
+		ResourceManager::StopSound(ResourceManager::SetSound("Resource/Sounds/BGM/AS_1223064_不思議かわいいチップチューン風の曲.wav", false));
+
 		return new Title();
 	}
 	else
 	{
+		//全てのBGMを停止
+		ResourceManager::StopAllSound();
 		//ひとつ前のシーンに戻る
 		return GetOldScene();
 	}

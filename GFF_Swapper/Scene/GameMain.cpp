@@ -843,6 +843,7 @@ void GameMain::UpdateGameOver()
 			object_manager->UpdateState(GameMainState::Null);
 			pause_after_flg = true;
 			ResourceManager::StopSound(bgm_title);
+			set_sound_once = false;
 			//BGMの再生(ボスステージ以外)
 			if (now_stage != STAGE_NUM-1)
 			{
