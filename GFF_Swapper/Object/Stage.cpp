@@ -148,6 +148,9 @@ void Stage::Update(ObjectManager* _manager)
 		_manager->SpawnEffect(location, erea, PlayerSpawnEffect, 10, color);
 		//更新
 		old_color = color;
+		//SEを出す
+		
+		ResourceManager::StartSound(change_fire+GetColorNum(color));
 	}
 
 	//ステージの遷移ブロックを判断

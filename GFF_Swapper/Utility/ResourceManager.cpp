@@ -108,6 +108,24 @@ void ResourceManager::StageAnimUpdate()
 		}
 	}
 
+	for (int i = 0; sound_data[i].sound_handle != NULL; i++)
+	{
+		//音声の再生時間確認処理
+		if (CheckSoundMem(sound_data[i].sound_handle))
+		{
+			sound_data[i].play_time++;
+		}
+		else
+		{
+			sound_data[i].play_time = 0;
+		}
+		//音声の同時再生防止フラグリセット
+		if (sound_data[i].play_once)
+		{
+			sound_data[i].play_once = false;
+		}
+	
+	}
 	//画像を使わない時のアニメーション更新
 
 	////炎エフェクト用
@@ -420,7 +438,15 @@ void ResourceManager::StartSound(int _num)
 	//再生
 	if (sound_data[_num].bgm_or_se)
 	{
-		PlaySoundMem(sound_data[_num].sound_handle, DX_PLAYTYPE_BACK);
+		//音がなっていない、もしくは再生開始から5フレーム以上経過しているなら再生
+		if ((sound_data[_num].play_time == 0 || sound_data[_num].play_time >= 7)&& !sound_data[_num].play_once)
+		{
+			PlaySoundMem(sound_data[_num].sound_handle, DX_PLAYTYPE_BACK);
+			//測定をリセット
+			sound_data[_num].play_time = 0;
+			//同時再生防止フラグを立てる
+			sound_data[_num].play_once = true;
+		}
 	}
 	else
 	{

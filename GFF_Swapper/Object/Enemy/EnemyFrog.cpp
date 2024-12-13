@@ -55,6 +55,7 @@ void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	damage_se[2] = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_damage_water.wav");
 	faint_se = ResourceManager::SetSound("Resource/Sounds/Enemy/enemy_faint.wav");
 	fall_se = ResourceManager::SetSound("Resource/Sounds/Player/player_fall.wav");
+	hit_se = ResourceManager::SetSound("Resource/Sounds/System/hit.wav");
 }
 
 void EnemyFrog::Update(ObjectManager* _manager)
@@ -335,7 +336,7 @@ void EnemyFrog::Hit(Object* _object)
 		move[3] = 0;
 
 		//上下判定用に座標とエリアの調整
-		location.x += 10.f;
+		/*location.x += 10.f;*/
 		erea.y = 1.f;
 		erea.x = tmpe.x - 20.f;
 
@@ -368,8 +369,10 @@ void EnemyFrog::Hit(Object* _object)
 		if (stageHitFlg[0][top]) {//上方向に埋まっていたら
 			float t = (_object->GetLocation().y + _object->GetErea().y) - location.y;
 			if (t != 0) {
-				velocity.y = 0.f;
+				velocity.y = !velocity.y;
 				move[top] = t;
+				//ぶつかるSE再生
+				ResourceManager::StartSound(hit_se);
 			}
 		}
 
@@ -393,6 +396,8 @@ void EnemyFrog::Hit(Object* _object)
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
 			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
+
+	
 		}
 		else {
 			stageHitFlg[0][left] = false;
@@ -422,7 +427,7 @@ void EnemyFrog::Hit(Object* _object)
 		if (stageHitFlg[0][left]) {//左方向に埋まっていたら
 			float t = (_object->GetLocation().x + _object->GetErea().x) - location.x;
 			if (t != 0) {
-				velocity.x = 0.f;
+				velocity.x = !velocity.x;
 				move[left] = t;
 			}
 		}
@@ -431,7 +436,7 @@ void EnemyFrog::Hit(Object* _object)
 		if (stageHitFlg[0][right]) {//右方向に埋まっていたら
 			float t = _object->GetLocation().x - (location.x + erea.x);
 			if (t != 0) {
-				velocity.x = 0.f;
+				velocity.x= !velocity.x;
 				move[right] = t;
 			}
 		}
@@ -440,14 +445,14 @@ void EnemyFrog::Hit(Object* _object)
 		//上下左右の移動量から移動後も埋まってるか調べる
 		location.x += move[left];
 		location.x += move[right];
-		location.y += move[top];
-		location.y += move[bottom];
 		if (location.x + erea.x < _object->GetLocation().x || location.x > _object->GetLocation().x + _object->GetErea().x) {
 			if (stageHitFlg[1][top] || stageHitFlg[1][bottom]) {
 				location.x -= move[left];
 				location.x -= move[right];
 			}
 		}
+		location.y += move[top];
+		location.y += move[bottom];
 
 		erea.y = tmpe.y;
 		erea.x = tmpe.x;
@@ -495,26 +500,28 @@ void EnemyFrog::Hit(Object* _object)
 
 			//あいこの場合
 		case 0:
-			//プレイヤーが左にいるなら右にノックバック
+			//相手が左にいるなら右にノックバック
 			if (this->location.x > _object->GetLocation().x)
 			{
-				velocity.x = 20;
+				velocity.x = 10;
 			}
-			//プレイヤーが右にいるなら左にノックバック
+			//相手が右にいるなら左にノックバック
 			else
 			{
-				velocity.x = -20;
+				velocity.x = -10;
 			}
-			//プレイヤーが上にいるなら下にノックバック
+			//相手が上にいるなら下にノックバック
 			if (this->location.y > _object->GetLocation().y)
 			{
-				velocity.y = 20;
+				velocity.y = 10;
 			}
-			//プレイヤーが下にいるなら上にノックバック
+			//相手が下にいるなら上にノックバック
 			else
 			{
-				velocity.y = -20;
+				velocity.y = -10;
 			}
+			//ぶつかるSE再生
+			ResourceManager::StartSound(hit_se);
 			break;
 			//有利の場合
 		case 1:

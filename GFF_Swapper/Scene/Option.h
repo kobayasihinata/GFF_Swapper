@@ -148,6 +148,8 @@ private:
 
     //音源格納                       
     int cursor_se;                    //カーソル移動のSE    
+    int enter_se;                     //決定音
+    int cancel_se;                     //キャンセル音
 
 public:
     //コンストラクタ _old_scene=ひとつ前のシーン(情報を保持する必要があるなら"this"を格納)

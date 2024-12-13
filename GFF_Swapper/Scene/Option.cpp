@@ -107,6 +107,8 @@ void Option::Initialize()
 	stick_loc = { right_box_location.x + (right_box_size.x / 2),right_box_location.y + right_box_size.y+75 };
 
 	cursor_se = ResourceManager::SetSound("Resource/Sounds/Player/cursor.wav");
+	enter_se = ResourceManager::SetSound("Resource/Sounds/System/decision.wav");
+	cancel_se = ResourceManager::SetSound("Resource/Sounds/System/juggler.wav");
 
 	//全てのBGMを停止
 	ResourceManager::StopAllSound();
@@ -388,12 +390,14 @@ void Option::UpdateLeftBox()
 	if (PadInput::OnButton(XINPUT_BUTTON_B))
 		{
 			current_item = cursor_num;
+			ResourceManager::StartSound(enter_se);
 		}
 
 	//Aボタンが押された時に前の画面に戻る処理に移動する
 	if (PadInput::OnButton(XINPUT_BUTTON_A))
 	{
 		current_item = (int)Items::BACK;
+		ResourceManager::StartSound(cancel_se);
 	}
 }
 
@@ -426,6 +430,7 @@ void Option::UpdateVolumeSetting()
 		if (PadInput::OnButton(XINPUT_BUTTON_B))
 		{
 			current_bar = v_cursor_num;
+			ResourceManager::StartSound(enter_se);
 		}
 	}
 
@@ -436,7 +441,7 @@ void Option::UpdateVolumeSetting()
 		if (current_bar != -1)current_bar = -1;
 		//音量調整バーが選択されていなければ、要素選択ボックスに戻る
 		else current_item = -1;
-
+		ResourceManager::StartSound(cancel_se);
 	}
 
 	//何かしらのバーが選択されているなら音量更新
@@ -649,6 +654,7 @@ void Option::UpdateKeyConfig()
 			current_action_y = action_num_y;
 			current_action_x = action_num_x;
 			press_flg = true;
+			ResourceManager::StartSound(enter_se);
 		}
 
 		//Aボタンが押された時に選択されている要素を解除
@@ -657,12 +663,14 @@ void Option::UpdateKeyConfig()
 			current_item = -1;
 			press_flg = true;
 			warning_flg = false;
+			ResourceManager::StartSound(cancel_se);
 		}
 
 		//STARTボタンが押された時にキー割り当てをリセット
 		if (PadInput::OnButton(XINPUT_BUTTON_START))
 		{
 			UserData::ResetKeyConfig();
+			ResourceManager::StartSound(cancel_se);
 		}
 	}
 	//キーの割り当て処理
@@ -684,6 +692,7 @@ void Option::UpdateKeyConfig()
 				//キーの選択をやめる
 				current_action_y = -1;
 				press_flg = true;
+				ResourceManager::StartSound(enter_se);
 			}
 
 			//キーの選択をやめる
@@ -694,6 +703,8 @@ void Option::UpdateKeyConfig()
 				//キーの選択をやめる
 				current_action_y = -1;
 				press_flg = true;
+				ResourceManager::StartSound(cancel_se);
+
 			}
 
 			return;
@@ -704,6 +715,7 @@ void Option::UpdateKeyConfig()
 		//選択されている時にBACK以外のボタンが押されたら、キーの割り当てを更新する
 		if (now_input != -1 && now_input != XINPUT_BUTTON_BACK)
 		{
+			ResourceManager::StartSound(enter_se);
 			warning_flg = false;
 			//STARTが押されたら空白を表す10を割り振り、警告処理スキップ
 			if (now_input == XINPUT_BUTTON_START)now_input = 10;
@@ -738,6 +750,8 @@ void Option::UpdateKeyConfig()
 		//BACKかSTARTが押されたら割り当て処理をやめる
 		else if (now_input != -1)
 		{
+			ResourceManager::StartSound(cancel_se);
+
 			current_action_y = -1;
 			//5フレーム入力を受け付けない
 			wait_timer = 5;
@@ -905,10 +919,12 @@ AbstractScene* Option::UpdateBack()
 	if (PadInput::OnButton(XINPUT_BUTTON_A))
 	{
 		current_item = -1;
+		ResourceManager::StartSound(cancel_se);
 	}
 
 	if (PadInput::OnButton(XINPUT_BUTTON_B))
 	{
+		ResourceManager::StartSound(enter_se);
 		switch (back_cursor)
 		{
 			//保存して終了

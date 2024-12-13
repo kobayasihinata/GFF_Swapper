@@ -40,10 +40,10 @@ static int ColorList[4]
     0xffffff   //白
 };
 
-#define EAST  0  //東
-#define WEST  1  //西
-#define SOUTH 2  //南
-#define NORTH 3  //北
+#define NORTH 0  //北
+#define SOUTH 1  //南
+#define WEST  2  //西
+#define EAST  3  //東
 
 //敵の設定
 #define FAINT_TIME 180      //気絶している時間
