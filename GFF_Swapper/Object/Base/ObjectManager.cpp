@@ -14,7 +14,7 @@ void ObjectManager::Initialize()
 	boss_appeared_skip = false;
 	boss_appeared_set_once = false;
 
-	change_stage = -1;
+	change_stage = -1;	//0が1ステージ目を表す為、ステージ変更がない時は-1を格納しておく
 	boss_appeared_flg = false;
 
 	player_warp_flg = false;
@@ -218,6 +218,33 @@ void ObjectManager::Draw()const
 
 void ObjectManager::Finalize()
 {
+	player_object->Finalize();
+	delete player_object;
+
+	boss_object->Finalize();
+	delete boss_object;
+
+	for (const auto object_list : object_list)
+	{
+		object_list->Finalize();
+		delete object_list;
+	}
+
+	for (const auto in_screen_object : in_screen_object)
+	{
+		in_screen_object->Finalize();
+		delete in_screen_object;
+	}
+
+	for (const auto delete_object : delete_object)
+	{
+		delete_object->Finalize();
+		delete delete_object;
+	}
+
+	now_current_object->Finalize();
+	delete now_current_object;
+
 	effect_spawner->Finalize();
 	delete effect_spawner;
 }
@@ -432,11 +459,6 @@ Vector2D ObjectManager::GetPlayerErea()const
 int ObjectManager::GetPlayerColor()const
 {
 	return player_object->GetColorData(); 
-}
-
-bool ObjectManager::GetBlindFlg()const
-{
-	return boss_blind_flg;
 }
 
 Vector2D ObjectManager::GetBossLocation()const
