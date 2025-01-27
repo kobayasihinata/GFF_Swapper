@@ -114,11 +114,11 @@ void ObjectManager::Update(GameMain* _g)
 			//プレイヤーに選択されているオブジェクトなら、描画色を変える
 			if (in_screen_object == now_current_object)
 			{
-				in_screen_object->SetDrawColor(WHITE);
+				in_screen_object->color = WHITE;
 			}
 			else
 			{
-				in_screen_object->SetDrawColor(in_screen_object->GetColorData());
+				in_screen_object->color = in_screen_object->GetColorData();
 			}
 		}
 

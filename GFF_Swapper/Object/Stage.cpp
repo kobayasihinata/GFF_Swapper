@@ -74,7 +74,6 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 		can_swap = FALSE;
 	}
 	old_color = color;
-	draw_color = color;
 	object_pos = _object_pos;
 
 	//画像読み込み
