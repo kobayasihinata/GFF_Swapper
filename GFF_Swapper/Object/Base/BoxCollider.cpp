@@ -99,11 +99,6 @@ Vector2D BoxCollider::GetErea()const
 	return erea;
 }
 
-void BoxCollider::SetLocation(Vector2D _location)
-{
-	location = _location;
-}
-
 void BoxCollider::SetScreenPosition(Vector2D _world_to_screen)
 {
  	local_location.x = location.x - _world_to_screen.x;
