@@ -33,13 +33,12 @@ Tutorial::~Tutorial()
 {
 }
 
-void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void Tutorial::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
     location = _location;  
     erea = _erea;          
-    color = _color_data;   
-    object_pos = _object_pos; 
-    type = TUTORIAL;  
+    color = _color_data; 
+    object_type = TUTORIAL;  
 
     tutorial_completed = false;  
 
@@ -208,7 +207,7 @@ void Tutorial::DrawButton() const
 
 void Tutorial::Hit(Object* _object)
 {
-    if (_object->GetObjectType() == PLAYER)
+    if (_object->object_type == PLAYER)
     {
         tutorial_flg = true;  // チュートリアルを開始
     }

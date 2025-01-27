@@ -12,7 +12,7 @@ Player::Player()
 {
 	camera = Camera::Get();
 	frame = 0;
-	type = PLAYER;
+	object_type = PLAYER;
 	can_swap = TRUE;	//プレイヤーのcan_swapは真でも偽でも大丈夫
 	can_hit = TRUE;
 
@@ -104,13 +104,11 @@ Player::~Player()
 	
 }
 
-void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = _location;
 	erea = _erea;
 	color = _color_data;
-
-	object_pos = _object_pos;
 
 	damageFlg = false;
 }
@@ -511,10 +509,8 @@ void Player::Finalize()
 
 void Player::Hit(Object* _object)
 {
-	__super::Hit(_object);
-
 	//敵と当たった時の処理
-	if (_object->GetObjectType() == ENEMY)
+	if (_object->object_type == ENEMY)
 	{
 		//プレイヤーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))
@@ -523,7 +519,7 @@ void Player::Hit(Object* _object)
 		case -1:
 			//ダメージ
 			if (!damageEffectFlg &&
-				(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
+				(_object->can_hit || _object->is_boss_attack == TRUE)) {
 
 				damageFlg = true;
 				//ノックバック
@@ -568,8 +564,8 @@ void Player::Hit(Object* _object)
 	//ブロックと当たった時の処理
 	if (
 			(
-				(_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE)||
-				(_object->GetCanSwap() == TRUE && _object->CheckCompatibility(this,_object) == 0
+				(_object->object_type == BLOCK || _object->object_type == GROUND_BLOCK) && _object->can_hit == TRUE)||
+				(_object->can_swap == TRUE && _object->CheckCompatibility(this,_object) == 0
 			)
 		)
 	{
@@ -705,7 +701,7 @@ void Player::Hit(Object* _object)
 	}
 
 	//不利な属性のブロックかダメージゾーンと当たった時の処理
-	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER) && CheckCompatibility(this, _object) == -1)
+	if ((_object->object_type == FIRE || _object->object_type == WOOD || _object->object_type == WATER) && CheckCompatibility(this, _object) == -1)
 	{
 		//演出中ならダメージを受けない
 		if (!damageEffectFlg)
@@ -717,41 +713,41 @@ void Player::Hit(Object* _object)
 	}
 
 	//ダメージゾーンを上書きする
-	if ((_object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE && this->color == GREEN) ||
-		(_object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE && this->color == BLUE) ||
-		(_object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE && this->color == RED))
+	if ((_object->object_type == WATER && _object->can_swap == FALSE && this->color == GREEN) ||
+		(_object->object_type == FIRE && _object->can_swap == FALSE && this->color == BLUE) ||
+		(_object->object_type == WOOD && _object->can_swap == FALSE && this->color == RED))
 	{
-		if (!_object->GetIsBossAttack())
+		if (!_object->is_boss_attack)
 		{
 			_object->SetColorData(color);
 		}
 	}
 
 	//同じ属性のダメージゾーン内で繰り返しジャンプ出来る
-	if (((_object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE && this->color == BLUE && !stateFlg) ||
-		(_object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE && this->color == RED && !stateFlg) ||
-		(_object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE && this->color == GREEN && !stateFlg)) && !_object->GetIsBossAttack()){
+	if (((_object->object_type == WATER && _object->can_swap == FALSE && this->color == BLUE && !stateFlg) ||
+		(_object->object_type == FIRE && _object->can_swap == FALSE && this->color == RED && !stateFlg) ||
+		(_object->object_type == WOOD && _object->can_swap == FALSE && this->color == GREEN && !stateFlg)) && !_object->is_boss_attack){
 		state = 1;
 	}
 
 	//自分が乗っている(触れている)ブロックに応じてSEを変える
-	if ((_object->GetObjectType() == FIRE && this->color != RED) || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER)
+	if ((_object->object_type == FIRE && this->color != RED) || _object->object_type == WOOD || _object->object_type == WATER)
 	{
-		now_riding = _object->GetObjectType() - 2;
+		now_riding = _object->object_type - 2;
 	}
-	else if(_object->GetObjectType() == FIRE && this->color == RED)
+	else if(_object->object_type == FIRE && this->color == RED)
 	{
 		now_riding = 0;
 	}
 
 	//ボスの木攻撃に当たった時、プレイヤーを跳ねさせる
-	if (_object->GetObjectType() == BLOCK && _object->GetIsBossAttack() == TRUE && _object->GetLocation().y > this->location.y)
+	if (_object->object_type == BLOCK && _object->is_boss_attack == TRUE && _object->GetLocation().y > this->location.y)
 	{
 		velocity.y = -20;
 	}
 
 	//チュートリアル
-	if (_object->GetObjectType() == TUTORIAL)
+	if (_object->object_type == TUTORIAL)
 	{
 		//is_tutorial = true;
 	}
@@ -842,7 +838,7 @@ bool Player::SearchColor(Object* ob)
 			objNum++;
 		}
 		//ボスも交換対象に追加
-		if (ob->GetObjectType() == BOSS)
+		if (ob->object_type == BOSS)
 		{
 			searchedObjAll[objNum] = ob;
 			int x = (int)ob->GetLocalLocation().x / 40;
@@ -898,7 +894,7 @@ void Player::SelectObject()
 			flg = true;
 			int snum[4] = { -1,-1,-1,-1 };// オブジェクトのインデックス保存用配列
 			int current_color = searchedObj->GetColorData();// 現在の選択オブジェクトの色を取得
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 
 			// 全オブジェクトを探索
@@ -920,7 +916,7 @@ void Player::SelectObject()
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
 
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[y][j]]->GetObjectType();
+							int next_type = searchedObjAll[posRelation[y][j]]->object_type;
 							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								snum[0] = posRelation[y][j];
@@ -952,7 +948,7 @@ void Player::SelectObject()
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[y - h][j]]->object_type;
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y - h][j];
@@ -976,7 +972,7 @@ void Player::SelectObject()
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[y + h][j]]->object_type;
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y + h][j];
@@ -1022,7 +1018,7 @@ void Player::SelectObject()
 			float nearLen[4] = { 1000.f,1000.f,1000.f,1000.f };
 			int snum[4] = { -1,-1,-1,-1 };
 			int current_color = searchedObj->GetColorData();
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -1041,7 +1037,7 @@ void Player::SelectObject()
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
 
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[y][j]]->GetObjectType();
+							int next_type = searchedObjAll[posRelation[y][j]]->object_type;
 							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								snum[0] = posRelation[y][j];
@@ -1071,7 +1067,7 @@ void Player::SelectObject()
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[y - h][j]]->object_type;
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y - h][j];
@@ -1094,7 +1090,7 @@ void Player::SelectObject()
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[y + h][j]]->object_type;
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y + h][j];
@@ -1152,7 +1148,7 @@ void Player::SelectObject()
 			flg = true;
 			int tutirial_num = -1;
 			int current_color = searchedObj->GetColorData();
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -1169,7 +1165,7 @@ void Player::SelectObject()
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
+							int next_type = searchedObjAll[posRelation[j][x]]->object_type;
 							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								tutirial_num = posRelation[j][x];
@@ -1198,7 +1194,7 @@ void Player::SelectObject()
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[j][x - w]]->object_type;
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x - w];
@@ -1220,7 +1216,7 @@ void Player::SelectObject()
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[j][x + w]]->object_type;
 									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x + w];
@@ -1262,7 +1258,7 @@ void Player::SelectObject()
 			flg = true;
 			int tutirial_num = -1;
 			int current_color = searchedObj->GetColorData();
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -1279,7 +1275,7 @@ void Player::SelectObject()
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
+							int next_type = searchedObjAll[posRelation[j][x]]->object_type;
 							if (next_type == BOSS) {
 								tutirial_num = posRelation[j][x];
 								break;
@@ -1313,7 +1309,7 @@ void Player::SelectObject()
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[j][x - w]]->object_type;
 									if (next_type == BOSS) {
 										tutirial_num = posRelation[j][x - w];
 										break;
@@ -1339,7 +1335,7 @@ void Player::SelectObject()
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
+									int next_type = searchedObjAll[posRelation[j][x + w]]->object_type;
 									if (next_type == BOSS) {
 										tutirial_num = posRelation[j][x + w];
 										break;

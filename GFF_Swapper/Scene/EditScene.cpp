@@ -43,7 +43,7 @@ void EditScene::Initialize()
 			kari_location.y = (float)(i * BOX_HEIGHT);
 			kari_erea.x = BOX_WIDTH;
 			kari_erea.y = BOX_HEIGHT;
-			stage[i][j]->Initialize(kari_location, kari_erea, stage_data[i][j], 0);
+			stage[i][j]->Initialize(kari_location, kari_erea, stage_data[i][j]);
 			stage[i][j]->SetDebugFlg();
 			select_data[i][j] = false;
 			if (stage_data[i][j] == PLAYER_BLOCK)
@@ -749,7 +749,7 @@ void EditScene::UpdateStage(int _width, int _height)
 				kari_location.y = (float)(i * BOX_HEIGHT);
 				kari_erea.x = BOX_WIDTH;
 				kari_erea.y = BOX_HEIGHT;
-				stage[i][j]->Initialize(kari_location, kari_erea, stage_data[i][j],0);
+				stage[i][j]->Initialize(kari_location, kari_erea, stage_data[i][j]);
 				stage[i][j]->SetDebugFlg();
 				select_data[i][j] = false;
 			}

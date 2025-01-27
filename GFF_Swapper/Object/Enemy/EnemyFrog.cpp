@@ -16,7 +16,7 @@ EnemyFrog::EnemyFrog():
 	effect_once(false),
 	jump_se(0)
 {
-	type = ENEMY;
+	object_type = ENEMY;
 	can_swap = TRUE;
 	can_hit = TRUE;
 }
@@ -26,14 +26,12 @@ EnemyFrog::~EnemyFrog()
 
 }
 
-void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void EnemyFrog::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	camera = Camera::Get();
 	location = _location;
 	erea = _erea;
 	color = _color_data;
-
-	object_pos = _object_pos;
 
 	stageHitFlg[1][bottom] = true;
 
@@ -252,11 +250,9 @@ void EnemyFrog::Finalize()
 
 void EnemyFrog::Hit(Object* _object)
 {
-	__super::Hit(_object);
-
 
 	//プレイヤーと当たった時の処理
-	if (_object->GetObjectType() == PLAYER)
+	if (_object->object_type == PLAYER)
 	{
 		//プレイヤーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))
@@ -326,7 +322,7 @@ void EnemyFrog::Hit(Object* _object)
 	}
 
 	//ブロックと当たった時の処理
-	if ((_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE)
+	if ((_object->object_type == BLOCK || _object->object_type == GROUND_BLOCK) && _object->can_hit == TRUE)
 	{
 		Vector2D tmpl = location;
 		Vector2D tmpe = erea;
@@ -461,34 +457,34 @@ void EnemyFrog::Hit(Object* _object)
 
 	//弱点色に触れた時の処理
 	if (
-		(_object->GetObjectType() == FIRE && this->color == GREEN)||
-		(_object->GetObjectType() == WATER && this->color == RED)||
-		(_object->GetObjectType() == WOOD && this->color == BLUE)
+		(_object->object_type == FIRE && this->color == GREEN)||
+		(_object->object_type == WATER && this->color == RED)||
+		(_object->object_type == WOOD && this->color == BLUE)
 	   )
 	{
 		//死亡状態へ
 		if (frog_state != FrogState::DEATH)
 		{
 			SetFrogState(FrogState::DEATH);
-			ResourceManager::StartSound(damage_se[_object->GetObjectType() - 3]);
+			ResourceManager::StartSound(damage_se[_object->object_type - 3]);
 			can_swap = FALSE;
 		}
 	}
 
 	//ボス攻撃なら上書きしない為に処理終了
-	if (_object->GetIsBossAttack())return;
+	if (_object->is_boss_attack)return;
 
 	//ダメージゾーンを上書きする
-	if ((this->color == GREEN && _object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE) ||
-		(this->color == BLUE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE) ||
-		(this->color == RED && _object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE)
+	if ((this->color == GREEN && _object->object_type == WATER && _object->can_swap == FALSE) ||
+		(this->color == BLUE && _object->object_type == FIRE && _object->can_swap == FALSE) ||
+		(this->color == RED && _object->object_type == WOOD && _object->can_swap == FALSE)
 		)
 	{
 		_object->SetColorData(color);
 	}
 
 	//エネミーと当たった時の処理
-	if (_object->GetObjectType() == ENEMY)
+	if (_object->object_type == ENEMY)
 	{
 		//エネミーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))

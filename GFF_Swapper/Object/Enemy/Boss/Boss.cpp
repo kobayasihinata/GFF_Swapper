@@ -33,7 +33,7 @@ Boss::Boss() :
 	damage_se(0)
 {
 	camera = Camera::Get();
-	type = BOSS;
+	object_type = BOSS;
 	can_swap = TRUE;
 
 	can_hit = TRUE;
@@ -82,15 +82,13 @@ Boss::~Boss()
 {
 }
 
-void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = { SCREEN_WIDTH - 300.0f, SCREEN_HEIGHT - 400};//x座標 ,y座標 
 	//location = { SCREEN_WIDTH / 2, SCREEN_HEIGHT - 300 };//x座標 ,y座標 
 	erea = { _erea };			 //高さ、幅	
 	appearance_size = erea*1.71f;		//ボスの見た目の大きさ
 	color = _color_data;
-
-	object_pos = _object_pos;
 
 	warp_pos = {
 		 {(SCREEN_WIDTH / 2 +30) , 125.0f},			 //中央

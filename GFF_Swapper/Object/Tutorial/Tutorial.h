@@ -56,7 +56,7 @@ public:
     ~Tutorial();
 
     // 初期化処理
-    void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos) override;
+    void Initialize(Vector2D _location, Vector2D _erea, int _color_data) override;
 
     // 更新処理
     void Update(ObjectManager* _manager) override;

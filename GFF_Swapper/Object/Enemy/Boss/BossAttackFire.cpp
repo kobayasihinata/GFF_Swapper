@@ -7,7 +7,7 @@ BossAttackFire::BossAttackFire(Vector2D _parent_center_location, int _angle)
 	this->parent_center_location = _parent_center_location;
 	angle = _angle;
 	camera = Camera::Get();
-	type = FIRE;
+	object_type = FIRE;
 	can_swap = FALSE;
 	can_hit = FALSE;
 	is_boss_attack = TRUE;
@@ -23,12 +23,11 @@ BossAttackFire::~BossAttackFire()
 
 }
 
-void BossAttackFire::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void BossAttackFire::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = _location;
 	color = _color_data;
 	erea = _erea;
-	object_pos = _object_pos;
 
 	start_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/attack_start_fire.wav");
 	end_se = ResourceManager::SetSound("Resource/Sounds/Enemy/Boss/attack_end_fire.wav");
@@ -99,18 +98,18 @@ void BossAttackFire::Draw() const
 void BossAttackFire::Hit(Object* _object)
 {
 	//他のボス攻撃には干渉しない
-	if (!_object->GetIsBossAttack())
+	if (!_object->is_boss_attack)
 	{
 		//草ダメージゾーンに当たったら色だけ変える
-		if (_object->GetObjectType() == WOOD &&
-			!_object->GetCanSwap())
+		if (_object->object_type == WOOD &&
+			!_object->can_swap)
 		{
 			_object->SetColorData(color);
 			return;
 		}
 		//地面ブロックか木に当たったら色を上書きしてフラグを立てる
-		if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WOOD) && _object->GetColorData() != WHITE && !_object->GetIsBossAttack()) {
-			_object->SetCanSwap(TRUE);
+		if ((_object->object_type == GROUND_BLOCK || _object->object_type == WOOD) && _object->GetColorData() != WHITE && !_object->is_boss_attack) {
+			_object->can_swap = TRUE;
 			_object->SetColorData(color);
 			hitFlg = true;
 		}

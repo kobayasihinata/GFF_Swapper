@@ -8,7 +8,7 @@ EnemyDeer::EnemyDeer()
 {
 	old_location = 0;
 	velocity = 0;
-	type = ENEMY;
+	object_type = ENEMY;
 	can_swap = TRUE;
 	can_hit = TRUE;
 
@@ -62,7 +62,7 @@ EnemyDeer::~EnemyDeer()
 
 }
 
-void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	camera = Camera::Get();
 	//一旦引数はパス 鹿がどこにでるかの座標 
@@ -72,8 +72,6 @@ void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	//erea = {100, 100};
 	erea = _erea;
 	color = _color_data;
-
-	object_pos = _object_pos;
 
 	deer_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_walk.PNG", 12, 4, 3, 88, 90, 5, TRUE);
 	damage_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_damage.PNG", 3, 3, 1, 89, 90, 0, FALSE);
@@ -380,17 +378,17 @@ void EnemyDeer::Hit(Object* _object)
 	DrawTest2 = _object->GetLocation().y;
 	DrawTest3 = _object->GetErea().y;
 	DrawTest4 = _object->GetErea().x;
-	DrawTest5 = _object->GetObjectType();
+	DrawTest5 = _object->type;
 	DrawTest6 = _object->GetColerData();*/
 
 	//ブロックや同じ色のプレイヤー、敵と当たった時の処理
 	if (
-			((_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE) ||
-			(_object->GetObjectType() == FIRE && _object->GetCanSwap() == TRUE && this->color == RED) ||
-			(_object->GetObjectType() == WOOD && _object->GetCanSwap() == TRUE && this->color == GREEN) ||
-			(_object->GetObjectType() == WATER && _object->GetCanSwap() == TRUE && this->color == BLUE)||
-			(_object->GetObjectType() == PLAYER && CheckCompatibility(this,_object)==0) ||
-			(_object->GetObjectType() == ENEMY && CheckCompatibility(this, _object) == 0)
+			((_object->object_type == BLOCK || _object->object_type == GROUND_BLOCK) && _object->can_hit == TRUE) ||
+			(_object->object_type == FIRE && _object->can_swap == TRUE && this->color == RED) ||
+			(_object->object_type == WOOD && _object->can_swap == TRUE && this->color == GREEN) ||
+			(_object->object_type == WATER && _object->can_swap == TRUE && this->color == BLUE)||
+			(_object->object_type == PLAYER && CheckCompatibility(this,_object)==0) ||
+			(_object->object_type == ENEMY && CheckCompatibility(this, _object) == 0)
 		)
 	{
 		Vector2D tmpl = location;
@@ -549,33 +547,33 @@ void EnemyDeer::Hit(Object* _object)
 	// 死亡判定
 	if (
 
-		(this->color == RED && _object->GetObjectType() == WATER) ||
-		(this->color == BLUE && _object->GetObjectType() == WOOD) ||
-		(this->color == GREEN && _object->GetObjectType() == FIRE)
+		(this->color == RED && _object->object_type == WATER) ||
+		(this->color == BLUE && _object->object_type == WOOD) ||
+		(this->color == GREEN && _object->object_type == FIRE)
 
 		)
 	{
 		if (deer_state != DeerState::DEATH)
 		{
 			deer_state = DeerState::DEATH;
-			ResourceManager::StartSound(damage_se[_object->GetObjectType() - 3]);
+			ResourceManager::StartSound(damage_se[_object->object_type - 3]);
 			can_swap = false;
 		}
 	}
 
 	//ボス攻撃なら処理終わり
-	if (_object->GetIsBossAttack())return;
+	if (_object->is_boss_attack)return;
 
 	//ダメージゾーンを上書きする
-	if ((this->color == GREEN && _object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE) ||
-		(this->color == BLUE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE) ||
-		(this->color == RED && _object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE))
+	if ((this->color == GREEN && _object->object_type == WATER && _object->can_swap == FALSE) ||
+		(this->color == BLUE && _object->object_type == FIRE && _object->can_swap == FALSE) ||
+		(this->color == RED && _object->object_type == WOOD && _object->can_swap == FALSE))
 	{
 		_object->SetColorData(color);
 	}
 
 	//プレイヤーと当たった時の処理
-	if (_object->GetObjectType() == PLAYER)
+	if (_object->object_type == PLAYER)
 	{
 		//プレイヤーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))
@@ -627,7 +625,7 @@ void EnemyDeer::Hit(Object* _object)
 	}
 
 	//エネミーと当たった時の処理
-	if (_object->GetObjectType() == ENEMY)
+	if (_object->object_type == ENEMY)
 	{
 		//エネミーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))

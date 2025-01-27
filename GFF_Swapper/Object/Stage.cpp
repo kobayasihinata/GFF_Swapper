@@ -13,32 +13,32 @@ Stage::Stage(int _type, int _stage_height, int _next_stage) :old_color(0), inv_f
 	//炎
 	if (_type == RED_BLOCK || _type == FIRE_BLOCK)
 	{
-		type = FIRE;
+		object_type = FIRE;
 	}
 	//木
 	else if (_type == GREEN_BLOCK || _type == WOOD_BLOCK)
 	{
-		type = WOOD;
+		object_type = WOOD;
 	}
 	//水
 	else if (_type == BLUE_BLOCK || _type == WATER_BLOCK)
 	{
-		type = WATER;
+		object_type = WATER;
 	}
 	//ステージ変更ブロック
 	else if (_type == BOSSSTAGE_TRANSITION || _type == TUTOSTAGE_ONE_TRANSITION || _type == TUTOSTAGE_TWO_TRANSITION || _type == FIRSTSTAGE_TRANSITION)
 	{
-		type = CHANGESTAGE;
+		object_type = CHANGESTAGE;
 	}
 	//灰ブロック
 	else if(_type == GRAY_BLOCK)
 	{
-		type = GROUND_BLOCK;
+		object_type = GROUND_BLOCK;
 	}
 	//それ以外
 	else
 	{
-		type = BLOCK;
+		object_type = BLOCK;
 	}
 	//すり抜けるブロック
 	if (_type == PLAYER_RESPAWN_BLOCK || _type == TUTOSTAGE_ONE_TRANSITION || _type == TUTOSTAGE_TWO_TRANSITION || _type == FIRSTSTAGE_TRANSITION || _type == BOSSSTAGE_TRANSITION)
@@ -58,7 +58,7 @@ Stage::~Stage()
 
 }
 
-void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _object_pos)
+void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = _location;
 	erea = _erea;
@@ -74,7 +74,6 @@ void Stage::Initialize(Vector2D _location, Vector2D _erea, int _color_data,int _
 		can_swap = FALSE;
 	}
 	old_color = color;
-	object_pos = _object_pos;
 
 	//画像読み込み
 	StageLoadGraph();
@@ -191,7 +190,7 @@ void Stage::Update()
 			{
 				block_type = FIRE_BLOCK;
 			}
-			type = FIRE;
+			object_type = FIRE;
 		}
 		else if (color == GREEN)
 		{
@@ -205,7 +204,7 @@ void Stage::Update()
 			{
 				block_type = WOOD_BLOCK;
 			}
-			type = WOOD;
+			object_type = WOOD;
 		}
 		else if (color == BLUE)
 		{
@@ -219,7 +218,7 @@ void Stage::Update()
 			{
 				block_type = WATER_BLOCK;
 			}
-			type = WATER;
+			object_type = WATER;
 			draw_wood_flg = false;
 		}
 	}
@@ -442,16 +441,16 @@ void Stage::Hit(Object* _object)
 	if (check_ignore_flg)return;
 
 	//相手が地面ブロックなら処理終了
-	if (_object->GetObjectType() == GROUND_BLOCK)return;
+	if (_object->object_type == GROUND_BLOCK)return;
 
 	//プレイヤーに当たったらフラグを立てる
-	if (_object->GetObjectType() == PLAYER)
+	if (_object->object_type == PLAYER)
 	{
 		hit_flg = true;
 	}
 
 	//草ブロック同士が当たった場合、座標に応じて描画を切り替える
-	if (this->type == WOOD && _object->GetObjectType() == WOOD )
+	if (this->object_type == WOOD && _object->object_type == WOOD )
 	{
 		//当たったオブジェクトより上か下に自分が居るなら、木の描画に切り替える
 		if ((_object->GetLocation().y < this->location.y || _object->GetLocation().y > this->location.y + this->erea.y) && _object->GetLocation().x + (_object->GetErea().x / 2) > this->location.x && _object->GetLocation().x + (_object->GetErea().x / 2) < this->location.x + this->erea.x)
@@ -462,17 +461,17 @@ void Stage::Hit(Object* _object)
 	}
 
 	//プレイヤーに当たった時、このブロックがプレイヤーリスポーン位置設定ブロックなら、フラグを立てる
-	if (block_type == PLAYER_RESPAWN_BLOCK && _object->GetObjectType() == PLAYER)
+	if (block_type == PLAYER_RESPAWN_BLOCK && _object->object_type == PLAYER)
 	{
 		set_respawn_flg = true;
 		return;
 	}
 
 	//属性の相性が悪いブロックに継続的に当たっていた時、色を変える
-	if ((this->can_swap == FALSE && _object->GetCanSwap() == FALSE)|| (this->can_swap == TRUE && _object->GetCanSwap() == TRUE))
+	if ((this->can_swap == FALSE && _object->can_swap == FALSE)|| (this->can_swap == TRUE && _object->can_swap == TRUE))
 	{
  		//草が火に触れ続けているなら
-		if (this->type == WOOD && _object->GetObjectType() == FIRE && ++touch_object > 10)
+		if (this->object_type == WOOD && _object->object_type == FIRE && ++touch_object > 10)
 		{
 			SetColorData(RED);
 			ResourceManager::StartSound(change_fire);
@@ -480,7 +479,7 @@ void Stage::Hit(Object* _object)
 			return;
 		}
 		//火が水に触れ続けているなら
-		if (this->type == FIRE && _object->GetObjectType() == WATER && ++touch_object > 10)
+		if (this->object_type == FIRE && _object->object_type == WATER && ++touch_object > 10)
 		{
 			SetColorData(BLUE);
 			ResourceManager::StartSound(change_water);
@@ -488,7 +487,7 @@ void Stage::Hit(Object* _object)
 			return;
 		}
 		//水が草に触れ続けているなら
-		if (this->type == WATER && _object->GetObjectType() == WOOD && ++touch_object > 10)
+		if (this->object_type == WATER && _object->object_type == WOOD && ++touch_object > 10)
 		{
 			SetColorData(GREEN);
 			ResourceManager::StartSound(change_wood);
@@ -499,7 +498,7 @@ void Stage::Hit(Object* _object)
 
 	//自身が炎で、真上にも炎があるなら
 	if (this->block_type == FIRE_BLOCK &&
-		_object->GetObjectType() == FIRE &&
+		_object->object_type == FIRE &&
 		this->location.x == _object->GetLocation().x &&
 		this->location.y >= _object->GetLocation().y)
 	{

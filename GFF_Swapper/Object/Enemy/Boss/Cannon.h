@@ -35,7 +35,7 @@ public:
 	Cannon(int _type, int _angle);
 	~Cannon();
 
-	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data)override;
 	void Finalize()override;
 
 	void Update(ObjectManager* _manager)override;

@@ -1041,7 +1041,7 @@ void GameMain::SetStageBlockAround()
 	//	for (int j = 0; j < stage_width_num; j++)
 	//	{
 	//		//ブロックだけダウンキャストする
-	//		if (object[stage_block_pos[i][j]] != nullptr && object[stage_block_pos[i][j]]->GetObjectType() == BLOCK)
+	//		if (object[stage_block_pos[i][j]] != nullptr && object[stage_block_pos[i][j]]->type == BLOCK)
 	//		{
 	//			for (int k = 0; k < 8; k++)
 	//			{
