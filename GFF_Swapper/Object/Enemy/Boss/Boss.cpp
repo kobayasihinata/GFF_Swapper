@@ -45,9 +45,6 @@ Boss::Boss() :
 	{
 		barrier_rad[i] = 0;
 	}
-	for (int i = 0; i < 3; i++) {
-		part_color[i] = 0;
-	}
 
 	wood_count = 0;
 	fire_count = 0;
@@ -104,11 +101,6 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 	damage_anim_time = 60;
 
 	wing_color = 0x000000;
-
-	for (int i = 0; i < 3; i++)
-	{
-		part_color[i] = BLACK;
-	}
 
 	LoadPosition();  // 初期化時に座標を読み込む
 
@@ -273,9 +265,7 @@ void Boss::Update(ObjectManager* _manager)
 		}
 		if (damage_anim_time <= 0)
 		{
-			for (int i = 0; i < 3; i++) {
-				part_color[i] = BLACK;
-			}
+
 			wing_color = 0x000000;
 			shake_anim = 0;
 			damage_anim_flg = false;
@@ -718,10 +708,6 @@ void Boss::BossAtack(ObjectManager *_manager)
 				boss_state = BossState::MOVE;
 				woodNum = 0;
 				t = 0;
-				for (int i = 0; i < 3; i++)
-				{
-					attackWood[i] = 0.f;
-				}
 			}
 			break;
 		case 2://水

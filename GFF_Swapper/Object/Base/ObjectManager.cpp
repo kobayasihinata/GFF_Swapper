@@ -98,7 +98,7 @@ void ObjectManager::Update(GameMain* _g)
 	//画面内のオブジェクトを更新する処理
 	if (!GetSearchFlg() || (GetSearchFlg()&& frame % 10 == 0))
 	{
-		for (const auto& in_screen_object : in_screen_object)
+		for (const auto& in_screen_object : this->in_screen_object)
 		{
 			in_screen_object->Update(this);
 			move_object_num++;
@@ -218,32 +218,38 @@ void ObjectManager::Draw()const
 
 void ObjectManager::Finalize()
 {
-	player_object->Finalize();
-	delete player_object;
+	if (player_object != nullptr)
+	{
+		player_object->Finalize();
+		delete player_object;
+	}
 
-	boss_object->Finalize();
-	delete boss_object;
+	if (boss_object != nullptr)
+	{
+		boss_object->Finalize();
+		delete boss_object;
+	}
 
-	for (const auto object_list : object_list)
+	for (const auto& object_list : object_list)
 	{
 		object_list->Finalize();
 		delete object_list;
 	}
 
-	for (const auto in_screen_object : in_screen_object)
+	for (const auto& delete_object : delete_object)
 	{
-		in_screen_object->Finalize();
-		delete in_screen_object;
+		if (delete_object != nullptr)
+		{
+			delete_object->Finalize();
+			delete delete_object;
+		}
 	}
 
-	for (const auto delete_object : delete_object)
+	if (now_current_object != nullptr)
 	{
-		delete_object->Finalize();
-		delete delete_object;
+		now_current_object->Finalize();
+		delete now_current_object;
 	}
-
-	now_current_object->Finalize();
-	delete now_current_object;
 
 	effect_spawner->Finalize();
 	delete effect_spawner;

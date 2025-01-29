@@ -14,6 +14,7 @@
 #define APPEARED_TIME 500			//登場演出の時間
 #define BOSS_DEATH_TIME 300			//死亡演出の時間
 
+//木の攻撃がスポーンする位置
 static float WOOD_SPAWN[6][3]{
 	{570,610,650},
 	{315,355,395},
@@ -23,6 +24,7 @@ static float WOOD_SPAWN[6][3]{
 	{-825,-865,-905},
 };
 
+//ボスの状態
 enum class BossState {
 	MOVE = 0,
 	ATTACK,
@@ -33,6 +35,9 @@ class Boss :
 	public Object
 {
 private:
+	//ボス移動関連変数
+	
+	//当たり判定用
 	enum hitPosition
 	{
 		top,
@@ -45,56 +50,50 @@ private:
 	Vector2D vector;				//ボスのベクトル
 	bool stageHitFlg[2][4];			//bossとステージの当たり判定
 	float move[4];					//各方向加速度格納用
+	float speed;					//移動速度
 
+	//ボス本体関連変数
 	BossState boss_state;			//現在のボスの状態
-
 	float barrier_rad[3];			//バリアの半径
 	int barrier_num;				//バリアの数
-
 	int wood_count;					//木攻撃の数カウント
 	int fire_count;					//火攻撃の数カウント
-	int wing_color;
-	int part_color[3];
-
+	int wing_color;					//羽の描画色
 	int attack_count;				//何回攻撃したか測定
 	bool stop_flg;					//ボスの動作を止めておくか判断
+	bool invin_flg;					//無敵かどうか
+	int state_change_time;			//状態変更のタイミング
+	int boss_appeared_timer;		//登場演出の時間測定
+
+	//ボスダメージ、死亡関連変数
 	bool damage_flg;				//ダメージを受けたとき
 	int damage_effect_time = 60;	//ダメージエフェクトの持続時間
 	bool damage_effect_flg = false; //ダメージエフェクトのフラグ
+	bool damage_anim_flg;			//ダメージアニメーション用フラグ
+	int damage_anim_time;			//ダメージアニメーション持続時間
+	int shake_anim;					//ダメージ時の振動数値管理用
 	bool death_flg;					//死亡演出中か
 	int death_timer;				//死亡演出の時間測定
-	bool damage_anim_flg;
-	int damage_anim_time;
-	int shake_anim;
 
-	float speed;					//移動速度;
-
+	//ボス色関連変数
 	float change_color_timer;		//色変化にかける時間
 	int next_color;					//次に変わる色
 	int change_rand;				//ボスを揺らす
-	int boss_color;
-
-	bool invin_flg;					//無敵かどうか
+	int boss_color;					//ボスの描画色
 
 	//計算用
-	Vector2D velocity;
+	Vector2D velocity;				//加速度
 	Vector2D player_local_location;	//プレイヤーの座標
-	int cunt;
+	int cunt;						//羽の位置計算用
 	int c;
 	int tutirial_num;
 	int t = 0;
-
-	int state_change_time;		//状態変更のタイミング
-	int boss_appeared_timer;	//登場演出の時間測定
-
 	std::vector<Vector2D> vertices; //ボスの頂点情報
 	std::vector<Vector2D> warp_pos; //ワープ位置情報
 	std::array<Vector2D, 40> wing;	//ボスの羽の位置情報
 	std::array<Vector2D, 40> wing_mirror;//ミラー羽の位置情報
-
 	int wing_fps; //羽の加算用
 	float boss_anim;//アニメーション用
-
 	bool f = false;
 	bool oldF = false;
 	int cnt = 100;
@@ -102,10 +101,10 @@ private:
 	int old_attack = 0;
 	int attack_num = 0;
 	bool side = false;
-
-	float attackWood[6];
 	int woodNum = 0;
 
+
+	//SE格納用変数
 	int warphole_se;	//ワープホールSE
 	int spawn_se;		//登場SE
 	int damage_se;	//被ダメージSE
