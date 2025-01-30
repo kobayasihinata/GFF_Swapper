@@ -145,6 +145,10 @@ public:
 	bool ChangePlayerColor();
 	void SelectObject();
 
+	bool CheckBlock(int current_type, int current_color, int next_type, int next_color);
+	//int SearchObject(int _x, int _y, int direction_x, int direction_y);
+
+
 	//bool CheckCollision(Location l, Erea e); //ステージとの当たり判定
 	float ThreePointAngle(Vector2D l1, Vector2D l2, Vector2D referenceP) const;
 
@@ -155,9 +159,9 @@ public:
 
 	void PlayerAnim();
 	void AnimStateUpdate();		//アニメーションの状態を更新する
-	void DrawPlayer()const;
+	//void DrawPlayer()const;
 	void DrawPlayerImage()const;	//プレイヤー描画の画像版
-	void DrawPlayerFront(bool f)const;
+	//void DrawPlayerFront(bool f)const;
 
 	//引数:もとになる座標、回転させたい座標、回転させたい角度
 	Vector2D RotationLocation(Vector2D BaseLoc, Vector2D Loc, float r) const;
