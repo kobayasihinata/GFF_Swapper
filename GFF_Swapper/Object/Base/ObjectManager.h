@@ -14,11 +14,11 @@ class GameMain;
 //オブジェクト生成時に必要な情報
 struct SpawnData
 {
-	Object* object;
-	Vector2D location;
-	Vector2D size;
-	int color;
-	int stage_around_data[8];
+	Object* object;				//生成するオブジェクトのポインタ
+	Vector2D location;			//生成位置
+	Vector2D size;				//大きさ
+	int color;					//色情報
+	int stage_around_data[8];	//近隣8マスのブロックの種類
 };
 
 class ObjectManager
@@ -38,7 +38,6 @@ private:
 	int move_object_num;						//Updateされているオブジェクト数
 	bool boss_blind_flg;						//ボスステージの暗転が有効か
 	GameMainState change_state;					//次に変えるゲームメインのステート
-
 	bool boss_appeared_set_once;				//ボス演出が開始された時の数値変更用
 
 public:
@@ -76,7 +75,6 @@ public:
 	Vector2D GetPlayerLocalLocation()const;				//プレイヤーローカル座標取得
 	Vector2D GetPlayerErea()const;						//プレイヤー大きさ取得
 	int GetPlayerColor()const;							//プレイヤーの色取得
-	bool GetBlindFlg()const;							//暗転中か取得
 
 	Vector2D GetBossLocation()const;					//ボスの位置取得
 	void UpdateState(GameMainState _state);				//ゲームメインの状態更新

@@ -10,7 +10,7 @@ BossAttackWood::BossAttackWood()
 	w_type = 0;
 	camera_impact_once = false;
 	
-	type = WOOD;
+	object_type = WOOD;
 	can_swap = FALSE;
 	can_hit = FALSE;
 	is_boss_attack = TRUE;
@@ -20,14 +20,12 @@ BossAttackWood::~BossAttackWood()
 {
 }
 
-void BossAttackWood::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void BossAttackWood::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = _location;
 	start_location_y = location.y;
 
 	color = _color_data;
-
-	object_pos = _object_pos;
 
 	velocity.x = 0.f;
 	velocity.y = -10.f;
@@ -106,19 +104,19 @@ void BossAttackWood::Draw() const
 void BossAttackWood::Hit(Object* _object)
 {
 	//他のボス攻撃には干渉しない
-	if (!_object->GetIsBossAttack())
+	if (!_object->is_boss_attack)
 	{
 		//水ダメージゾーンに当たったら色だけ変える
-		if (_object->GetObjectType() == WATER &&
-			!_object->GetCanSwap())
+		if (_object->object_type == WATER &&
+			!_object->can_swap)
 		{
 			_object->SetColorData(color);
 			return;
 		}
-		if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == WATER) &&
+		if ((_object->object_type == GROUND_BLOCK || _object->object_type == WATER) &&
 			_object->GetColorData() != WHITE &&
 			_object->GetLocation().y < start_location_y) {
-			_object->SetCanSwap(TRUE);
+			_object->can_swap = TRUE;
 			_object->SetColorData(color);
 		}
 	}

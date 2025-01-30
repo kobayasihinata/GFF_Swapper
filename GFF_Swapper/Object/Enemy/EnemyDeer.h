@@ -78,7 +78,7 @@ public:
 
 	EnemyDeer();
 	~EnemyDeer();
-	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data)override;
 	void Update(ObjectManager* _manager)override;
 	void Draw()const override;
 	void Finalize()override;

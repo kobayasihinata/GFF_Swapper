@@ -8,7 +8,7 @@ EnemyDeer::EnemyDeer()
 {
 	old_location = 0;
 	velocity = 0;
-	type = ENEMY;
+	object_type = ENEMY;
 	can_swap = TRUE;
 	can_hit = TRUE;
 
@@ -62,7 +62,7 @@ EnemyDeer::~EnemyDeer()
 
 }
 
-void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	camera = Camera::Get();
 	//一旦引数はパス 鹿がどこにでるかの座標 
@@ -72,8 +72,6 @@ void EnemyDeer::Initialize(Vector2D _location, Vector2D _erea, int _color_data, 
 	//erea = {100, 100};
 	erea = _erea;
 	color = _color_data;
-
-	object_pos = _object_pos;
 
 	deer_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_walk.PNG", 12, 4, 3, 88, 90, 5, TRUE);
 	damage_image = ResourceManager::SetDivGraph("Resource/Images/sozai/mashroom_damage.PNG", 3, 3, 1, 89, 90, 0, FALSE);
@@ -151,7 +149,7 @@ void EnemyDeer::Draw()const
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
 
 		//頭
-		ResourceManager::DrawRotaBox(local_location.x + 16.0f, local_location.y + 10.0f, 30.0f, 20.0f, local_location.x + 16.0f, local_location.y + 10.0f, d_head_rad, draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 16.0f, local_location.y + 10.0f, 30.0f, 20.0f, local_location.x + 16.0f, local_location.y + 10.0f, d_head_rad, color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 16.0f, local_location.y + 10.0f, 30.0f, 20.0f, local_location.x + 16.0f, local_location.y + 10.0f, d_head_rad, 0x000000, FALSE);
 		//目
 		ResourceManager::DrawRotaBox(local_location.x + 8.0f, local_location.y + 10.0f, 8.0f, 9.0f, local_location.x + 8.0f, local_location.y + 10.0f, d_eye_rad, 0x000000, true);
@@ -164,39 +162,39 @@ void EnemyDeer::Draw()const
 			//ResourceManager::DrawRotaBox(local_location.x + 22.0f, local_location.y + 30.0f, 17.0f, 10.0f, local_location.x + 22.0f, local_location.y + 30.0f, d_neck_rad, color, true);
 			//ResourceManager::DrawRotaBox(local_location.x + 26.0f, local_location.y + 45.0f, 10.0f, 10.0f, local_location.x + 26.0f, local_location.y + 45.0f, d_neck_rad, color, true);
 
-			ResourceManager::DrawRotaBox(local_location.x + 25.0f, local_location.y + 38.0f, 13.0f, 24.0f, local_location.x + 25.0f, local_location.y + 38.0f, d_neck_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 25.0f, local_location.y + 38.0f, 13.0f, 24.0f, local_location.x + 25.0f, local_location.y + 38.0f, d_neck_rad, color, true);
 			ResourceManager::DrawRotaBox(local_location.x + 25.0f, local_location.y + 38.0f, 13.0f, 24.0f, local_location.x + 25.0f, local_location.y + 38.0f, d_neck_rad, 0x000000, FALSE);
 
 			//胴体 vr.1
-			ResourceManager::DrawRotaBox(local_location.x + 53.0f, local_location.y + 63.0f, 65.0f, 15.0f, local_location.x + 53.0f, local_location.y + 63.0f, 0.f, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 53.0f, local_location.y + 63.0f, 65.0f, 15.0f, local_location.x + 53.0f, local_location.y + 63.0f, 0.f, color, true);
 			ResourceManager::DrawRotaBox(local_location.x + 53.0f, local_location.y + 63.0f, 65.0f, 15.0f, local_location.x + 53.0f, local_location.y + 63.0f, 0.f, 0x000000, FALSE);
 			break;
 
 		case d_draw::vr_two:
 
 			//首 vr.2
-			ResourceManager::DrawRotaBox(local_location.x + 25.0f, local_location.y + 38.0f, 13.0f, 24.0f, local_location.x + 25.0f, local_location.y + 38.0f, d_neck_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 25.0f, local_location.y + 38.0f, 13.0f, 24.0f, local_location.x + 25.0f, local_location.y + 38.0f, d_neck_rad, color, true);
 
 			//胴体 vr.2
-			ResourceManager::DrawRotaBox(local_location.x + 34.0f, local_location.y + 63.0f, 30.0f, 15.0f, local_location.x + 34.0f, local_location.y + 63.0f, d_rad, draw_color, true);
-			ResourceManager::DrawRotaBox(local_location.x + 72.0f, local_location.y + 63.0f, 30.0f, 15.0f, local_location.x + 72.0f, local_location.y + 63.0f, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 34.0f, local_location.y + 63.0f, 30.0f, 15.0f, local_location.x + 34.0f, local_location.y + 63.0f, d_rad, color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 72.0f, local_location.y + 63.0f, 30.0f, 15.0f, local_location.x + 72.0f, local_location.y + 63.0f, d_rad, color, true);
 			break;
 		}
 
 		//足　左から
-		ResourceManager::DrawRotaBox(local_location.x + 27.0f + d_left_leg[0], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 27.0f - d_left_leg[0], local_location.y + 88.0f, leg_angle[0], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 27.0f + d_left_leg[0], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 27.0f - d_left_leg[0], local_location.y + 88.0f, leg_angle[0], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 27.0f + d_left_leg[0], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 27.0f - d_left_leg[0], local_location.y + 88.0f, leg_angle[0], 0x000000, FALSE);
 
-		ResourceManager::DrawRotaBox(local_location.x + 43.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 43.0f, local_location.y + 88.0f, -leg_angle[1], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 43.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 43.0f, local_location.y + 88.0f, -leg_angle[1], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 43.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 43.0f, local_location.y + 88.0f, -leg_angle[1], 0x000000, FALSE);
-		//ResourceManager::DrawRotaBox(local_location.x + 35.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 35.0f, local_location.y + 88.0f, -leg_angle[1], draw_color, true);
+		//ResourceManager::DrawRotaBox(local_location.x + 35.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 35.0f, local_location.y + 88.0f, -leg_angle[1], color, true);
 
-		ResourceManager::DrawRotaBox(local_location.x + 68.0f + d_left_leg[2], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 68.0f, local_location.y + 88.0f, leg_angle[2], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 68.0f + d_left_leg[2], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 68.0f, local_location.y + 88.0f, leg_angle[2], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 68.0f + d_left_leg[2], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 68.0f, local_location.y + 88.0f, leg_angle[2], 0x000000, FALSE);
 
-		ResourceManager::DrawRotaBox(local_location.x + 83.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 83.0f, local_location.y + 88.0f, -leg_angle[3], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 83.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 83.0f, local_location.y + 88.0f, -leg_angle[3], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 83.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 83.0f, local_location.y + 88.0f, -leg_angle[3], 0x000000, FALSE);
-		//ResourceManager::DrawRotaBox(local_location.x + 75.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 75.0f, local_location.y + 88.0f, -leg_angle[3], draw_color, true);
+		//ResourceManager::DrawRotaBox(local_location.x + 75.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 75.0f, local_location.y + 88.0f, -leg_angle[3], color, true);
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		}
@@ -206,7 +204,7 @@ void EnemyDeer::Draw()const
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (deer_death_timer * 4));
 
 		//頭
-		ResourceManager::DrawRotaBox(local_location.x - erea.x + 15.0f, local_location.y - 10.0f, 30.0f, 20.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x - erea.x + 15.0f, local_location.y - 10.0f, 30.0f, 20.0f, local_location.x, local_location.y, d_rad, color, true);
 		ResourceManager::DrawRotaBox(local_location.x - erea.x + 15.0f, local_location.y - 10.0f, 30.0f, 20.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
 		//目
 		ResourceManager::DrawRotaBox(local_location.x - erea.x + 8.0f, local_location.y - 10.0f, 8.0f, 9.0f, local_location.x, local_location.y, d_rad, 0x000000, true);
@@ -219,39 +217,39 @@ void EnemyDeer::Draw()const
 			//ResourceManager::DrawRotaBox(local_location.x - erea.x + 21.0f, local_location.y - 30.0f, 17.0f, 10.0f, local_location.x, local_location.y, d_rad, color, true);
 			//ResourceManager::DrawRotaBox(local_location.x - erea.x + 25.0f, local_location.y - 45.0f, 10.0f, 10.0f, local_location.x, local_location.y, d_rad, color, true);
 
-			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, color, true);
 			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
 
 			//胴体 vr.1
-			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, color, true);
 			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, 0x000000, FALSE);
 			break;
 
 		case d_draw::vr_two:
 
 			//首 vr.2
-			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 23.0f, local_location.y - 38.0f, 13.0f, 24.0f, local_location.x, local_location.y, d_rad, color, true);
 
 			//胴体 vr.2
-			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
-			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, draw_color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, color, true);
+			ResourceManager::DrawRotaBox(local_location.x - erea.x + 52.0f, local_location.y - 63.0f, 65.0f, 15.0f, local_location.x, local_location.y, d_rad, color, true);
 			break;
 		}
 
 		//足　左から
-		ResourceManager::DrawRotaBox(local_location.x + 21.0f + d_left_leg[0], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 21.0f - d_left_leg[0], local_location.y + 88.0f, leg_angle[0], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 21.0f + d_left_leg[0], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 21.0f - d_left_leg[0], local_location.y + 88.0f, leg_angle[0], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 21.0f + d_left_leg[0], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 21.0f - d_left_leg[0], local_location.y + 88.0f, leg_angle[0], 0x000000, FALSE);
 
-		ResourceManager::DrawRotaBox(local_location.x + 37.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 37.0f, local_location.y + 88.0f, -leg_angle[1], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 37.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 37.0f, local_location.y + 88.0f, -leg_angle[1], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 37.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 37.0f, local_location.y + 88.0f, -leg_angle[1], 0x000000, FALSE);
-		//ResourceManager::DrawRotaBox(local_location.x + 35.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 35.0f, local_location.y + 88.0f, -leg_angle[1], draw_color, true);
+		//ResourceManager::DrawRotaBox(local_location.x + 35.0f + d_left_leg[1], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 35.0f, local_location.y + 88.0f, -leg_angle[1], color, true);
 
-		ResourceManager::DrawRotaBox(local_location.x + 62.0f + d_left_leg[2], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 62.0f, local_location.y + 88.0f, leg_angle[2], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 62.0f + d_left_leg[2], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 62.0f, local_location.y + 88.0f, leg_angle[2], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 62.0f + d_left_leg[2], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 62.0f, local_location.y + 88.0f, leg_angle[2], 0x000000, FALSE);
 
-		ResourceManager::DrawRotaBox(local_location.x + 77.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 77.f, local_location.y + 88.0f, -leg_angle[3], draw_color, true);
+		ResourceManager::DrawRotaBox(local_location.x + 77.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 77.f, local_location.y + 88.0f, -leg_angle[3], color, true);
 		ResourceManager::DrawRotaBox(local_location.x + 77.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 77.0f, local_location.y + 88.0f, -leg_angle[3], 0x000000, FALSE);
-		//ResourceManager::DrawRotaBox(local_location.x + 75.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 75.0f, local_location.y + 88.0f, -leg_angle[3], draw_color, true);
+		//ResourceManager::DrawRotaBox(local_location.x + 75.0f + d_left_leg[3], local_location.y + 88.0f, 10.0f, 25.0f, local_location.x + 75.0f, local_location.y + 88.0f, -leg_angle[3], color, true);
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		}*/
@@ -380,17 +378,17 @@ void EnemyDeer::Hit(Object* _object)
 	DrawTest2 = _object->GetLocation().y;
 	DrawTest3 = _object->GetErea().y;
 	DrawTest4 = _object->GetErea().x;
-	DrawTest5 = _object->GetObjectType();
+	DrawTest5 = _object->type;
 	DrawTest6 = _object->GetColerData();*/
 
 	//ブロックや同じ色のプレイヤー、敵と当たった時の処理
 	if (
-			((_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE) ||
-			(_object->GetObjectType() == FIRE && _object->GetCanSwap() == TRUE && this->color == RED) ||
-			(_object->GetObjectType() == WOOD && _object->GetCanSwap() == TRUE && this->color == GREEN) ||
-			(_object->GetObjectType() == WATER && _object->GetCanSwap() == TRUE && this->color == BLUE)||
-			(_object->GetObjectType() == PLAYER && CheckCompatibility(this,_object)==0) ||
-			(_object->GetObjectType() == ENEMY && CheckCompatibility(this, _object) == 0)
+			((_object->object_type == BLOCK || _object->object_type == GROUND_BLOCK) && _object->can_hit == TRUE) ||
+			(_object->object_type == FIRE && _object->can_swap == TRUE && this->color == RED) ||
+			(_object->object_type == WOOD && _object->can_swap == TRUE && this->color == GREEN) ||
+			(_object->object_type == WATER && _object->can_swap == TRUE && this->color == BLUE)||
+			(_object->object_type == PLAYER && CheckCompatibility(this,_object)==0) ||
+			(_object->object_type == ENEMY && CheckCompatibility(this, _object) == 0)
 		)
 	{
 		Vector2D tmpl = location;
@@ -549,33 +547,33 @@ void EnemyDeer::Hit(Object* _object)
 	// 死亡判定
 	if (
 
-		(this->color == RED && _object->GetObjectType() == WATER) ||
-		(this->color == BLUE && _object->GetObjectType() == WOOD) ||
-		(this->color == GREEN && _object->GetObjectType() == FIRE)
+		(this->color == RED && _object->object_type == WATER) ||
+		(this->color == BLUE && _object->object_type == WOOD) ||
+		(this->color == GREEN && _object->object_type == FIRE)
 
 		)
 	{
 		if (deer_state != DeerState::DEATH)
 		{
 			deer_state = DeerState::DEATH;
-			ResourceManager::StartSound(damage_se[_object->GetObjectType() - 3]);
+			ResourceManager::StartSound(damage_se[_object->object_type - 3]);
 			can_swap = false;
 		}
 	}
 
 	//ボス攻撃なら処理終わり
-	if (_object->GetIsBossAttack())return;
+	if (_object->is_boss_attack)return;
 
 	//ダメージゾーンを上書きする
-	if ((this->color == GREEN && _object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE) ||
-		(this->color == BLUE && _object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE) ||
-		(this->color == RED && _object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE))
+	if ((this->color == GREEN && _object->object_type == WATER && _object->can_swap == FALSE) ||
+		(this->color == BLUE && _object->object_type == FIRE && _object->can_swap == FALSE) ||
+		(this->color == RED && _object->object_type == WOOD && _object->can_swap == FALSE))
 	{
 		_object->SetColorData(color);
 	}
 
 	//プレイヤーと当たった時の処理
-	if (_object->GetObjectType() == PLAYER)
+	if (_object->object_type == PLAYER)
 	{
 		//プレイヤーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))
@@ -627,7 +625,7 @@ void EnemyDeer::Hit(Object* _object)
 	}
 
 	//エネミーと当たった時の処理
-	if (_object->GetObjectType() == ENEMY)
+	if (_object->object_type == ENEMY)
 	{
 		//エネミーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))

@@ -12,7 +12,7 @@
 
 EnemyBat::EnemyBat() :up(0), bat_state(BatState::LEFT), wing_angle(0.0f), vector{ 0.0f }, faint_timer(0), death_timer(0), se_once(false),bat_state_num(0)
 {
-	type = ENEMY;
+	object_type = ENEMY;
 	can_swap = TRUE;
 	can_hit = TRUE;
 	for (int i = 0; i < 4; i++){
@@ -27,14 +27,12 @@ EnemyBat::~EnemyBat()
 {
 }
 
-void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	camera = Camera::Get();
 	location = { _location };//x座標 ,y座標 //590 ,400
 	erea = { _erea };		//高さ、幅	//100,150
 	color = _color_data;
-
-	object_pos = _object_pos;
 
 	vector = ENEMY_SPEED;
 
@@ -218,7 +216,7 @@ void EnemyBat::Draw() const
 		//for (int i = 0; i + 2 < vertices.size(); i += 3) {
 		//	//耳
 		//	if (i < 5) {
-		//		DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, draw_color, TRUE);
+		//		DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, color, TRUE);
 		//		DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, 0x000000, FALSE);
 		//	}
 		//	//右羽
@@ -227,7 +225,7 @@ void EnemyBat::Draw() const
 		//		DrawLineAA(vertices[7].x, vertices[7].y + wing_angle, vertices[8].x + wing_angle, vertices[8].y, 0x000000);
 		//		DrawLineAA(vertices[6].x, vertices[6].y - 2, vertices[7].x, vertices[7].y - 2 + wing_angle, 0x000000);
 		//		//DrawTriangleAA(vertices[i].x - 1, vertices[i].y - 1, vertices[i + 1].x - 1, vertices[i + 1].y - 1 + wing_angle, vertices[i + 2].x + wing_angle - 1, vertices[i + 2].y - 1, 0x000000, FALSE);
-		//		DrawTriangleAA(verをtices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x + wing_angle, vertices[i + 2].y, draw_color, TRUE);
+		//		DrawTriangleAA(verをtices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x + wing_angle, vertices[i + 2].y, color, TRUE);
 
 		//	}
 		//	//左羽
@@ -236,13 +234,13 @@ void EnemyBat::Draw() const
 		//		DrawLineAA(vertices[16].x, vertices[16].y - 2 + wing_angle, vertices[17].x - wing_angle, vertices[17].y, 0x000000);
 		//		DrawLineAA(vertices[15].x, vertices[15].y - 2, vertices[16].x, vertices[16].y - 2 + wing_angle, 0x000000);
 		//		//DrawTriangleAA(vertices[i].x + 1, vertices[i].y + 1, vertices[i + 1].x + 1, vertices[i + 1].y - 1 + wing_angle, vertices[i + 2].x - 3 - wing_angle, vertices[i + 2].y - 3, 0x000000, FALSE);
-		//		DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x - wing_angle, vertices[i + 2].y, draw_color, TRUE);
+		//		DrawTriangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y + wing_angle, vertices[i + 2].x - wing_angle, vertices[i + 2].y, color, TRUE);
 
 		//	}
 		//	//ひし形の描画
 		//	else if (i + 3 < vertices.size())
 		//	{
-		//		DrawQuadrangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, vertices[i + 3].x, vertices[i + 3].y, draw_color, TRUE);
+		//		DrawQuadrangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, vertices[i + 3].x, vertices[i + 3].y, color, TRUE);
 		//		DrawQuadrangleAA(vertices[i].x, vertices[i].y, vertices[i + 1].x, vertices[i + 1].y, vertices[i + 2].x, vertices[i + 2].y, vertices[i + 3].x, vertices[i + 3].y, 0x000000, FALSE);
 		//		i++;
 		//	}
@@ -369,9 +367,9 @@ void EnemyBat::Hit(Object* _object)
 {
 	/*delete_object = _object;*/
 	//ブロックと当たった時の処理
-	if (_object->GetObjectType() == BLOCK || 
-		_object->GetObjectType() == GROUND_BLOCK|| 
-		(_object->GetCanSwap() == TRUE && CheckCompatibility(this, _object) == 0)
+	if (_object->object_type == BLOCK || 
+		_object->object_type == GROUND_BLOCK|| 
+		(_object->can_swap == TRUE && CheckCompatibility(this, _object) == 0)
 		)
 		
 	{
@@ -472,7 +470,7 @@ void EnemyBat::Hit(Object* _object)
 			if (t != 0) {
 				vector.x = 0.f;
 				move[left] = t;
-				if (bat_state != BatState::FAINT && _object->GetObjectType() != PLAYER)
+				if (bat_state != BatState::FAINT && _object->object_type != PLAYER)
 				{
 					bat_state = BatState::RIGHT;
 					wall_hit_flg = true;
@@ -486,7 +484,7 @@ void EnemyBat::Hit(Object* _object)
 			if (t != 0) {
 				vector.x = 0.f;
 				move[right] = t;
-				if (bat_state != BatState::FAINT && _object->GetObjectType() != PLAYER)
+				if (bat_state != BatState::FAINT && _object->object_type != PLAYER)
 				{
 					bat_state = BatState::LEFT;
 					wall_hit_flg = true;
@@ -516,14 +514,14 @@ void EnemyBat::Hit(Object* _object)
 	//触れたブロックが緑＆自分の色が赤だったら触れた緑ブロックを燃やす
 	//水の中に突っ込むと即死
 	if (_object->GetColorData() == BLUE &&
-		_object->GetObjectType() != PLAYER &&
+		_object->object_type != PLAYER &&
 		this->color == RED) {
 		
 		//死亡状態へ
 		if (bat_state != BatState::DEATH)
 		{
 			bat_state = BatState::DEATH;
-			ResourceManager::StartSound(damage_se[_object->GetObjectType() - 3]);
+			ResourceManager::StartSound(damage_se[_object->object_type - 3]);
 			can_swap = FALSE;
 		}
 	}
@@ -532,14 +530,14 @@ void EnemyBat::Hit(Object* _object)
 	//触れたブロックが赤＆自分の色が青だったら触れた赤ブロックを消す
 	//コウモリの色が吸い取られて死ぬ
 	if (_object->GetColorData() == GREEN &&
-		_object->GetObjectType() != PLAYER &&
+		_object->object_type != PLAYER &&
 		this->color == BLUE) {
 		//wing_angle = sin(PI * 2.f / 12.f * up) * 20.f; // 藻掻いているように見える風に
 		//死亡状態へ
 		if (bat_state != BatState::DEATH)
 		{
 			bat_state = BatState::DEATH;
-			ResourceManager::StartSound(damage_se[_object->GetObjectType() - 3]);
+			ResourceManager::StartSound(damage_se[_object->object_type - 3]);
 			can_swap = FALSE;
 		}
 	}
@@ -548,27 +546,27 @@ void EnemyBat::Hit(Object* _object)
 	//触れたブロックが青＆自分の色が緑だったら、雨粒を吸い取り　水場などに当たると反射する
 	//当たったら即死
 	if (_object->GetColorData() == RED &&
-		_object->GetObjectType() != PLAYER &&
+		_object->object_type != PLAYER &&
 		this->color == GREEN) {
 		if (bat_state != BatState::DEATH)
 		{
 			bat_state = BatState::DEATH;
-			ResourceManager::StartSound(damage_se[_object->GetObjectType() - 3]);
+			ResourceManager::StartSound(damage_se[_object->object_type - 3]);
 			can_swap = FALSE;
 		}
 	}
 
 	//ダメージゾーンを上書きする
-	if (!_object->GetCanSwap() && !_object->GetIsBossAttack()&&
-		((this->color == GREEN && _object->GetObjectType() == WATER) ||
-		(this->color == BLUE && _object->GetObjectType() == FIRE) ||
-		(this->color == RED && _object->GetObjectType() == WOOD)))
+	if (!_object->can_swap && !_object->is_boss_attack&&
+		((this->color == GREEN && _object->object_type == WATER) ||
+		(this->color == BLUE && _object->object_type == FIRE) ||
+		(this->color == RED && _object->object_type == WOOD)))
 	{
 		_object->SetColorData(color);
 	}
 
 	//プレイヤーと当たった時の処理
-	if (_object->GetObjectType() == PLAYER)
+	if (_object->object_type == PLAYER)
 	{
 		//プレイヤーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))
@@ -626,7 +624,7 @@ void EnemyBat::Hit(Object* _object)
 	}
 
 	//エネミーと当たった時の処理
-	if (_object->GetObjectType() == ENEMY)
+	if (_object->object_type == ENEMY)
 	{
 		//エネミーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))

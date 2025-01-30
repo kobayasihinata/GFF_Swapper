@@ -14,7 +14,7 @@ void ObjectManager::Initialize()
 	boss_appeared_skip = false;
 	boss_appeared_set_once = false;
 
-	change_stage = -1;
+	change_stage = -1;	//0が1ステージ目を表す為、ステージ変更がない時は-1を格納しておく
 	boss_appeared_flg = false;
 
 	player_warp_flg = false;
@@ -33,7 +33,7 @@ void ObjectManager::Update(GameMain* _g)
 				create_object.object->SetAroundBlock(i, create_object.stage_around_data[i]);
 			}
 		}
-		create_object.object->Initialize(create_object.location, create_object.size, create_object.color, 0);
+		create_object.object->Initialize(create_object.location, create_object.size, create_object.color);
 		object_list.push_back(create_object.object);
 	}
 
@@ -98,7 +98,7 @@ void ObjectManager::Update(GameMain* _g)
 	//画面内のオブジェクトを更新する処理
 	if (!GetSearchFlg() || (GetSearchFlg()&& frame % 10 == 0))
 	{
-		for (const auto& in_screen_object : in_screen_object)
+		for (const auto& in_screen_object : this->in_screen_object)
 		{
 			in_screen_object->Update(this);
 			move_object_num++;
@@ -114,11 +114,11 @@ void ObjectManager::Update(GameMain* _g)
 			//プレイヤーに選択されているオブジェクトなら、描画色を変える
 			if (in_screen_object == now_current_object)
 			{
-				in_screen_object->SetDrawColor(WHITE);
+				in_screen_object->color = WHITE;
 			}
 			else
 			{
-				in_screen_object->SetDrawColor(in_screen_object->GetColorData());
+				in_screen_object->color = in_screen_object->GetColorData();
 			}
 		}
 
@@ -167,7 +167,7 @@ void ObjectManager::Draw()const
 		else
 		{
 			//交換可能ブロック(もしくは敵)なら配列に格納してまとめて描画、それ以外は描画
-			if (!in_screen_object->GetCanSwap())
+			if (!in_screen_object->can_swap)
 			{
 				in_screen_object->Draw();
 			}
@@ -180,7 +180,7 @@ void ObjectManager::Draw()const
 	}
 
 	//プレイヤーが交換しようとしているなら、オブジェクトを暗く表示
-	if (player_object->GetSearchFlg())
+	if (player_object->searchFlg)
 	{
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
 		DrawBox(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000, true);
@@ -218,6 +218,39 @@ void ObjectManager::Draw()const
 
 void ObjectManager::Finalize()
 {
+	if (player_object != nullptr)
+	{
+		player_object->Finalize();
+		delete player_object;
+	}
+
+	if (boss_object != nullptr)
+	{
+		boss_object->Finalize();
+		delete boss_object;
+	}
+
+	for (const auto& object_list : object_list)
+	{
+		object_list->Finalize();
+		delete object_list;
+	}
+
+	for (const auto& delete_object : delete_object)
+	{
+		if (delete_object != nullptr)
+		{
+			delete_object->Finalize();
+			delete delete_object;
+		}
+	}
+
+	if (now_current_object != nullptr)
+	{
+		now_current_object->Finalize();
+		delete now_current_object;
+	}
+
 	effect_spawner->Finalize();
 	delete effect_spawner;
 }
@@ -241,13 +274,13 @@ void ObjectManager::CreatePlayer(Object* _object, Vector2D _location, Vector2D _
 		delete player_object;
 	}
 	player_object = _object;
-	player_object->Initialize(_location, _erea, _color_data, 0);
+	player_object->Initialize(_location, _erea, _color_data);
 }
 
 void ObjectManager::CreateBoss(Object* _object, Vector2D _location, Vector2D _erea, int _color_data)
 {
 	boss_object = _object;
-	boss_object->Initialize(_location, _erea, _color_data, 0);
+	boss_object->Initialize(_location, _erea, _color_data);
 }
 
 void ObjectManager::DeleteObject(Object* _object)
@@ -322,14 +355,14 @@ bool ObjectManager::CheckInScreen(Object* _object)const
 	//画面内に居るか判断 画面端の敵がすり抜けないように地面の更新範囲を広めに
 	if (_object != nullptr &&
 		(
-			(_object->GetObjectType() != ENEMY &&
+			(_object->object_type != ENEMY &&
 				_object->GetLocation().x > camera->GetCameraLocation().x - _object->GetErea().x - 80 &&
 				_object->GetLocation().x < camera->GetCameraLocation().x + SCREEN_WIDTH + _object->GetErea().x + 80 &&
 				_object->GetLocation().y > camera->GetCameraLocation().y - _object->GetErea().y - 80 &&
 				_object->GetLocation().y < camera->GetCameraLocation().y + SCREEN_HEIGHT + _object->GetErea().y + 160
 				)
 			||
-			(_object->GetObjectType() == ENEMY &&
+			(_object->object_type == ENEMY &&
 				_object->GetLocation().x > camera->GetCameraLocation().x - _object->GetErea().x &&
 				_object->GetLocation().x < camera->GetCameraLocation().x + SCREEN_WIDTH + _object->GetErea().x &&
 				_object->GetLocation().y > camera->GetCameraLocation().y - _object->GetErea().y &&
@@ -347,7 +380,7 @@ void ObjectManager::PlayerUpdate(GameMain* _g)
 {
 
 	//プレイヤーが居ないなら(DeleteObjectされていた、もしくはobject[player_object]がプレイヤーではないなら)
-	if (player_object == nullptr || player_object->GetObjectType() != PLAYER)
+	if (player_object == nullptr || player_object->object_type != PLAYER)
 	{
 		//プレイヤーの生成
 		CreateObject(new Player, Vector2D(100,100), {PLAYER_HEIGHT,PLAYER_WIDTH}, GREEN);
@@ -362,7 +395,7 @@ void ObjectManager::PlayerUpdate(GameMain* _g)
 
 		for (const auto& in_screen_object : in_screen_object)
 		{
-			if (in_screen_object->GetCanSwap() == TRUE && in_screen_object->GetObjectType() != PLAYER && boss_blind_flg == false) {
+			if (in_screen_object->can_swap == TRUE && in_screen_object->object_type != PLAYER && boss_blind_flg == false) {
 				player_object->SearchColor(in_screen_object);
 			}
 
@@ -377,7 +410,7 @@ void ObjectManager::PlayerUpdate(GameMain* _g)
 		//ボスを色交換対象にする
 		if (boss_object != nullptr)
 		{
-			if (boss_object->GetCanSwap() == TRUE && boss_object->GetObjectType() != PLAYER && boss_blind_flg == false) {
+			if (boss_object->can_swap == TRUE && boss_object->object_type != PLAYER && boss_blind_flg == false) {
 				player_object->SearchColor(boss_object);
 			}
 		}
@@ -411,7 +444,7 @@ void ObjectManager::SetNowCurrentObject(Object* _object)
 
 bool ObjectManager::GetSearchFlg()const
 {
-	return player_object->GetSearchFlg();
+	return player_object->searchFlg;
 }
 
 Vector2D ObjectManager::GetPlayerLocation()const
@@ -432,11 +465,6 @@ Vector2D ObjectManager::GetPlayerErea()const
 int ObjectManager::GetPlayerColor()const
 {
 	return player_object->GetColorData(); 
-}
-
-bool ObjectManager::GetBlindFlg()const
-{
-	return boss_blind_flg;
 }
 
 Vector2D ObjectManager::GetBossLocation()const

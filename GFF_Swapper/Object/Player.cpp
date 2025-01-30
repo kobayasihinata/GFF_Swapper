@@ -12,7 +12,7 @@ Player::Player()
 {
 	camera = Camera::Get();
 	frame = 0;
-	type = PLAYER;
+	object_type = PLAYER;
 	can_swap = TRUE;	//プレイヤーのcan_swapは真でも偽でも大丈夫
 	can_hit = TRUE;
 
@@ -90,7 +90,7 @@ Player::Player()
 	LoadPlayerImage();
 
 	now_riding = 0;
-	draw_color = 0;
+	color = 0;
 
 	emoteFlg = false;
 	emoteCnt = 0;
@@ -104,14 +104,11 @@ Player::~Player()
 	
 }
 
-void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void Player::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = _location;
 	erea = _erea;
 	color = _color_data;
-	draw_color = color;
-
-	object_pos = _object_pos;
 
 	damageFlg = false;
 }
@@ -251,7 +248,7 @@ void Player::Update(ObjectManager* _manager)
 				objSelectNumTmp = 0;
 
 				//描画する色を白に
-				//draw_color = WHITE;
+				//color = WHITE;
 			}
 			else
 			{
@@ -512,10 +509,8 @@ void Player::Finalize()
 
 void Player::Hit(Object* _object)
 {
-	__super::Hit(_object);
-
 	//敵と当たった時の処理
-	if (_object->GetObjectType() == ENEMY)
+	if (_object->object_type == ENEMY)
 	{
 		//プレイヤーとの属性相性で処理を変える
 		switch (CheckCompatibility(this, _object))
@@ -524,7 +519,7 @@ void Player::Hit(Object* _object)
 		case -1:
 			//ダメージ
 			if (!damageEffectFlg &&
-				(_object->GetCanHit() || _object->GetIsBossAttack() == TRUE)) {
+				(_object->can_hit || _object->is_boss_attack == TRUE)) {
 
 				damageFlg = true;
 				//ノックバック
@@ -569,8 +564,8 @@ void Player::Hit(Object* _object)
 	//ブロックと当たった時の処理
 	if (
 			(
-				(_object->GetObjectType() == BLOCK || _object->GetObjectType() == GROUND_BLOCK) && _object->GetCanHit() == TRUE)||
-				(_object->GetCanSwap() == TRUE && _object->CheckCompatibility(this,_object) == 0
+				(_object->object_type == BLOCK || _object->object_type == GROUND_BLOCK) && _object->can_hit == TRUE)||
+				(_object->can_swap == TRUE && _object->CheckCompatibility(this,_object) == 0
 			)
 		)
 	{
@@ -706,7 +701,7 @@ void Player::Hit(Object* _object)
 	}
 
 	//不利な属性のブロックかダメージゾーンと当たった時の処理
-	if ((_object->GetObjectType() == FIRE || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER) && CheckCompatibility(this, _object) == -1)
+	if ((_object->object_type == FIRE || _object->object_type == WOOD || _object->object_type == WATER) && CheckCompatibility(this, _object) == -1)
 	{
 		//演出中ならダメージを受けない
 		if (!damageEffectFlg)
@@ -718,41 +713,41 @@ void Player::Hit(Object* _object)
 	}
 
 	//ダメージゾーンを上書きする
-	if ((_object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE && this->color == GREEN) ||
-		(_object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE && this->color == BLUE) ||
-		(_object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE && this->color == RED))
+	if ((_object->object_type == WATER && _object->can_swap == FALSE && this->color == GREEN) ||
+		(_object->object_type == FIRE && _object->can_swap == FALSE && this->color == BLUE) ||
+		(_object->object_type == WOOD && _object->can_swap == FALSE && this->color == RED))
 	{
-		if (!_object->GetIsBossAttack())
+		if (!_object->is_boss_attack)
 		{
 			_object->SetColorData(color);
 		}
 	}
 
 	//同じ属性のダメージゾーン内で繰り返しジャンプ出来る
-	if (((_object->GetObjectType() == WATER && _object->GetCanSwap() == FALSE && this->color == BLUE && !stateFlg) ||
-		(_object->GetObjectType() == FIRE && _object->GetCanSwap() == FALSE && this->color == RED && !stateFlg) ||
-		(_object->GetObjectType() == WOOD && _object->GetCanSwap() == FALSE && this->color == GREEN && !stateFlg)) && !_object->GetIsBossAttack()){
+	if (((_object->object_type == WATER && _object->can_swap == FALSE && this->color == BLUE && !stateFlg) ||
+		(_object->object_type == FIRE && _object->can_swap == FALSE && this->color == RED && !stateFlg) ||
+		(_object->object_type == WOOD && _object->can_swap == FALSE && this->color == GREEN && !stateFlg)) && !_object->is_boss_attack){
 		state = 1;
 	}
 
 	//自分が乗っている(触れている)ブロックに応じてSEを変える
-	if ((_object->GetObjectType() == FIRE && this->color != RED) || _object->GetObjectType() == WOOD || _object->GetObjectType() == WATER)
+	if ((_object->object_type == FIRE && this->color != RED) || _object->object_type == WOOD || _object->object_type == WATER)
 	{
-		now_riding = _object->GetObjectType() - 2;
+		now_riding = _object->object_type - 2;
 	}
-	else if(_object->GetObjectType() == FIRE && this->color == RED)
+	else if(_object->object_type == FIRE && this->color == RED)
 	{
 		now_riding = 0;
 	}
 
 	//ボスの木攻撃に当たった時、プレイヤーを跳ねさせる
-	if (_object->GetObjectType() == BLOCK && _object->GetIsBossAttack() == TRUE && _object->GetLocation().y > this->location.y)
+	if (_object->object_type == BLOCK && _object->is_boss_attack == TRUE && _object->GetLocation().y > this->location.y)
 	{
 		velocity.y = -20;
 	}
 
 	//チュートリアル
-	if (_object->GetObjectType() == TUTORIAL)
+	if (_object->object_type == TUTORIAL)
 	{
 		//is_tutorial = true;
 	}
@@ -843,7 +838,7 @@ bool Player::SearchColor(Object* ob)
 			objNum++;
 		}
 		//ボスも交換対象に追加
-		if (ob->GetObjectType() == BOSS)
+		if (ob->object_type == BOSS)
 		{
 			searchedObjAll[objNum] = ob;
 			int x = (int)ob->GetLocalLocation().x / 40;
@@ -899,7 +894,7 @@ void Player::SelectObject()
 			flg = true;
 			int snum[4] = { -1,-1,-1,-1 };// オブジェクトのインデックス保存用配列
 			int current_color = searchedObj->GetColorData();// 現在の選択オブジェクトの色を取得
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 
 			// 全オブジェクトを探索
@@ -921,9 +916,19 @@ void Player::SelectObject()
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
 
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[y][j]]->GetObjectType();
-							if (CheckBlock(current_type,current_color,next_type,next_color)) {
+							int next_type = searchedObjAll[posRelation[y][j]]->object_type;
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
+								snum[0] = posRelation[y][j];
+								break;
+							}
+							else if (current_type == ENEMY && next_color == current_color) {
+								// エネミーからブロックへ移行可能
+								snum[0] = posRelation[y][j];
+								break;
+							}
+							else if (next_color != current_color) {
+								// 異なる色の場合は選択対象を更新
 								snum[0] = posRelation[y][j];
 								break;
 							}
@@ -943,9 +948,19 @@ void Player::SelectObject()
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[y - h][j]]->object_type;
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										snum[0] = posRelation[y - h][j];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										snum[0] = posRelation[y - h][j];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										snum[0] = posRelation[y - h][j];
 										break;
 									}
@@ -957,9 +972,19 @@ void Player::SelectObject()
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[y + h][j]]->object_type;
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										snum[0] = posRelation[y + h][j];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										snum[0] = posRelation[y + h][j];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										snum[0] = posRelation[y + h][j];
 										break;
 									}
@@ -993,7 +1018,7 @@ void Player::SelectObject()
 			float nearLen[4] = { 1000.f,1000.f,1000.f,1000.f };
 			int snum[4] = { -1,-1,-1,-1 };
 			int current_color = searchedObj->GetColorData();
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -1012,9 +1037,19 @@ void Player::SelectObject()
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
 
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[y][j]]->GetObjectType();
-							if (CheckBlock(current_type, current_color, next_type, next_color)) {
+							int next_type = searchedObjAll[posRelation[y][j]]->object_type;
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
+								snum[0] = posRelation[y][j];
+								break;
+							}
+							else if (current_type == ENEMY && next_color == current_color) {
+								// エネミーからブロックへ移行可能
+								snum[0] = posRelation[y][j];
+								break;
+							}
+							else if (next_color != current_color) {
+								// 異なる色の場合は選択対象を更新
 								snum[0] = posRelation[y][j];
 								break;
 							}
@@ -1032,9 +1067,19 @@ void Player::SelectObject()
 								if (posRelation[y - h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y - h][j]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[y - h][j]]->object_type;
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										snum[0] = posRelation[y - h][j];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										snum[0] = posRelation[y - h][j];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										snum[0] = posRelation[y - h][j];
 										break;
 									}
@@ -1045,9 +1090,19 @@ void Player::SelectObject()
 								if (posRelation[y + h][j] != -1 && posRelation[y][j] != 999) {
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[y + h][j]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[y + h][j]]->object_type;
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										snum[0] = posRelation[y + h][j];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										snum[0] = posRelation[y + h][j];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										snum[0] = posRelation[y + h][j];
 										break;
 									}
@@ -1093,7 +1148,7 @@ void Player::SelectObject()
 			flg = true;
 			int tutirial_num = -1;
 			int current_color = searchedObj->GetColorData();
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -1110,9 +1165,19 @@ void Player::SelectObject()
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
-							if (CheckBlock(current_type, current_color, next_type, next_color)) {
+							int next_type = searchedObjAll[posRelation[j][x]]->object_type;
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
+								tutirial_num = posRelation[j][x];
+								break;
+							}
+							else if (current_type == ENEMY && next_color == current_color) {
+								// エネミーからブロックへ移行可能
+								tutirial_num = posRelation[j][x];
+								break;
+							}
+							else if (next_color != current_color) {
+								// 異なる色の場合は選択対象を更新
 								tutirial_num = posRelation[j][x];
 								break;
 							}
@@ -1129,9 +1194,19 @@ void Player::SelectObject()
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[j][x - w]]->object_type;
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										tutirial_num = posRelation[j][x - w];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										tutirial_num = posRelation[j][x - w];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										tutirial_num = posRelation[j][x - w];
 										break;
 									}
@@ -1141,9 +1216,19 @@ void Player::SelectObject()
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[j][x + w]]->object_type;
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										tutirial_num = posRelation[j][x + w];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										tutirial_num = posRelation[j][x + w];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										tutirial_num = posRelation[j][x + w];
 										break;
 									}
@@ -1173,7 +1258,7 @@ void Player::SelectObject()
 			flg = true;
 			int tutirial_num = -1;
 			int current_color = searchedObj->GetColorData();
-			int current_type = searchedObj->GetObjectType();
+			int current_type = searchedObj->object_type;
 
 			for (int i = 0; i < objNum; i++)
 			{
@@ -1190,12 +1275,27 @@ void Player::SelectObject()
 					{
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
-							int next_type = searchedObjAll[posRelation[j][x]]->GetObjectType();
-							if (CheckBlock(current_type, current_color, next_type, next_color)) {
+							int next_type = searchedObjAll[posRelation[j][x]]->object_type;
+							if (next_type == BOSS) {
+								tutirial_num = posRelation[j][x];
+								break;
+							}
+							if (next_type == ENEMY || next_type == PLAYER) {
 								// エネミーは常に選択可能
 								tutirial_num = posRelation[j][x];
 								break;
 							}
+							else if (current_type == ENEMY && next_color == current_color) {
+								// エネミーからブロックへ移行可能
+								tutirial_num = posRelation[j][x];
+								break;
+							}
+							else if (next_color != current_color) {
+								// 異なる色の場合は選択対象を更新
+								tutirial_num = posRelation[j][x];
+								break;
+							}
+
 						}
 					}
 
@@ -1209,9 +1309,23 @@ void Player::SelectObject()
 							if (x - w > -1) {
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x - w]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[j][x - w]]->object_type;
+									if (next_type == BOSS) {
+										tutirial_num = posRelation[j][x - w];
+										break;
+									}
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										tutirial_num = posRelation[j][x - w];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										tutirial_num = posRelation[j][x - w];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										tutirial_num = posRelation[j][x - w];
 										break;
 									}
@@ -1221,9 +1335,23 @@ void Player::SelectObject()
 							if (x + w < 32) {
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
-									int next_type = searchedObjAll[posRelation[j][x + w]]->GetObjectType();
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									int next_type = searchedObjAll[posRelation[j][x + w]]->object_type;
+									if (next_type == BOSS) {
+										tutirial_num = posRelation[j][x + w];
+										break;
+									}
+									if (next_type == ENEMY || next_type == PLAYER) {
 										// エネミーは常に選択可能
+										tutirial_num = posRelation[j][x + w];
+										break;
+									}
+									else if (current_type == ENEMY && next_color == current_color) {
+										// エネミーからブロックへ移行可能
+										tutirial_num = posRelation[j][x + w];
+										break;
+									}
+									else if (next_color != current_color) {
+										// 異なる色の場合は選択対象を更新
 										tutirial_num = posRelation[j][x + w];
 										break;
 									}
@@ -1282,16 +1410,6 @@ void Player::SelectObject()
 		searchedObj = nullptr;
 	}
 
-}
-
-bool Player::CheckBlock(int current_type, int current_color, int next_type, int next_color)
-{
-	if (next_type == ENEMY || next_type == PLAYER || (current_type == ENEMY && next_color == current_color) || (next_color != current_color)) {
-		// エネミーは常に選択可能
-		return true;
-	}
-
-	return false;
 }
 
 float Player::GetLength(Vector2D l1, Vector2D l2) 
@@ -1481,6 +1599,233 @@ void Player::AnimStateUpdate()
 	}
 }
 
+void Player::DrawPlayer() const
+{
+	if (moveFrontFlg == true) {
+		//腕
+		if (hp > 4) {
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 50, 28, 7, local_location.x + 35, local_location.y + 50, angle[0], color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 50, 28, 7, local_location.x + 35, local_location.y + 50, angle[0], 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 50, 28, 7, local_location.x + 35, local_location.y + 50, angle[0], 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 50, 28, 7, local_location.x + 35, local_location.y + 50, angle[0], 0xffffff, false);
+		}
+		if (hp > 0) {
+			//頭
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 80 + 55, 23, 15, local_location.x + 30, local_location.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 80 + 55, 23, 15, local_location.x + 30, local_location.y + 80, 0, 0x000000, false);
+
+			//目
+			ResourceManager::DrawRotaBox(local_location.x + 30 - 6, local_location.y + 80 + 56, 6, 7, local_location.x + 30, local_location.y + 80, 0, 0x000000, true);
+
+			//首
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 80 + 42, 10, 5, local_location.x + 30, local_location.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 80 + 42, 10, 5, local_location.x + 30, local_location.y + 80, 0, 0x000000, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 80 + 37 / 2, 21, 37, local_location.x + 30, local_location.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 80 + 37 / 2, 21, 37, local_location.x + 30, local_location.y + 80, 0, 0x000000, false);
+
+			//バッグ
+			ResourceManager::DrawRotaBox(local_location.x + 30 + 15, local_location.y + 80 + 20, 5, 23, local_location.x + 30, local_location.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30 + 15, local_location.y + 80 + 20, 5, 23, local_location.x + 30, local_location.y + 80, 0, 0x000000, false);
+			ResourceManager::DrawRotaBox(local_location.x + 30 + 15, local_location.y + 80 + 20, 3, 15, local_location.x + 30, local_location.y + 80, 0, 0x000000, true);
+		}
+		else {
+			//頭
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 76, 23, 15, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 76, 23, 15, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//目
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) - 6, local_location.y - (erea.y) + 76, 6, 7, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) - 6, local_location.y - (erea.y) + 76, 6, 7, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//首
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 62, 10, 5, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 62, 10, 5, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 37, 21, 37, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 37, 21, 37, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//バッグ
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 5, 23, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 5, 23, local_location.x, local_location.y, 0, 0xffffff, false);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 3, 15, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 3, 15, local_location.x, local_location.y, 0, 0xffffff, false);
+		}
+
+		//腕
+		if (hp > 3) {
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 55, 28, 7, local_location.x + 35, local_location.y + 55, angle[1], color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 55, 28, 7, local_location.x + 35, local_location.y + 55, angle[1], 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 55, 28, 7, local_location.x + 35, local_location.y + 55, angle[1], 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 25, local_location.y + 55, 28, 7, local_location.x + 35, local_location.y + 55, angle[1], 0xffffff, false);
+		}
+
+		//足 前から
+		if (hp > 2) {
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], 0x000000, false);
+
+		}
+		else {
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], 0xffffff, false);
+		}
+		if (hp > 1) {
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], 0x000000, false);
+
+		}
+		else {
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], 0xffffff, false);
+		}
+
+		if (hp > 1) {
+			//帽子　中央
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, color, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, 0x000000, false);
+			//帽子　右側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, color, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, 0x000000, false);
+			//帽子　左側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, color, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0x000000, false);
+		}
+		else {
+			//帽子　中央
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, 0x000000, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, 0xffffff, false);
+			//帽子　右側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, 0x000000, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, 0xffffff, false);
+			//帽子　左側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0x000000, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0xffffff, false);
+		}
+		
+	
+	}
+	else {
+		if (hp > 3) {
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 50, 28, 7, local_location.x + 25, local_location.y + 50, angle[0] + 180, color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 50, 28, 7, local_location.x + 25, local_location.y + 50, angle[0] + 180, 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 50, 28, 7, local_location.x + 25, local_location.y + 50, angle[0] + 180, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 50, 28, 7, local_location.x + 25, local_location.y + 50, angle[0] + 180, 0xffffff, false);
+
+		}
+		if (hp > 0) {
+			//頭
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 76, 23, 15, local_location.x, local_location.y, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 76, 23, 15, local_location.x, local_location.y, 0, 0x000000, false);
+
+			//目
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 6, local_location.y - (erea.y) + 76, 6, 7, local_location.x, local_location.y, 0, 0x000000, true);
+
+			//首
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 62, 10, 5, local_location.x, local_location.y, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 62, 10, 5, local_location.x, local_location.y, 0, 0x000000, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 37, 21, 37, local_location.x, local_location.y, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 37, 21, 37, local_location.x, local_location.y, 0, 0x000000, false);
+
+			//バッグ
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) - 15, local_location.y - (erea.y) + 40, 5, 23, local_location.x, local_location.y, 0, color, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) - 15, local_location.y - (erea.y) + 40, 5, 23, local_location.x, local_location.y, 0, 0x000000, false);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) - 15, local_location.y - (erea.y) + 40, 3, 15, local_location.x, local_location.y, 0, 0x000000, true);
+		}
+		else {
+			//頭
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 76, 23, 15, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 76, 23, 15, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//目
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) - 6, local_location.y - (erea.y) + 76, 6, 7, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) - 6, local_location.y - (erea.y) + 76, 6, 7, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//首
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 62, 10, 5, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 62, 10, 5, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 37, 21, 37, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2), local_location.y - (erea.y) + 37, 21, 37, local_location.x, local_location.y, 0, 0xffffff, false);
+
+			//バッグ
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 5, 23, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 5, 23, local_location.x, local_location.y, 0, 0xffffff, false);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 3, 15, local_location.x, local_location.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x - (erea.x / 2) + 15, local_location.y - (erea.y) + 40, 3, 15, local_location.x, local_location.y, 0, 0xffffff, false);
+		}
+		//腕
+
+		if (hp > 4) {
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 55, 28, 7, local_location.x + 25, local_location.y + 55, angle[1] + 180, color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 55, 28, 7, local_location.x + 25, local_location.y + 55, angle[1] + 180, 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 55, 28, 7, local_location.x + 25, local_location.y + 55, angle[1] + 180, 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 15, local_location.y + 55, 28, 7, local_location.x + 25, local_location.y + 55, angle[1] + 180, 0xffffff, false);
+		}
+
+
+		//足 前から
+		if (hp > 2) {
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], 0x000000, false);
+
+		}
+		else {
+
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[2], 0xffffff, false);
+
+		}
+		if (hp > 1) {
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], color, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], 0x000000, false);
+
+		}
+		else {
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], 0x000000, true);
+			ResourceManager::DrawRotaBox(local_location.x + 30, local_location.y + 70, 7, 27, local_location.x + 30, local_location.y + 80, angle[3], 0xffffff, false);
+		}
+
+		if (hp > 1) {
+			//帽子　中央
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, color, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, 0x000000, false);
+			//帽子　右側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, color, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, 0x000000, false);
+			//帽子　左側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, color, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0x000000, false);
+
+		}
+		else {
+			//帽子　中央
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, 0x000000, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 20, local_location.y + 20, local_location.x + 40, local_location.y + 20, 0xffffff, false);
+			//帽子　右側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, 0x000000, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 40, local_location.y + 20, local_location.x + 52, local_location.y + 15, 0xffffff, false);
+			//帽子　左側
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0x000000, true);
+			DrawTriangleAA(local_location.x + (erea.x / 2), local_location.y, local_location.x + 8, local_location.y + 15, local_location.x + 20, local_location.y + 20, 0xffffff, false);
+
+		}
+
+	}
+}
 
 void Player::DrawPlayerImage()const
 {
@@ -1513,6 +1858,223 @@ void Player::DrawPlayerImage()const
 			if ((int)damageEffectTime % 4 != 0) {
 				ResourceManager::DrawColorAnimGraph(local_location + (erea / 2), player_image[p_state], color, false);
 			}
+		}
+	}
+}
+
+void Player::DrawPlayerFront(bool f) const
+{
+	Vector2D uiL;
+	
+	if (f) {
+		uiL.x = 45.f;
+		uiL.y = 45.f;
+		DrawCircleAA(uiL.x + (erea.x / 2), uiL.y + (erea.y / 2), 65.f, 64, 0x555555, TRUE);
+		DrawCircleAA(uiL.x + (erea.x / 2), uiL.y + (erea.y / 2), 65.f, 64, 0xffffff, FALSE, 4.f);
+		if (hp > 0) {
+			//頭
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 55, 23, 15, uiL.x + 30, uiL.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 55, 23, 15, uiL.x + 30, uiL.y + 80, 0, 0x000000, false);
+
+			//目
+			ResourceManager::DrawRotaBox(uiL.x + 30 - 6, uiL.y + 80 + 56, 6, 7, uiL.x + 30, uiL.y + 80, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - 30 + 6, uiL.y - 100 + 76, 6, 7, uiL.x, uiL.y, 0, 0x000000, true);
+
+
+			//首
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 42, 10, 5, uiL.x + 30, uiL.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 42, 10, 5, uiL.x + 30, uiL.y + 80, 0, 0x000000, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 37 / 2, 21, 37, uiL.x + 30, uiL.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 37 / 2, 21, 37, uiL.x + 30, uiL.y + 80, 0, 0x000000, false);
+		}
+		else {
+			//頭
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 76, 23, 15, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 76, 23, 15, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			//目
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) - 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) - 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) + 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) + 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			//首
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 62, 10, 5, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 62, 10, 5, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 37, 21, 37, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 37, 21, 37, uiL.x, uiL.y, 0, 0xffffff, false);
+		}
+		//左腕
+		if (hp > 4) {
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x - 6, uiL.y + 50, 180, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x - 6, uiL.y + 50, 180, 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x - 6, uiL.y + 50, 180, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x - 6, uiL.y + 50, 180, 0xffffff, false);
+
+		}
+		//腕
+		if (hp > 3) {
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 0, 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 0, 0xffffff, false);
+		}
+
+
+		//足 前から
+		if (hp > 2) {
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 0, 0x000000, false);
+
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 0, 0xffffff, false);
+		}
+		if (hp > 1) {
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, 0x000000, false);
+
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, 0xffffff, false);
+		}
+
+		if (hp > 1) {
+			//帽子　中央
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, color, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, 0x000000, false);
+			//帽子　右側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, color, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, 0x000000, false);
+			//帽子　左側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, color, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, 0x000000, false);
+		}
+		else {
+			//帽子　中央
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, 0x000000, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, 0xffffff, false);
+			//帽子　右側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, 0x000000, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, 0xffffff, false);
+			//帽子　左側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, 0x000000, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, 0xffffff, false);
+		}
+	}
+	else {
+		uiL = local_location;
+		if (hp > 0) {
+			//頭
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 55, 23, 15, uiL.x + 30, uiL.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 55, 23, 15, uiL.x + 30, uiL.y + 80, 0, 0x000000, false);
+
+			//目
+			ResourceManager::DrawRotaBox(uiL.x + 30 - 6, uiL.y + 80 + 56, 6, 7, uiL.x + 30, uiL.y + 80, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) + 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0x000000, true);
+
+
+			//首
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 42, 10, 5, uiL.x + 30, uiL.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 42, 10, 5, uiL.x + 30, uiL.y + 80, 0, 0x000000, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 37 / 2, 21, 37, uiL.x + 30, uiL.y + 80, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 30, uiL.y + 80 + 37 / 2, 21, 37, uiL.x + 30, uiL.y + 80, 0, 0x000000, false);
+		}
+		else {
+			//頭
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 76, 23, 15, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 76, 23, 15, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			//目
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) - 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) - 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) + 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2) + 6, uiL.y - (erea.y) + 76, 6, 7, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			//首
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 62, 10, 5, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 62, 10, 5, uiL.x, uiL.y, 0, 0xffffff, false);
+
+			//胴体
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 37, 21, 37, uiL.x, uiL.y, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x - (erea.x / 2), uiL.y - (erea.y) + 37, 21, 37, uiL.x, uiL.y, 0, 0xffffff, false);
+		}
+		//左腕
+		if (hp > 4) {
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x + 15, uiL.y + 50, 120, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x + 15, uiL.y + 50, 120, 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x + 15, uiL.y + 50, 120, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 4, uiL.y + 50, 28, 7, uiL.x + 15, uiL.y + 50, 120, 0xffffff, false);
+
+		}
+		//腕
+		if (hp > 3) {
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 300, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 300, 0x000000, false);
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 300, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 34, uiL.y + 50, 28, 7, uiL.x + 45, uiL.y + 50, 300, 0xffffff, false);
+		}
+
+
+		//足 前から
+		if (hp > 2) {
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 60, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 60, 0x000000, false);
+
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 60, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 25, uiL.y + 70, 7, 27, uiL.x + 25, uiL.y + 83, 60, 0xffffff, false);
+		}
+		if (hp > 1) {
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, color, true);
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, 0x000000, false);
+
+		}
+		else {
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, 0x000000, true);
+			ResourceManager::DrawRotaBox(uiL.x + 35, uiL.y + 70, 7, 27, uiL.x + 35, uiL.y + 83, 0, 0xffffff, false);
+		}
+
+		if (hp > 1) {
+			//帽子　中央
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, color, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, 0x000000, false);
+			//帽子　右側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, color, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, 0x000000, false);
+			//帽子　左側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, color, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, 0x000000, false);
+		}
+		else {
+			//帽子　中央
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, 0x000000, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 20, uiL.y + 20, uiL.x + 40, uiL.y + 20, 0xffffff, false);
+			//帽子　右側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, 0x000000, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 40, uiL.y + 20, uiL.x + 52, uiL.y + 15, 0xffffff, false);
+			//帽子　左側
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, 0x000000, true);
+			DrawTriangleAA(uiL.x + (erea.x / 2), uiL.y, uiL.x + 8, uiL.y + 15, uiL.x + 20, uiL.y + 20, 0xffffff, false);
 		}
 	}
 }
@@ -1555,7 +2117,6 @@ void Player::PlayerReset(ObjectManager* _manager)
 	hp = 5;
 	//プレイヤーの色を初期色に戻す
 	color = DEFAULT_PLAYER_COLOR;
-	draw_color = color;
 	//プレイヤー再生成フラグを下ろす
 	_manager->player_respawn_flg = false;
 	//プレイヤースポーンエフェクトの生成

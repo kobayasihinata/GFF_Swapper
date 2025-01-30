@@ -6,8 +6,8 @@
 class BoxCollider
 {
 protected:
-	Vector2D location;			//座標
-	Vector2D local_location;	//画面上での座標
+	Vector2D location;				//座標
+	Vector2D local_location;		//画面上での座標
 	Vector2D erea;					//範囲
 public:
 
@@ -28,9 +28,6 @@ public:
 
 	//直径の取得
 	Vector2D GetErea()const;
-
-	//座標のセット
-	void SetLocation(Vector2D _location);
 
 	//オブジェクトのワールド座標をスクリーン座標に変換する
 	void SetScreenPosition(Vector2D _world_to_screen);

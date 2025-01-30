@@ -9,7 +9,7 @@ Cannon::Cannon(int _type, int _angle)
 	cannon_angle = _angle;
 	cannon_stop = false;
 
-	type = CANNON;
+	object_type = CANNON;
 	can_swap = FALSE;
 	can_hit = TRUE;
 	is_boss_attack = FALSE;
@@ -20,12 +20,11 @@ Cannon::~Cannon()
 
 }
 
-void Cannon::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void Cannon::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = _location;
 	erea = _erea;
 	color = _color_data;
-	object_pos = _object_pos;
 
 	cannon_image = ResourceManager::SetDivGraph("Resource/Images/sozai/cannon.png", 12, 4, 3, 40, 40, 0);
 }

@@ -7,7 +7,7 @@
 BossAttackWater::BossAttackWater()
 {
 	camera = Camera::Get();
-	type = WATER;
+	object_type = WATER;
 	can_swap = FALSE;
 	can_hit = FALSE;
 	is_boss_attack = TRUE;
@@ -25,12 +25,11 @@ BossAttackWater::~BossAttackWater()
 
 }
 
-void BossAttackWater::Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)
+void BossAttackWater::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = _location;
 	color = _color_data;
 	erea = _erea;
-	object_pos = _object_pos;
 
 	f_location = _location;
 	f_erea = { 10,10 };
@@ -131,17 +130,17 @@ void BossAttackWater::Draw() const
 void BossAttackWater::Hit(Object* _object)
 {
 	//他のボス攻撃には干渉しない
-	if (!_object->GetIsBossAttack())
+	if (!_object->is_boss_attack)
 	{
 		//火ダメージゾーンに当たったら色だけ変える
-		if (_object->GetObjectType() == FIRE &&
-			!_object->GetCanSwap())
+		if (_object->object_type == FIRE &&
+			!_object->can_swap)
 		{
 			_object->SetColorData(color);
 			return;
 		}
-		if ((_object->GetObjectType() == GROUND_BLOCK || _object->GetObjectType() == FIRE) && _object->GetColorData() != WHITE && _object->GetIsBossAttack() == FALSE) {
-			_object->SetCanSwap(TRUE);
+		if ((_object->object_type == GROUND_BLOCK || _object->object_type == FIRE) && _object->GetColorData() != WHITE && _object->is_boss_attack == FALSE) {
+			_object->can_swap = TRUE;
 			_object->SetColorData(color);
 			hitFlg = true;
 		}

@@ -19,7 +19,7 @@ public:
 	BossAttackFire(Vector2D _parent_center_location, int _angle = -1);
 	~BossAttackFire();
 
-	void Initialize(Vector2D _location, Vector2D _erea, int _color_data, int _object_pos)override;
+	void Initialize(Vector2D _location, Vector2D _erea, int _color_data)override;
 	void Finalize()override;
 
 	void Update(ObjectManager* _manager)override;
