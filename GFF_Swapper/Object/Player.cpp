@@ -916,7 +916,7 @@ void Player::SelectObject()
 						if (posRelation[y][j] != -1 && posRelation[y][j] != 999) {
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
 							int next_type = searchedObjAll[posRelation[y][j]]->object_type;
-							if (CheckBlock(current_type, current_color, next_type, next_color)) {
+							if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 								// エネミーは常に選択可能
 								snum[0] = posRelation[y][j];
 								break;
@@ -938,7 +938,7 @@ void Player::SelectObject()
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[y - h][j]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y - h][j];
 										break;
@@ -952,7 +952,7 @@ void Player::SelectObject()
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[y + h][j]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y + h][j];
 										break;
@@ -1007,7 +1007,7 @@ void Player::SelectObject()
 
 							int next_color = searchedObjAll[posRelation[y][j]]->GetColorData();
 							int next_type = searchedObjAll[posRelation[y][j]]->object_type;
-							if (CheckBlock(current_type, current_color, next_type, next_color)) {
+							if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 								// エネミーは常に選択可能
 								snum[0] = posRelation[y][j];
 								break;
@@ -1027,7 +1027,7 @@ void Player::SelectObject()
 
 									int next_color = searchedObjAll[posRelation[y - h][j]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[y - h][j]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y - h][j];
 										break;
@@ -1040,7 +1040,7 @@ void Player::SelectObject()
 
 									int next_color = searchedObjAll[posRelation[y + h][j]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[y + h][j]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										snum[0] = posRelation[y + h][j];
 										break;
@@ -1105,7 +1105,7 @@ void Player::SelectObject()
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
 							int next_type = searchedObjAll[posRelation[j][x]]->object_type;
-							if (CheckBlock(current_type, current_color, next_type, next_color)) {
+							if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 								// エネミーは常に選択可能
 								tutirial_num = posRelation[j][x];
 								break;
@@ -1124,7 +1124,7 @@ void Player::SelectObject()
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[j][x - w]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x - w];
 										break;
@@ -1136,7 +1136,7 @@ void Player::SelectObject()
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[j][x + w]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x + w];
 										break;
@@ -1185,7 +1185,7 @@ void Player::SelectObject()
 						if (posRelation[j][x] != -1 && posRelation[j][x] != 999) {
 							int next_color = searchedObjAll[posRelation[j][x]]->GetColorData();
 							int next_type = searchedObjAll[posRelation[j][x]]->object_type;
-							if (CheckBlock(current_type, current_color, next_type, next_color)) {
+							if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 								// エネミーは常に選択可能
 								tutirial_num = posRelation[j][x];
 								break;
@@ -1204,7 +1204,7 @@ void Player::SelectObject()
 								if (posRelation[j][x - w] != -1 && posRelation[j][x - w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x - w]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[j][x - w]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x - w];
 										break;
@@ -1216,7 +1216,7 @@ void Player::SelectObject()
 								if (posRelation[j][x + w] != -1 && posRelation[j][x + w] != 999) {
 									int next_color = searchedObjAll[posRelation[j][x + w]]->GetColorData();
 									int next_type = searchedObjAll[posRelation[j][x + w]]->object_type;
-									if (CheckBlock(current_type, current_color, next_type, next_color)) {
+									if (CheckBlock(current_type, current_color, next_type, next_color, color)) {
 										// エネミーは常に選択可能
 										tutirial_num = posRelation[j][x + w];
 										break;
@@ -1278,12 +1278,24 @@ void Player::SelectObject()
 
 }
 
-bool Player::CheckBlock(int current_type, int current_color, int next_type, int next_color)
+bool Player::CheckBlock(int current_type, int current_color, int next_type, int next_color, int player_color)
 {
-	if (next_type == ENEMY || next_type == PLAYER || (current_type == ENEMY && next_color == current_color) || (next_color != current_color)) {
-		// エネミーは常に選択可能
+	// エネミーとプレイヤーは常に選択可能
+	if (next_type == ENEMY || next_type == PLAYER)
+	{
 		return true;
 	}
+	// 現在のオブジェクトがブロックで、次のオブジェクトもブロックで、かつプレイヤーと同じ色ならスキップ
+	else if (current_type == BLOCK && next_type == BLOCK && next_color == player_color)
+	{
+		return true;
+	}
+	// 色が違うなら選択可能
+	else if (next_color != player_color)
+	{
+		return true;
+	}
+
 
 	return false;
 }

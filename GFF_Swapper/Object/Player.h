@@ -145,7 +145,7 @@ public:
 	bool ChangePlayerColor();
 	void SelectObject();
 
-	bool CheckBlock(int current_type, int current_color, int next_type, int next_color);
+	bool CheckBlock(int current_type, int current_color, int next_type, int next_color, int player_color);
 	//int SearchObject(int _x, int _y, int direction_x, int direction_y);
 
 
