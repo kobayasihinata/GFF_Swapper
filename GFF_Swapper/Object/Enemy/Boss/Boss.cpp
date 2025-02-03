@@ -202,7 +202,7 @@ void Boss::Update(ObjectManager* _manager)
 			Move();
 			break;
 		case BossState::ATTACK:
-			BossAtack(_manager);
+			BossAttack(_manager);
 			break;
 		case BossState::DEATH:
 			//死亡時SEを再生
@@ -579,7 +579,7 @@ void Boss::barrier()
 
 }
 
-void Boss::BossAtack(ObjectManager *_manager)
+void Boss::BossAttack(ObjectManager *_manager)
 {
 	//ボスが画面内に居て、カウントが240以上なら、攻撃処理開始
 	if ((local_location.x > 0 && local_location.x < 1280 && local_location.y > 0 && local_location.y < 720) && ++cnt >= 240) {

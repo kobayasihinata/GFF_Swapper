@@ -1058,7 +1058,7 @@ void EditScene::ChangeEditStage(int _num)
 	Initialize();
 }
 
-bool EditScene::CheckInArea(Vector2D _loc, Vector2D _size)
+bool EditScene::CheckInArea(Vector2D _loc, Vector2D _size)const
 {
 	if (_loc.x < cursor.x && _loc.x + _size.x > cursor.x && _loc.y < cursor.y && _loc.y + _size.y > cursor.y)
 	{
@@ -1067,7 +1067,7 @@ bool EditScene::CheckInArea(Vector2D _loc, Vector2D _size)
 	return false;
 }
 
-bool EditScene::CheckInArea(Vector2D _loc, float _width, float _height)
+bool EditScene::CheckInArea(Vector2D _loc, float _width, float _height)const
 {
 	Vector2D size = { _height,_width };
 	if (CheckInArea(_loc, size))
@@ -1077,7 +1077,7 @@ bool EditScene::CheckInArea(Vector2D _loc, float _width, float _height)
 	return false;
 }
 
-bool EditScene::CheckInArea(float _x, float _y, float _width, float _height)
+bool EditScene::CheckInArea(float _x, float _y, float _width, float _height)const
 {
 	Vector2D location{ _x,_y };
 	Vector2D size = { _width,_height };

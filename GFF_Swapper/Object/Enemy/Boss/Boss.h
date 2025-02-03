@@ -136,7 +136,7 @@ public:
 	void barrier();
 
 	//ボスの攻撃
-	void BossAtack(ObjectManager* _manager);
+	void BossAttack(ObjectManager* _manager);
 
 	//六角形模様球体の描画
 	void DrawHexagonSphere(int _color) const;

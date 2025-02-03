@@ -215,9 +215,9 @@ public:
     void ChangeEditStage(int _num);
 
     //指定した範囲内にカーソルがあるか判断 _loc1 = 左上座標 _size = 大きさ
-    bool CheckInArea(Vector2D _loc, Vector2D _size);
-    bool CheckInArea(Vector2D _loc, float _width, float _height);
-    bool CheckInArea(float _x, float _y , float _width, float _height);
+    bool CheckInArea(Vector2D _loc, Vector2D _size)const;
+    bool CheckInArea(Vector2D _loc, float _width, float _height)const;
+    bool CheckInArea(float _x, float _y , float _width, float _height)const;
 
 };
 
