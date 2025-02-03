@@ -58,7 +58,7 @@ void BackGround::Draw(Vector2D _camera_location)const
 	}
 
 #ifdef _DEBUG
-	if (!DebugInfomation::GetPhotographMode)
+	if (!DebugInformation::GetPhotographMode)
 	{
 		DrawStringF(shift_location.x, 300.0f, "左端", 0x00ff00);
 		DrawStringF((bg_erea.x - 50) + shift_location.x, 300.0f, "右端", 0x00ff00);

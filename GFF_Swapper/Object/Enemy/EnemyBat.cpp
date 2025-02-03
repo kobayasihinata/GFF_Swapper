@@ -3,7 +3,7 @@
 #include "../../Utility/ResourceManager.h"
 #include<math.h>
 
-#include "../../Utility/DebugInfomation.h"
+#include "../../Utility/DebugInformation.h"
 
 
 #define _PI 3.141592654f
@@ -176,8 +176,8 @@ void EnemyBat::Draw() const
 
 	//各頂点をlocal_locationに置き換えた
 
-	DebugInfomation::Add("bat_state", len);
-	DebugInfomation::Add("time", wall_hit_timer);
+	DebugInformation::Add("bat_state", len);
+	DebugInformation::Add("time", wall_hit_timer);
 
 
 	const std::vector<Vector2D> vertices = {

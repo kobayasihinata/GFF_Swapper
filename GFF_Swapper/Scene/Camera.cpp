@@ -1,6 +1,6 @@
 #include "Camera.h"
 #include "../Utility/PadInput.h"
-#include "../Utility/DebugInfomation.h"
+#include "../Utility/DebugInformation.h"
 
 Camera* Camera::Get()
 {

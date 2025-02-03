@@ -1,6 +1,6 @@
 #include "Tutorial.h"
 #include "../../Scene/GameMain.h"
-#include "../../Utility/DebugInfomation.h"
+#include "../../Utility/DebugInformation.h"
 #include "../../Utility/PadInput.h"
 
 #define _USE_MATH_DEFINES
@@ -144,7 +144,7 @@ void Tutorial::Draw() const
 
     // デバッグ情報の追加
     //DrawGraph(offset.x + 75 - 3, offset.y + 43, ResourceManager::GetDivGraph(UserData::button_image[frame % 3 == 0], XINPUT_BUTTON_A), TRUE);
-    DebugInfomation::Add("tuto_loc", r_stick_anim);
+    DebugInformation::Add("tuto_loc", r_stick_anim);
 }
 
 void Tutorial::Finalize()

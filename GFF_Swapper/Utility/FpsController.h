@@ -1,6 +1,6 @@
 #pragma once
 #include"DxLib.h"
-#include "DebugInfomation.h"
+#include "DebugInformation.h"
 
 class FpsController {
 private:
@@ -31,7 +31,7 @@ public:
 
     //描画処理
     void Disp() {
-        DebugInfomation::Add("fps", Fps);
+        DebugInformation::Add("fps", Fps);
     }
     //処理をまとめたもの
     float All() {

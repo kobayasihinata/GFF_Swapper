@@ -1,6 +1,6 @@
 #include "DxLib.h"
 #include "TutorialText.h"
-#include "../../Utility/DebugInfomation.h"
+#include "../../Utility/DebugInformation.h"
 
 
 TutorialText::TutorialText() : GNum(0), GColor(GREEN), Gbutton_draw{ false, false, false, false }, GGNum(0), frame(0), Gstick_angle(0.0), stage_height(0), p_c(GREEN), add_x(0), add_y(0), f_c(RED), Gdraw_stick_shift{ 0, 0 }, circleAng(0.f), cosor_flg(false), p_swap_x(0), e_swap_x(0)
@@ -160,8 +160,8 @@ void TutorialText::Update(Vector2D _p, int y)
 
 void TutorialText::Draw() const
 {
-	//DebugInfomation::Add("Tutorialtext loc", in_camera->GetCameraLocation().x);
-	DebugInfomation::Add("Tutorialtext height", stage_height);
+	//DebugInformation::Add("Tutorialtext loc", in_camera->GetCameraLocation().x);
+	DebugInformation::Add("Tutorialtext height", stage_height);
 	SetFontSize(50);
 
 	//// 最初のチュートリアルテキストボックス

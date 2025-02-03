@@ -1,7 +1,7 @@
 #pragma once
 #include"BoxCollider.h"
 #include"ColorData.h"
-#include "../../Utility/DebugInfomation.h"
+#include "../../Utility/DebugInformation.h"
 #include "../../Utility/UserData.h"
 #include "../../Scene/Camera.h"
 
@@ -28,7 +28,7 @@ class Object : public BoxCollider, public ColorData
 public:
 
 	int frame = 0;						//フレーム数測定
-	int object_type = 0;						//Objectの種類格納 0=BLOCK 1=PLAYER 2=ENEMY 3=FIRE 4=WOOD 5=WATER 6=EFFECT
+	int object_type = 0;				//Objectの種類格納 0=BLOCK 1=PLAYER 2=ENEMY 3=FIRE 4=WOOD 5=WATER 6=EFFECT
 	bool can_swap = false;				//交換できるオブジェクトか
 	bool can_hit = false;				//当たり判定があるオブジェクトか
 	bool searchFlg = false;				//スローモーション中か（プレイヤー）
@@ -53,7 +53,7 @@ public:
 	{
 #ifdef _DEBUG
 		//撮影モードなら判定描画は無し
-		if (!DebugInfomation::GetPhotographMode())
+		if (!DebugInformation::GetPhotographMode())
 		{
 			//当たり判定描画
 			DrawBoxAA(local_location.x, local_location.y, local_location.x + erea.x, local_location.y + erea.y, 0xff0000, false);

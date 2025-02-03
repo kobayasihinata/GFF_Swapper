@@ -1,7 +1,7 @@
 #pragma once
 #include "DxLib.h"
 #include <math.h>
-#include "DebugInfomation.h"
+#include "DebugInformation.h"
 
 class Fps
 {
@@ -39,7 +39,7 @@ public:
 	void Draw()
 	{
 		//fps描画
-		DebugInfomation::Add("fps", fps);
+		DebugInformation::Add("fps", fps);
 	}
 	void Wait()
 	{

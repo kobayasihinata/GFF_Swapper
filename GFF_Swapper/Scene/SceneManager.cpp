@@ -1,5 +1,5 @@
 #include "SceneManager.h"
-#include "../Utility/DebugInfomation.h"
+#include "../Utility/DebugInformation.h"
 #include "../Utility/UserData.h"
 
 void SceneManager::Initialize()
@@ -16,7 +16,7 @@ void SceneManager::Finalize()
 AbstractScene* SceneManager::Update() {
 
 	//デバッグ表示の更新
-	DebugInfomation::Update();
+	DebugInformation::Update();
 
 	AbstractScene* p = mScene->Update();
 

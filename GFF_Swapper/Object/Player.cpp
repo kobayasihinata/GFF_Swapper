@@ -6,7 +6,7 @@
 #include "../Scene/GameMain.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "../Utility/DebugInfomation.h"
+#include "../Utility/DebugInformation.h"
 
 Player::Player()
 {

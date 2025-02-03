@@ -1,5 +1,5 @@
 #include "PadInput.h"
-#include "DebugInfomation.h"
+#include "DebugInformation.h"
 
 char PadInput::NowKey[BUTTONS];
 char PadInput::OldKey[BUTTONS];
