@@ -637,7 +637,7 @@ void Player::Hit(Object* _object)
 		if (CheckCollision(_object->GetLocation(), _object->GetErea()) && !stageHitFlg[1][left]) {
 			stageHitFlg[0][left] = true;
 			stageHitFlg[1][left] = true;
-			int a = CheckCollision(_object->GetLocation(), _object->GetErea());
+			//int a = CheckCollision(_object->GetLocation(), _object->GetErea());
 		}
 		else {
 			stageHitFlg[0][left] = false;
@@ -688,7 +688,12 @@ void Player::Hit(Object* _object)
 		//左右移動させてみてまだ埋まってたら戻す
 		location.x += move[left];
 		location.x += move[right];
-		if (location.x + erea.x < _object->GetLocation().x || location.x > _object->GetLocation().x + _object->GetErea().x) {
+		if (location.x + 
+			erea.x < 
+			_object->GetLocation().x ||
+			location.x >
+			_object->GetLocation().x +
+			_object->GetErea().x) {
 			if (stageHitFlg[1][top] || stageHitFlg[1][bottom]) {
 				location.x -= move[left];
 				location.x -= move[right];
