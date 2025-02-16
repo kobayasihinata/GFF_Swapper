@@ -109,44 +109,82 @@ private:
 	int death_expro_se;	//死亡爆破SE
 
 public:
+	//コンストラクタ
 	Boss();
+	//デストラクタ
 	~Boss();
-
+	/// <summary>
+	/// 初期処理
+	/// </summary>
+	/// <param name="_location">スポーン座標</param>
+	/// <param name="_erea">大きさ</param>
+	/// <param name="_color_data">色情報</param>
 	void Initialize(Vector2D _location, Vector2D _erea, int _color_data)override;
+	/// <summary>
+	/// 描画以外の更新
+	/// </summary>
+	/// <param name="_manager">このオブジェクトを管理するマネージャークラスのポインタ</param
 	void Update(ObjectManager* _manager)override;
+	//描画の更新
 	void Draw()const override;
+	//終了時処理
 	void Finalize()override;
+	/// <summary>
+	/// 何かと当たった時の処理
+	/// </summary>
+	/// <param name="_object">当たった相手のポインタ</param>
+	void Hit(Object* _object)override;
+	/// <summary>
+	/// オブジェクトの色を検索する
+	/// </summary>
+	/// <param name="ob">対象のオブジェクト</param>
+	/// <returns>オブジェクトを選択しているか(プレイヤー以外は偽を返す)</returns>
+	bool SearchColor(Object* ob)override {
+		return 0;
+	}
 
 	//ボスの移動処理
 	void Move();
 
-	//ヒット時の処理
-	void Hit(Object* _object)override;
-
-	bool SearchColor(Object* ob) {
-		return 0;
-	}
-	//ステージとの当たり判定
+	/// <summary>
+	/// ステージとの当たり判定
+	/// </summary>
+	/// <param name="l"> 座標</param>
+	/// <param name="e"> 大きさ</param>
+	/// <returns>当たったかどうか</returns>
 	bool CheckCollision(Vector2D l, Vector2D e);
 
-	//プレイヤーとボスの距離計算
-	float DistanceCalc(Vector2D pos1, Vector2D pos2);
 
-	//ボスのバリア
-	void barrier();
-
-	//ボスの攻撃
+	/// <summary>
+	/// ボスの攻撃
+	/// </summary>
+	/// <param name="_manager">自身を管理しているマネージャーのポインタ</param>
 	void BossAttack(ObjectManager* _manager);
+	
+	//状態を渡す
+	BossState GetBossState()const {
+		return boss_state;
+	}
 
-	//六角形模様球体の描画
+public:	//描画関連
+	/// <summary>
+	/// 六角形模様球体の描画
+	/// </summary>
+	/// <param name="_color">描画色</param>
 	void DrawHexagonSphere(int _color) const;
 
-	//六角形描画
+	/// <summary>
+	/// 六角形描画
+	/// </summary>
+	/// <param name="center">中心座標</param>
+	/// <param name="size">半径</param>
+	/// <param name="color">色</param>
 	void DrawHexagon(Vector2D center, float size, int color) const;
 
 	//羽を描画する
 	void DrawWings() const;
 
+public:	//羽設定関連
 	//羽の位置を更新する
 	void UpdateWingPositions();
 
@@ -159,8 +197,4 @@ public:
 	//羽の座標をファイルから読み込む
 	void LoadPosition();
 
-	//状態を渡す
-	BossState GetBossState()const{
-		return boss_state;
-	}
 };

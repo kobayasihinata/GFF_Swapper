@@ -567,18 +567,6 @@ bool Boss::CheckCollision(Vector2D l, Vector2D e)
 	return ret;
 }
 
-float Boss::DistanceCalc(Vector2D pos1, Vector2D pos2)
-{
-	float dx = pos2.x - pos1.x;
-	float dy = pos2.y - pos1.y;
-	return (float)sqrt(dx * dx + dy * dy);
-}
-
-void Boss::barrier()
-{
-
-}
-
 void Boss::BossAttack(ObjectManager *_manager)
 {
 	//ボスが画面内に居て、カウントが240以上なら、攻撃処理開始

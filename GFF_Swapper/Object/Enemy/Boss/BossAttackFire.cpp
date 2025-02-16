@@ -12,10 +12,13 @@ BossAttackFire::BossAttackFire(Vector2D _parent_center_location, int _angle)
 	can_hit = FALSE;
 	is_boss_attack = TRUE;
 
-	flg = false;
-	hitFlg = false;
+	set_velocity_once = false;
+	hit_flg = false;
 	player_hit = false;
-	boundCnt = 3;
+	bound_cnt = 3;		//3回跳ね返ったら消えるようにする
+
+	end_se = 0;
+	start_se = 0;
 }
 
 BossAttackFire::~BossAttackFire()
@@ -45,18 +48,20 @@ void BossAttackFire::Update(ObjectManager* _manager)
 	__super::Update(_manager);
 
 	//一回だけ移動方向計算
-	if (!flg) {
+	if (!set_velocity_once) {
 
 		SetAngle(_manager);
 
-		flg = true;
+		set_velocity_once = true;
 	}
 
+	//画面端反射(X軸)
 	if (local_location.x < 0 || local_location.x > 1280) {
 		velocity.x = velocity.x * -1.f;
-		boundCnt--;
+		bound_cnt--;
 	}
 
+	//画面端反射(Y軸)
 	if (local_location.y < 0 || local_location.y > 720) {
 		velocity.y = velocity.y * -1.f;
 		if (local_location.y < 0) {
@@ -65,17 +70,20 @@ void BossAttackFire::Update(ObjectManager* _manager)
 		if (local_location.y > 720) {
 			local_location.y = 710.f;
 		}
-		boundCnt--;
+		bound_cnt--;
 	}
 
+	//移動量加算
 	location.x += velocity.x;
 	location.y += velocity.y;
 
-	if (boundCnt < 0) {
-		hitFlg = true;
+	//反射回数上限を越したら破壊
+	if (bound_cnt < 0) {
+		hit_flg = true;
 	}
 	
-	if (hitFlg) {
+	//破壊処理
+	if (hit_flg) {
 		_manager->SpawnEffect(location, erea, ExplosionEffect, 10, RED);
 		camera->SetImpact(15);
 		ResourceManager::StartSound(end_se);
@@ -87,12 +95,8 @@ void BossAttackFire::Update(ObjectManager* _manager)
 
 void BossAttackFire::Draw() const
 {
-	ResourceManager::StageAnimDraw({ local_location.x - 20,local_location.y - 20 }, FIRE);
+	//火球描画
 	DrawCircleAA(local_location.x, local_location.y, erea.x,100, color, TRUE);
-	ResourceManager::DrawRotaBox(local_location.x, local_location.y, erea.x, erea.y, local_location.x, local_location.y, 45, color, TRUE);
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 120 + (frame%75));
-	DrawCircleAA(local_location.x, local_location.y, erea.x,100, color, TRUE);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 }
 
 void BossAttackFire::Hit(Object* _object)
@@ -111,7 +115,7 @@ void BossAttackFire::Hit(Object* _object)
 		if ((_object->object_type == GROUND_BLOCK || _object->object_type == WOOD) && _object->GetColorData() != WHITE && !_object->is_boss_attack) {
 			_object->can_swap = TRUE;
 			_object->SetColorData(color);
-			hitFlg = true;
+			hit_flg = true;
 		}
 	}
 }

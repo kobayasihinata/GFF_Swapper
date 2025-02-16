@@ -36,10 +36,18 @@ public:
 	bool is_boss_attack = false;		//ボスが生成した攻撃オブジェクトかどうか
 	int stage_around_data[8] = { -1 };	//自身の周辺８マスのブロック種類　左上から右に順番
 
-	//初期処理   _location _erea=スポーン座標、大きさ ,_color_data=色情報
+	/// <summary>
+	/// 初期処理
+	/// </summary>
+	/// <param name="_location">スポーン座標</param>
+	/// <param name="_erea">大きさ</param>
+	/// <param name="_color_data">色情報</param>
 	virtual void Initialize(Vector2D _location, Vector2D _erea, int _color_data) = 0;
 
-	//描画以外の更新   _manager=このオブジェクトを管理するマネージャークラスのポインタ
+	/// <summary>
+	/// 描画以外の更新
+	/// </summary>
+	/// <param name="_manager">このオブジェクトを管理するマネージャークラスのポインタ</param>
 	virtual void Update(ObjectManager* _manager)
 	{
 		if (++frame > 6000)
@@ -64,13 +72,28 @@ public:
 	//終了時処理
 	virtual void Finalize() = 0;
 
-	//何かと当たった時の処理
+	/// <summary>
+	/// 何かと当たった時の処理
+	/// </summary>
+	/// <param name="_object">当たった相手のポインタ</param>
 	virtual void Hit(Object* _object) = 0;
 
-	//オブジェクトの色を検索する
+	/// <summary>
+	/// オブジェクトの色を検索する
+	/// </summary>
+	/// <param name="ob">対象のオブジェクト</param>
+	/// <returns>オブジェクトを選択しているか(プレイヤー以外は偽を返す)</returns>
 	virtual bool SearchColor(Object* ob) = 0;
 
-	//周辺８マスのブロック情報を格納する
+	/// <summary>
+	/// 周辺８マスのブロック情報を格納する
+	/// </summary>
+	/// <param name="_num">格納位置　左上から右に向かって
+	/// 0 1 2 \n
+	/// 3   4 \n
+	/// 5 6 7 \n
+	/// </param>
+	/// <param name="_block_type">対象のブロックの種類</param>
 	void SetAroundBlock(int _num, int _block_type)
 	{
 		//想定している範囲外のポインタが指定されたら処理終了
@@ -78,6 +101,10 @@ public:
 
 		stage_around_data[_num] = _block_type;
 	}
+	/// <summary>
+	/// 周辺８マスのブロック情報を格納する
+	/// </summary>
+	/// <param name="around_data">周辺データの配列を指すポインタ</param>
 	void SetAroundBlock(int* around_data)
 	{
 		for (int i = 0; i < sizeof(around_data); i++)
@@ -86,7 +113,12 @@ public:
 		}
 	}
 
-	//１つ目のオブジェクトから見た２つ目のオブジェクトとの相性を返す -1=不利 0=あいこ 1=有利
+	/// <summary>
+	/// １つ目のオブジェクトから見た２つ目のオブジェクトとの相性を返す
+	/// </summary>
+	/// <param name="_object1">１つ目のオブジェクト</param>
+	/// <param name="_object2">２つ目のオブジェクト</param>
+	/// <returns>-1=不利 0=あいこ 1=有利</returns>
 	int CheckCompatibility(Object* _object1, Object* _object2)
 	{
 		//不利属性か
