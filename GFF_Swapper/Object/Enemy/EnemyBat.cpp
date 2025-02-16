@@ -10,17 +10,32 @@
 
 #define ENEMY_SPEED 2.f
 
-EnemyBat::EnemyBat() :up(0), bat_state(BatState::LEFT), wing_angle(0.0f), vector{ 0.0f }, faint_timer(0), death_timer(0), se_once(false),bat_state_num(0)
+EnemyBat::EnemyBat() :
+	camera(nullptr),
+	velocity{ 0.0f }, 
+	bat_state(BatState::LEFT), 
+	stageHitFlg{0},
+	move{0},
+	wing_angle(0.0f), 
+	up(0),
+	len(0.0f),
+	wall_hit_flg(false),
+    wall_hit_timer (0),
+	se_once(false),
+
+	faint_timer(0), 
+	death_timer(0), 
+	bat_image(0),
+	damage_image(0),
+	wing_se(0),
+	damage_se{0},
+	faint_se(0),
+	fall_se(0),
+	hit_se(0)
 {
 	object_type = ENEMY;
 	can_swap = TRUE;
 	can_hit = TRUE;
-	for (int i = 0; i < 4; i++){
-		move[i] = 0;
-	}
-	for (int i = 0; i < 4; i++) {
-		stageHitFlg[1][i] = false;
-	}
 }
 
 EnemyBat::~EnemyBat()
@@ -30,11 +45,11 @@ EnemyBat::~EnemyBat()
 void EnemyBat::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	camera = Camera::Get();
-	location = { _location };//x座標 ,y座標 //590 ,400
-	erea = { _erea };		//高さ、幅	//100,150
+	location = { _location };	
+	erea = { _erea };			
 	color = _color_data;
 
-	vector = ENEMY_SPEED;
+	velocity = ENEMY_SPEED;
 
 	bat_image = ResourceManager::SetDivGraph("Resource/Images/sozai/bat_fly.PNG", 12, 4, 3, 145, 107, 5, true);
 	damage_image = ResourceManager::SetDivGraph("Resource/Images/sozai/bat_damage.PNG", 3, 3, 1, 145, 107, 0, false);
@@ -113,14 +128,14 @@ void EnemyBat::Update(ObjectManager* _manager)
 
 			// 移動する
 			//location.x += vector.x;
-			location.x += dx * (vector.x);
-			location.y += dy * (vector.y);
+			location.x += dx * (velocity.x);
+			location.y += dy * (velocity.y);
 
 			//加速度を敵の基本速度に近くなるように加算、減算していく
-			if (vector.x > ENEMY_SPEED)vector.x--;
-			if (vector.x < ENEMY_SPEED)vector.x++;
-			if (vector.y > ENEMY_SPEED)vector.y--;
-			if (vector.y < ENEMY_SPEED)vector.y++;
+			if (velocity.x > ENEMY_SPEED)velocity.x--;
+			if (velocity.x < ENEMY_SPEED)velocity.x++;
+			if (velocity.y > ENEMY_SPEED)velocity.y--;
+			if (velocity.y < ENEMY_SPEED)velocity.y++;
 
 			wall_hit_timer = 0;
 		}
@@ -139,12 +154,12 @@ void EnemyBat::Update(ObjectManager* _manager)
 			bat_state = BatState::LEFT;
 		}
 
-		location += vector;
+		location += velocity;
 		//加速度を敵の基本速度に近くなるように加算、減算していく
-		if (vector.x > 0)vector.x--;
-		if (vector.x < 0)vector.x++;
-		if (vector.y > 0)vector.y--;
-		if (vector.y < 0)vector.y++;
+		if (velocity.x > 0)velocity.x--;
+		if (velocity.x < 0)velocity.x++;
+		if (velocity.y > 0)velocity.y--;
+		if (velocity.y < 0)velocity.y++;
 	}
 	
 	//落下死処理
@@ -297,28 +312,28 @@ void EnemyBat::Move(ObjectManager* _manager)
 	case BatState::IDLE:
 		break;
 	case BatState::LEFT:
-		vector.x = -ENEMY_SPEED;
+		velocity.x = -ENEMY_SPEED;
 		//location.x -= vector.x;
 		location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
-		bat_state_num = 1;
+		
 		break;
 	case BatState::RIGHT:
-		vector.x = ENEMY_SPEED;
+		velocity.x = ENEMY_SPEED;
 		//location.x += vector.x;
 		location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
-		bat_state_num = 2;
+		
 		break;
 	case BatState::FAINT:
-		bat_state_num = 3;
+		
 		break;
 	case BatState::DEATH:
 		//自分の色が青のとき吸われてく
-		bat_state_num = 4;
-		if (vector.x > 0) {
-			vector.x = 0.2f;
+		
+		if (velocity.x > 0) {
+			velocity.x = 0.2f;
 		}
 		else {
-			vector.x = -0.2f;
+			velocity.x = -0.2f;
 		}
 		if (++death_timer > 60) {
 			if (this != nullptr) {
@@ -330,37 +345,7 @@ void EnemyBat::Move(ObjectManager* _manager)
 		break;
 	}
 
-	location.x += vector.x;
-	////左移動
-	//if (bat_state == BatState::LEFT) {
-	//	location.x -= vector.x;
-	//	location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
-	//	bat_state_num = 1;
-
-	//}
-	////右移動
-	//if (bat_state == BatState::RIGHT) {
-	//	location.x += vector.x;
-	//	location.y += (float)sin(PI * 2.f / 40.f * up) * 5.f;
-	//	bat_state_num = 2;
-	//}
-
-	//if (bat_state == BatState::DEATH) {
-	//	//自分の色が青のとき吸われてく
-	//	bat_state_num = 4;
-
-	//	if (++death_timer > 60) {
-	//		if (this != nullptr) {
-	//			_manager->DeleteObject(this);
-	//		}
-	//	}
-	//	
-	//	/*else {
-	//		if (this != nullptr) {
-	//			_manager->DeleteObject(this);
-	//		}
-	//	}*/
-	//}
+	location.x += velocity.x;
 }
 
 void EnemyBat::Hit(Object* _object)
@@ -414,7 +399,7 @@ void EnemyBat::Hit(Object* _object)
 		if (stageHitFlg[0][top]) {//上方向に埋まっていたら
 			float t = (_object->GetLocation().y + _object->GetErea().y) - location.y;
 			if (t != 0) {
-				vector.y = 0.f;
+				velocity.y = 0.f;
 				move[top] = t;
 
 			}
@@ -468,7 +453,7 @@ void EnemyBat::Hit(Object* _object)
 		if (stageHitFlg[0][left]) {//左方向に埋まっていたら
 			float t = (_object->GetLocation().x + _object->GetErea().x) - location.x;
 			if (t != 0) {
-				vector.x = 0.f;
+				velocity.x = 0.f;
 				move[left] = t;
 				if (bat_state != BatState::FAINT && _object->object_type != PLAYER)
 				{
@@ -482,7 +467,7 @@ void EnemyBat::Hit(Object* _object)
 		if (stageHitFlg[0][right]) {//右方向に埋まっていたら
 			float t = _object->GetLocation().x - (location.x + erea.x);
 			if (t != 0) {
-				vector.x = 0.f;
+				velocity.x = 0.f;
 				move[right] = t;
 				if (bat_state != BatState::FAINT && _object->object_type != PLAYER)
 				{
@@ -579,22 +564,22 @@ void EnemyBat::Hit(Object* _object)
 				//プレイヤーが左にいるなら右にノックバック
 				if (this->location.x > _object->GetLocation().x)
 				{
-					vector.x = 20;
+					velocity.x = 20;
 				}
 				//プレイヤーが右にいるなら左にノックバック
 				else
 				{
-					vector.x = -20;
+					velocity.x = -20;
 				}
 				//プレイヤーが上にいるなら下にノックバック
 				if (this->location.y > _object->GetLocation().y)
 				{
-					vector.y = 20;
+					velocity.y = 20;
 				}
 				//プレイヤーが下にいるなら上にノックバック
 				else
 				{
-					vector.y = -20;
+					velocity.y = -20;
 				}
 				//自身をスタン状態にする
 				bat_state = BatState::FAINT;
@@ -608,8 +593,8 @@ void EnemyBat::Hit(Object* _object)
 		case 0:
 			if(bat_state != BatState::DEATH)
 			{ 
-				vector.x = -10;
-				vector.y = 10;
+				velocity.x = -10;
+				velocity.y = 10;
 			}
 			//ぶつかるSE再生
 			ResourceManager::StartSound(hit_se);
@@ -639,22 +624,22 @@ void EnemyBat::Hit(Object* _object)
 			//プレイヤーが左にいるなら右にノックバック
 			if (this->location.x > _object->GetLocation().x)
 			{
-				vector.x = 20;
+				velocity.x = 20;
 			}
 			//プレイヤーが右にいるなら左にノックバック
 			else
 			{
-				vector.x = -20;
+				velocity.x = -20;
 			}
 			//プレイヤーが上にいるなら下にノックバック
 			if (this->location.y > _object->GetLocation().y)
 			{
-				vector.y = 20;
+				velocity.y = 20;
 			}
 			//プレイヤーが下にいるなら上にノックバック
 			else
 			{
-				vector.y = -20;
+				velocity.y = -20;
 			}
 			break;
 			//有利の場合
