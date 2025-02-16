@@ -123,7 +123,9 @@ void Cannon::Update(ObjectManager* _manager)
 
 void Cannon::Draw()const
 {
+	//砲台画像描画
 	DrawGraphF(local_location.x, local_location.y, ResourceManager::GetDivGraph(cannon_image, cannon_angle+(cannon_type*4)),true);
+	
 	if (!cannon_stop)
 	{
 		//発射周期の視覚化
@@ -143,7 +145,7 @@ void Cannon::Draw()const
 
 void Cannon::Hit(Object* _object)
 {
-
+	//判定なし
 }
 
 bool Cannon::SearchColor(Object* ob)
