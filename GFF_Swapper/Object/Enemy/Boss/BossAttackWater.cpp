@@ -12,10 +12,9 @@ BossAttackWater::BossAttackWater()
 	can_hit = FALSE;
 	is_boss_attack = TRUE;
 
-	flg = false;
-	count = 0;
-	moveFlg = false;
-	hitFlg = false;
+	set_velocity_once = false;
+	move_direction = false;
+	hit_flg = false;
 	player_hit = false;
 	rad = 0.0f;
 }
@@ -51,23 +50,26 @@ void BossAttackWater::Update(ObjectManager* _manager)
 {
 	__super::Update(_manager);
 
-	if (flg) {
-		if (moveFlg) {
+	if (set_velocity_once) {
+		//一定角度に達したら切り返し
+		if (move_direction) {
 			if (velocity.y < -4.f) {
-				moveFlg = false;
+				move_direction = false;
 			}
 			velocity.y -= 0.1f;
 		}
 		else {
 			if (velocity.y > 4.f) {
-				moveFlg = true;
+				move_direction = true;
 			}
 			velocity.y += 0.1f;
 		}
 
+		//移動量加算
 		location.x += velocity.x;
 		location.y += velocity.y;
 
+		//端に到達したら破壊
 		if (local_location.x < 0 || local_location.x > 1280 || local_location.y < 0 || local_location.y > 720) {
 			if (this != nullptr) {
 				camera->SetImpact(15);
@@ -78,8 +80,7 @@ void BossAttackWater::Update(ObjectManager* _manager)
 		}
 	}
 	else {
-		//Location player = _manager->GetPlayerLocation();
-		//if (player.x - location.x > 0) {
+		//移動方向決定
 		if(local_location.x < (SCREEN_WIDTH/2)){
 			velocity.x = 3.f;
 		}
@@ -87,8 +88,9 @@ void BossAttackWater::Update(ObjectManager* _manager)
 			velocity.x = -3.f;
 		}
 		velocity.y = (float)(GetRand(6) - 3);
-		flg = true;
+		set_velocity_once = true;
 	}
+	//水球内の球回転計算
 	rad += 0.02f;
 	if (rad > 6.28f)
 	{
@@ -98,7 +100,7 @@ void BossAttackWater::Update(ObjectManager* _manager)
 	//radに応じた向きに進める
 	f_location.x += 30 * cosf(5.0f * (frame / 5) + (float)M_PI) * cosf(rad);
 	f_location.y += 30 * cosf(5.0f * (frame / 5) + (float)M_PI) * sinf(rad);
-	if (hitFlg) {
+	if (hit_flg) {
 		camera->SetImpact(15);
 		_manager->SpawnEffect(location, erea, ExplosionEffect, 10, BLUE);
 		ResourceManager::StartSound(end_se);
@@ -109,7 +111,7 @@ void BossAttackWater::Update(ObjectManager* _manager)
 
 void BossAttackWater::Draw() const
 {
-	if (flg) {
+	if (set_velocity_once) {
 		if (!player_hit)
 		{
 			for (int i = 0; i < 5; i++)
@@ -139,10 +141,11 @@ void BossAttackWater::Hit(Object* _object)
 			_object->SetColorData(color);
 			return;
 		}
+		//地面ブロックもしくは火ブロックを水ブロックに変える
 		if ((_object->object_type == GROUND_BLOCK || _object->object_type == FIRE) && _object->GetColorData() != WHITE && _object->is_boss_attack == FALSE) {
 			_object->can_swap = TRUE;
 			_object->SetColorData(color);
-			hitFlg = true;
+			hit_flg = true;
 		}
 	}
 }
