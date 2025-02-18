@@ -8,7 +8,7 @@
 #define DEBUG_X 100
 #define DEBUG_Y 100
 
-class DebugInfomation
+class DebugInformation
 {
 private:
 	static std::unordered_map<const char*, float>draw_list;	//描画するデバッグ表示の一覧

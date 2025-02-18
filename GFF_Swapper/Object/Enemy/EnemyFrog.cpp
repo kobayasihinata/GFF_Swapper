@@ -60,8 +60,8 @@ void EnemyFrog::Update(ObjectManager* _manager)
 {
 	__super::Update(_manager);
 
-	DebugInfomation::Add("frog_old_x", (int)old_state);
-	DebugInfomation::Add("frog_x", (int)frog_state);
+	DebugInformation::Add("frog_old_x", (int)old_state);
+	DebugInformation::Add("frog_x", (int)frog_state);
 	//if (velocity.x != 0 || velocity.y != 0)
 	//{
 	//	_manager->SpawnEffect(location, erea, 1, 20, color);

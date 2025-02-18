@@ -418,7 +418,7 @@ void GameMain::UpdateGameMain()
 	if (PadInput::OnButton(XINPUT_BUTTON_START) && gm_state != GameMainState::Pause && !object_manager->boss_appeared_flg)
 	{
 		//撮影モード中にスタートボタンを押すと、ポーズではなく画面が停止する
-		if (DebugInfomation::GetPhotographMode())
+		if (DebugInformation::GetPhotographMode())
 		{
 			stop_flg = !stop_flg;
 		}
@@ -494,7 +494,7 @@ void GameMain::DrawGameMain()const
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	}
 #ifdef _DEBUG
-	if (!DebugInfomation::GetPhotographMode()) {
+	if (!DebugInformation::GetPhotographMode()) {
 		SetFontSize(18);
 		DrawString((SCREEN_WIDTH / 2) - 30, 0, "Mキーで撮影用モード", 0xff0000);
 	}

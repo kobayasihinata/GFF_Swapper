@@ -6,7 +6,7 @@
 #include <math.h>
 
 #include "../Utility/ResourceManager.h"
-#include "../Utility/DebugInfomation.h"
+#include "../Utility/DebugInformation.h"
 #include "Title.h"
 
 Option::Option(AbstractScene* _old_scene) :
@@ -128,7 +128,7 @@ void Option::Finalize()
 AbstractScene* Option::Update()
 {
 	//キー情報取得
-	DebugInfomation::Add("state", PadInput::GetNowInput());
+	DebugInformation::Add("state", PadInput::GetNowInput());
 
 	frame++;
 
@@ -474,7 +474,7 @@ void Option::ChangeVolume(int _num)
 		Vector2D stick_inclination = { PadInput::TipLStick(STICKL_X) * 10,PadInput::TipLStick(STICKL_Y) * 10 };
 		stick_radian = atan2f(stick_inclination.y, stick_inclination.x);
 		stick_angle = (float)(180.f - (stick_radian * 180.f / M_PI));
-		DebugInfomation::Add("stick_angle", stick_angle);
+		DebugInformation::Add("stick_angle", stick_angle);
 
 		//スティックの角度が40~140なら応じた数値にする
 		if (stick_angle > 40.f && stick_angle < 140.f)

@@ -1,11 +1,11 @@
-#include "DebugInfomation.h"
+#include "DebugInformation.h"
 #include "KeyInput.h"
 
-std::unordered_map<const char*, float>DebugInfomation::draw_list;
-bool DebugInfomation::draw_flg = false;							
-bool DebugInfomation::photograph_mode = false;
+std::unordered_map<const char*, float>DebugInformation::draw_list;
+bool DebugInformation::draw_flg = false;							
+bool DebugInformation::photograph_mode = false;
 
-void DebugInfomation::Update()
+void DebugInformation::Update()
 {
 	//描画するテキストをリセットする
 	draw_list.clear();
@@ -23,7 +23,7 @@ void DebugInfomation::Update()
 #endif // _DEBUG
 }
 
-void DebugInfomation::Draw()
+void DebugInformation::Draw()
 {
 #ifdef _DEBUG
 	int old = GetFontSize();
@@ -51,22 +51,22 @@ void DebugInfomation::Draw()
 #endif // _DEBUG
 }
 
-void DebugInfomation::Add(const char* _c, float _num)
+void DebugInformation::Add(const char* _c, float _num)
 {
 	draw_list.insert(std::make_pair(_c, _num));
 }
 
-void DebugInfomation::Add(const char* _c, int _num)
+void DebugInformation::Add(const char* _c, int _num)
 {
 	draw_list.insert(std::make_pair(_c, (float)_num));
 }
 
-void DebugInfomation::Add(const char* _c, bool _num)
+void DebugInformation::Add(const char* _c, bool _num)
 {
 	draw_list.insert(std::make_pair(_c, (float)_num));
 }
 
-bool DebugInfomation::GetPhotographMode()
+bool DebugInformation::GetPhotographMode()
 {
 	return photograph_mode;
 }

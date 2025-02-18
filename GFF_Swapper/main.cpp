@@ -2,7 +2,7 @@
 #include "Scene/SceneManager.h"
 #include "Utility/FpsController.h"
 #include "Utility/UserData.h"
-#include "Utility/DebugInfomation.h"
+#include "Utility/DebugInformation.h"
 #include "Utility/PadInput.h"
 #include "Utility/KeyInput.h"
 #include "Utility/ResourceManager.h"
@@ -75,7 +75,7 @@ int WINAPI WinMain(_In_ HINSTANCE  hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 #endif
 
             //デバッグ表示の更新
-            DebugInfomation::Draw();
+            DebugInformation::Draw();
 
             //強制終了
             //Escapeキーまたはバックボタンを押したら強制終了

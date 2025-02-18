@@ -3,7 +3,7 @@
 #include <fstream>
 #include "../Utility/PadInput.h"
 
-#include "../Utility/DebugInfomation.h"
+#include "../Utility/DebugInformation.h"
 
 #define STOP_TITLE 2000
 
@@ -348,8 +348,8 @@ void End::PlayerUpdate()
 
 void End::DeerDraw() const
 {
-	DebugInfomation::Add("deer_location.x", deer_location.x);
-	DebugInfomation::Add("deer_location.y", deer_location.y);
+	DebugInformation::Add("deer_location.x", deer_location.x);
+	DebugInformation::Add("deer_location.y", deer_location.y);
 	ResourceManager::DrawColorAnimGraph(deer_location + (deer_erea / 2), deer_image, GREEN, false);
 }
 

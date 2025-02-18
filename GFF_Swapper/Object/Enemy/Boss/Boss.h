@@ -50,15 +50,13 @@ private:
 	Vector2D vector;				//ボスのベクトル
 	bool stageHitFlg[2][4];			//bossとステージの当たり判定
 	float move[4];					//各方向加速度格納用
-	float speed;					//移動速度
 
-	//ボス本体関連変数
+	//ボス情報関連変数
 	BossState boss_state;			//現在のボスの状態
 	float barrier_rad[3];			//バリアの半径
 	int barrier_num;				//バリアの数
 	int wood_count;					//木攻撃の数カウント
 	int fire_count;					//火攻撃の数カウント
-	int wing_color;					//羽の描画色
 	int attack_count;				//何回攻撃したか測定
 	bool stop_flg;					//ボスの動作を止めておくか判断
 	bool invin_flg;					//無敵かどうか
@@ -67,8 +65,8 @@ private:
 
 	//ボスダメージ、死亡関連変数
 	bool damage_flg;				//ダメージを受けたとき
-	int damage_effect_time = 60;	//ダメージエフェクトの持続時間
-	bool damage_effect_flg = false; //ダメージエフェクトのフラグ
+	int damage_effect_time;			//ダメージエフェクトの持続時間
+	bool damage_effect_flg;			//ダメージエフェクトのフラグ
 	bool damage_anim_flg;			//ダメージアニメーション用フラグ
 	int damage_anim_time;			//ダメージアニメーション持続時間
 	int shake_anim;					//ダメージ時の振動数値管理用
@@ -82,32 +80,29 @@ private:
 	int boss_color;					//ボスの描画色
 
 	//計算用
-	Vector2D velocity;				//加速度
-	Vector2D player_local_location;	//プレイヤーの座標
-	int cunt;						//羽の位置計算用
-	int c;
-	int tutirial_num;
-	int t = 0;
-	std::vector<Vector2D> vertices; //ボスの頂点情報
-	std::vector<Vector2D> warp_pos; //ワープ位置情報
-	std::array<Vector2D, 40> wing;	//ボスの羽の位置情報
-	std::array<Vector2D, 40> wing_mirror;//ミラー羽の位置情報
-	int wing_fps; //羽の加算用
-	float boss_anim;//アニメーション用
-	bool f = false;
-	bool oldF = false;
-	int cnt = 100;
-	int attack = 0;
-	int old_attack = 0;
-	int attack_num = 0;
-	bool side = false;
-	int woodNum = 0;
+	Vector2D velocity;						//加速度
+	Vector2D player_local_location;			//プレイヤーの座標
+	int cunt;								//羽の位置計算用
+	int tutirial_num;						//羽の位置計算用
+	int attack_timer;						//攻撃の時間測定用
+	std::vector<Vector2D> vertices;			//ボスの頂点情報
+	std::vector<Vector2D> warp_pos;			//ワープ位置情報
+	std::array<Vector2D, 40> wing;			//ボスの羽の位置情報
+	std::array<Vector2D, 40> wing_mirror;	//ミラー羽の位置情報
+	float boss_anim;						//アニメーション用
+	bool attack_flg;						//攻撃しているか判断
+	bool old_attack_flg;					//１フレーム前に攻撃していたか判断
+	int cnt;								//攻撃の時間測定
+	int attack_type;						//攻撃の種類格納 0=火 1=木 2=水	
+	int old_attack;							//ひとつ前の攻撃を格納
+	int attack_num;							//攻撃した回数を格納
+	bool side;								//画面の右側に居るか左側に居るか false = 右側
 
 
 	//SE格納用変数
 	int warphole_se;	//ワープホールSE
 	int spawn_se;		//登場SE
-	int damage_se;	//被ダメージSE
+	int damage_se;		//被ダメージSE
 	int appeared_se;	//登場SE
 	int bgm_abnormal;	//ボス曲格納
 	int death_se;		//死亡SE
@@ -141,7 +136,7 @@ public:
 	void barrier();
 
 	//ボスの攻撃
-	void BossAtack(ObjectManager* _manager);
+	void BossAttack(ObjectManager* _manager);
 
 	//六角形模様球体の描画
 	void DrawHexagonSphere(int _color) const;
@@ -165,7 +160,7 @@ public:
 	void LoadPosition();
 
 	//状態を渡す
-	BossState GetBossState(){
+	BossState GetBossState()const{
 		return boss_state;
 	}
 };

@@ -22,7 +22,7 @@
     <ClCompile Include="Object\Enemy\Boss\Cannon.cpp" />
     <ClCompile Include="Scene\Option.cpp" />
     <ClCompile Include="Utility\UserData.cpp" />
-    <ClCompile Include="Utility\DebugInfomation.cpp" />
+    <ClCompile Include="Utility\DebugInformation.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object\Base\ObjectManager.cpp" />
@@ -58,7 +58,7 @@
     <ClInclude Include="Scene\eNum\BackGroundStruct.h" />
     <ClInclude Include="Scene\Option.h" />
     <ClInclude Include="Utility\UserData.h" />
-    <ClInclude Include="Utility\DebugInfomation.h" />
+    <ClInclude Include="Utility\DebugInformation.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Object\Base\ObjectManager.h" />
     <ClInclude Include="Object\BackGround.h" />

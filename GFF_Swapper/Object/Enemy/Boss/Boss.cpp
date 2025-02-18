@@ -6,73 +6,86 @@
 #include <iostream>
 #include <fstream>
 
-#define STATE_CHANGE_INTERVAL 340
-#define BOSS_MAX_SPEED 4.0f
-
-#define ANGLE_SPEED 0.01f
-#define RADIUS 300.0f
-
 #define BLACK 0x000000
 
 #define BOSS_RED   0x800000
 #define BOSS_BLUE  0x000080
 #define BOSS_GREEN 0x005E15
 
-Boss::Boss() :
-	vector{ 0.0f }, 
-	boss_state(BossState::ATTACK), 
-	barrier_num(3),		//ボスのバリアは初期値で３枚
-	attack_count(0),
-	stop_flg(true),	    //ボスは最初停止させておく
-	damage_flg(false), 
-	death_flg(false),
-	death_timer(0),
-	state_change_time(0), 
-	speed(0.0f),
-	wing_fps(0),
-	damage_se(0)
+Boss::Boss()
 {
-	camera = Camera::Get();
+	//親クラス変数初期化
 	object_type = BOSS;
 	can_swap = TRUE;
-
 	can_hit = TRUE;
+
+	//ボス移動関連変数初期化
+	camera = Camera::Get();
+	appearance_size = 0.0f;
+	vector = 0.0f;
 	for (int i = 0; i < 4; i++) {
 		move[i] = 0;
+		stageHitFlg[0][i] = false;
 		stageHitFlg[1][i] = false;
 	}
+	//ボス情報関連変数初期化
+	boss_state = BossState::ATTACK;
 	for (int i = 0; i < barrier_num; i++)
 	{
 		barrier_rad[i] = 0;
 	}
-
+	barrier_num = 3;		//ボスのバリアは初期値で３枚
 	wood_count = 0;
 	fire_count = 0;
+	attack_count = 0;
+	stop_flg = true;	    //ボスは最初停止させておく
+	invin_flg = false;
+	state_change_time = 0;
+	boss_appeared_timer = 0;
 
-	// wing の初期化
-	wing.fill({ 0.0f,0.0f });
-	wing_mirror.fill({ 0.0f,0.0f });
-
-	cunt = 1;
-	c = 1;
-	tutirial_num = 0;
-
-	boss_anim = 0.0f;
-	shake_anim = 0;
-
+	//ボスダメージ、死亡関連変数初期化
+	damage_flg = false;
+	damage_effect_time = 60;
+	damage_effect_flg = false;
 	damage_anim_flg = false;
 	damage_anim_time = 0;
+	shake_anim = 0;
+	death_flg = false;
+	death_timer = 0;
 
-	wing_color = 0;
-
+	//ボス色関連変数初期化
 	change_color_timer = 0.0f;
 	next_color = RED;
 	change_rand = 0;
-
 	boss_color = BOSS_RED;
 
+	//計算用変数初期化
 	velocity = 0;
-	invin_flg = false;
+	player_local_location = 0;
+	cunt = 1;
+	tutirial_num = 0;
+	attack_timer = 0;
+	// wing の初期化
+	wing.fill({ 0.0f,0.0f });
+	wing_mirror.fill({ 0.0f,0.0f });
+	frame = 0;
+	boss_anim = 0.0f;
+	attack_flg = false;
+	old_attack_flg = false;	
+	cnt = 100;
+	attack_type = 0;
+	old_attack = 0;
+	attack_num = 0;
+	side = false;
+
+	//SE格納用変数初期化
+	warphole_se = 0;
+	spawn_se = 0;
+	damage_se = 0;
+	appeared_se = 0;
+	bgm_abnormal = 0;
+	death_se = 0;
+	death_expro_se = 0;
 }
 
 Boss::~Boss()
@@ -82,15 +95,14 @@ Boss::~Boss()
 void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 {
 	location = { SCREEN_WIDTH - 300.0f, SCREEN_HEIGHT - 400};//x座標 ,y座標 
-	//location = { SCREEN_WIDTH / 2, SCREEN_HEIGHT - 300 };//x座標 ,y座標 
 	erea = { _erea };			 //高さ、幅	
 	appearance_size = erea*1.71f;		//ボスの見た目の大きさ
 	color = _color_data;
 
 	warp_pos = {
-		 {(SCREEN_WIDTH / 2 +30) , 125.0f},			 //中央
-		 {SCREEN_WIDTH - 300.0f, SCREEN_HEIGHT - 400.0f},//右
-		 {370.0f , SCREEN_HEIGHT - 400.0f}				 //左
+		 {(SCREEN_WIDTH / 2 +30) , 125.0f},					//中央
+		 {SCREEN_WIDTH - 300.0f, SCREEN_HEIGHT - 400.0f},	//右
+		 {370.0f , SCREEN_HEIGHT - 400.0f}					//左
 	};
 
 	barrier_rad[0] = 70;
@@ -99,8 +111,6 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 
 	damage_effect_time = 180;
 	damage_anim_time = 60;
-
-	wing_color = 0x000000;
 
 	LoadPosition();  // 初期化時に座標を読み込む
 
@@ -117,7 +127,6 @@ void Boss::Initialize(Vector2D _location, Vector2D _erea, int _color_data)
 void Boss::Update(ObjectManager* _manager)
 {
 	__super::Update(_manager);
-	++wing_fps;
 	// ステージとの当たり判定フラグを初期化
 	for (int i = 0; i < 4; i++) {
 		stageHitFlg[0][i] = false;
@@ -126,7 +135,6 @@ void Boss::Update(ObjectManager* _manager)
 
 	//プレイヤーローカル座標取得（描画用）
 	player_local_location = _manager->GetPlayerLocalLocation();
-	speed = BOSS_MAX_SPEED;
 	vector = { 1.0f ,1.0f };
 
 	// 更新時に座標を保存
@@ -138,14 +146,14 @@ void Boss::Update(ObjectManager* _manager)
 	//ボスの羽を可変可能に
 	//UpdateWingPositions();
 
-	boss_anim = (float)sin(PI * 2.f / 60.f * wing_fps) * 5.f;
+	boss_anim = (float)sin(PI * 2.f / 60.f * frame) * 5.f;
 
 	//プレイヤーが一定距離まで近づいてきたら更新開始
 	if (stop_flg && frame > 1 && player_local_location.x > 160)
 	{
 		//マネージャー側に演出開始を伝える
 		_manager->boss_appeared_flg = true;
-		//一回だけSE再生()
+		//一回だけSE再生(登場)
 		if (boss_appeared_timer == 0)
 		{
 			ResourceManager::StartSound(warphole_se);
@@ -172,13 +180,16 @@ void Boss::Update(ObjectManager* _manager)
 			ResourceManager::StopSound(appeared_se);
 			//BGM再生
 			ResourceManager::StartSound(bgm_abnormal);
+
+			//フラグ、変数リセット
 			stop_flg = false;
 			boss_appeared_timer = 0;
+			shake_anim = 0;
+
 			//マネージャー側に演出終了を伝える
 			_manager->boss_appeared_flg = false;
 			//次の演出をスキップ可能にする
 			_manager->boss_appeared_skip = true;
-			shake_anim = 0;
 		}
 	}
 	//停止させる状態でなければ更新
@@ -191,7 +202,7 @@ void Boss::Update(ObjectManager* _manager)
 			Move();
 			break;
 		case BossState::ATTACK:
-			BossAtack(_manager);
+			BossAttack(_manager);
 			break;
 		case BossState::DEATH:
 			//死亡時SEを再生
@@ -237,36 +248,31 @@ void Boss::Update(ObjectManager* _manager)
 	}
 	// ダメージを受けている場合のアニメーション処理
 	if (damage_anim_flg) {
+		//ボス振動
 		shake_anim = GetRand(20) - 10;
 
+		//時間測定
 		damage_anim_time--;
 
-		//color = GetRand(256);
+		//三色の中からランダムで点滅
 		int r = GetRand(2);
 		switch (r)
 		{
 		case 0:
 			color = RED;
-			wing_color = RED;
-			//part_color[0] = RED;
 			break;
 		case 1:
 			color = BLUE;
-			wing_color = BLUE;
-			//part_color[0] = BLUE;
 			break;
 		case 2:
 			color = GREEN;
-			wing_color = GREEN;
-			//part_color[0] = GREEN;
 			break;
 		default:
 			break;
 		}
+		//演出終了
 		if (damage_anim_time <= 0)
 		{
-
-			wing_color = 0x000000;
 			shake_anim = 0;
 			damage_anim_flg = false;
 			damage_anim_time = 60;
@@ -308,12 +314,6 @@ void Boss::Update(ObjectManager* _manager)
 		if (cunt < 0) {
 			cunt = 0;
 		}
-		if (cunt % 4 == 0) {
-			c -= 1;
-			if (c < 0) {
-				c = 0;
-			}
-		}
 	}
 #endif
 }
@@ -340,7 +340,7 @@ void Boss::Draw() const
 		}
 		else
 		{
-			//攻撃の強さによって出る線が変わる
+			//攻撃の強さによって出る線の数が変わる
 			for (int i = 0; i < attack_count / 4 + 1; i++)
 			{
 				DrawCircleAA(local_location.x + (BOSS_SIZE / 2), local_location.y + (BOSS_SIZE / 2), (cnt - 260 - (i * 10)) * 25, 6, color, false);
@@ -349,7 +349,7 @@ void Boss::Draw() const
 		}
 
 		//火攻撃のターゲット線＆照準
-		if (attack == 0 && cnt >= 240)
+		if (attack_type == 0 && cnt >= 240)
 		{
 			//ターゲット線
 			DrawLineAA(local_location.x + (erea.x / 2),
@@ -389,28 +389,8 @@ void Boss::Draw() const
 				circle_size,
 				30,
 				0x000000,
-				true);/*
-			for (int x = 0; x < appearance_size.x; x += 40)
-			{
-				for (int y = 0; y < appearance_size.y; y += 40)
-				{
-					if (GetRand(3) == 0)
-					{
-						DrawBoxAA(local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x,
-							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y,
-							local_location.x + (erea.x / 2) - (appearance_size.x / 2) + x + 41,
-							local_location.y + (erea.y / 2) - (appearance_size.y / 2) + y + 41, 0x000000, true);
-					}
-				}
-			}*/
+				true);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, (boss_appeared_timer * 3)-260);
-			//DrawBox(local_location.x + (erea.x / 2) - (appearance_size.x / 2),
-			//	local_location.y + (erea.y / 2) - (appearance_size.y / 2),
-			//	local_location.x + (erea.x / 2) + (appearance_size.x / 2),
-			//	local_location.y + (erea.y / 2) + (appearance_size.y / 2),
-			//	0x000000, TRUE);
-
-
 		}
 		//暗転(一瞬)
 		else if (boss_appeared_timer < 305)
@@ -423,7 +403,6 @@ void Boss::Draw() const
 			for (int i = 0; i < 200; i += 20)
 			{
 				DrawCircleAA(local_location.x + (erea.x / 2), local_location.y + (erea.y / 2), (boss_appeared_timer + i) * 30 % 1000, 100, 0xffffff, FALSE);
-
 			}
 		}
 	}
@@ -486,23 +465,6 @@ void Boss::Draw() const
 		}
 	}
 
-	//for (int i = 0; i < barrier_num; ++i) {
-	//	int barrier_color = RED;
-	//	switch (barrier_num - i) {
-	//	case 1:
-	//		barrier_color = GREEN;
-	//		break;
-	//	case 2:
-	//		barrier_color = BLUE;
-	//		break;
-	//	case 3:
-	//		barrier_color = RED;
-	//		break;
-	//		// それ以上のバリアは想定しないが、必要に応じて追加
-	//	}
-	//	DrawCircleAA(local_location.x + BOSS_SIZE / 2, local_location.y + BOSS_SIZE / 2 + boss_anim, barrier_rad[i], 50, barrier_color, FALSE, 5.f);
-	//}
-
 	//透明なら元に戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
@@ -534,11 +496,12 @@ void Boss::Move()
 	boss_state = BossState::ATTACK;
 
 	//次の攻撃を更新
-	if (--attack < 0) {
-		attack = 2;
+	if (--attack_type < 0) {
+		attack_type = 2;
 	}
-	//attack = 0;
-	next_color = ColorList[attack];
+
+	//攻撃に合わせて色も更新
+	next_color = ColorList[attack_type];
 }
 	
 void Boss::Hit(Object* _object)
@@ -616,11 +579,12 @@ void Boss::barrier()
 
 }
 
-void Boss::BossAtack(ObjectManager *_manager)
+void Boss::BossAttack(ObjectManager *_manager)
 {
+	//ボスが画面内に居て、カウントが240以上なら、攻撃処理開始
 	if ((local_location.x > 0 && local_location.x < 1280 && local_location.y > 0 && local_location.y < 720) && ++cnt >= 240) {
-		oldF = f;
-		f = true;
+		old_attack_flg = attack_flg;
+		attack_flg = true;
 		change_rand = 0;
 		if (cnt == 240) {
 			wood_count = 0;
@@ -630,11 +594,13 @@ void Boss::BossAtack(ObjectManager *_manager)
 			else {
 				side = false;
 			}
+			//攻撃回数は20回を超えて測定されない
 			if (++attack_count > 20)attack_count = 20;
 		}
 	}
 	else
 	{
+		//カウント中はボスを揺らす
 		change_rand = GetRand(30) - 15;
 	}
 
@@ -643,12 +609,12 @@ void Boss::BossAtack(ObjectManager *_manager)
 	Vector2D boss_center;
 	float rad;
 
-	if (f) {
+	if (attack_flg) {
 		invin_flg = true;
-		switch (attack)
+		switch (attack_type)
 		{
 		case 0://火
-			//ターゲットまで伸びている直線の更新
+			//ターゲット（プレイヤー）まで伸びている直線の更新
 			player_center = { _manager->GetPlayerLocation().x + (_manager->GetPlayerErea().x / 2), 
 							  _manager->GetPlayerLocation().y + (_manager->GetPlayerErea().y / 2) };
 			boss_center = { this->location.x + BOSS_SIZE / 2,
@@ -659,37 +625,42 @@ void Boss::BossAtack(ObjectManager *_manager)
 			velocity.y = 5 * sinf(rad);
 
 			//攻撃する時、一回だけ自身の色を変える
-			if (t == 0)
+			if (attack_timer == 0)
 			{
 				color = RED;
 			}
-			if (++t > 90 + (attack_count / 4)*30) {
+			//バリア解除
+			if (++attack_timer > 90 + (attack_count / 4)*30) {
 				
 				invin_flg = false;
 			}
+			//攻撃
 			if (cnt % 30 == 0 && fire_count <=(attack_count / 4)) {
 				Vector2D e = { 20.f,20.f };
 				_manager->CreateObject(new BossAttackFire(this->GetCenterLocation()), this->GetCenterLocation(), e, RED);
 				fire_count++;
 			}
+			//攻撃終了
 			if (cnt > BOSS_ATTACK_CD-(attack_count*10)) {
 				cnt = 0;
 				fire_count = 0;
-				f = false;
+				attack_flg = false;
 				boss_state = BossState::MOVE;
-				t = 0;
+				attack_timer = 0;
 			}
 			break;
 
 		case 1://木
 			//攻撃する時、一回だけ自身の色を変える
-			if (t == 0)
+			if (attack_timer == 0)
 			{
 				color = GREEN;
 			}
-			if (++t > 30* attack_num) {
+			//バリア解除
+			if (++attack_timer > 30* attack_num) {
 				invin_flg = false;
 			}
+			//攻撃
 			if (cnt % 30 == 0 && attack_num <= (attack_count/4)) {
 				for (int i = 0; i < 3; i++)
 				{
@@ -699,26 +670,28 @@ void Boss::BossAtack(ObjectManager *_manager)
 				}
 				attack_num++;
 
-				f = false;
+				attack_flg = false;
 			}
+			//攻撃終了
 			if (cnt > BOSS_ATTACK_CD - (attack_num * 10)) {
 				attack_num = 0;
 				cnt = 0;
-				f = false;
+				attack_flg = false;
 				boss_state = BossState::MOVE;
-				woodNum = 0;
-				t = 0;
+				attack_timer = 0;
 			}
 			break;
 		case 2://水
 			//攻撃する時、一回だけ自身の色を変える
-			if (t == 0)
+			if (attack_timer == 0)
 			{
 				color = BLUE;
 			}
-			if (++t > 120) {
+			//バリア解除
+			if (++attack_timer > 120) {
 				invin_flg = false;
 			}
+			//攻撃
 			if (cnt % 30 == 0 && attack_num <= (attack_count / 4)) {
 				color = BLUE;
 				Vector2D e = { 40.f,40.f };
@@ -740,12 +713,13 @@ void Boss::BossAtack(ObjectManager *_manager)
 				if (location.x = warp_pos[1].x)location = warp_pos[2];
 				else if (location.x = warp_pos[2].x)location = warp_pos[1];
 			}
+			//攻撃終了
 			if (cnt > BOSS_ATTACK_CD - (attack_count * 10)) {
 				cnt = 0;
-				f = false;
+				attack_flg = false;
 				attack_num = 0;
 				boss_state = BossState::MOVE;
-				t = 0;
+				attack_timer = 0;
 			}
 			break;
 		default:
@@ -820,18 +794,18 @@ void Boss::DrawWings() const
 	// 羽の描画（）
 	for (int i = 0; i < wing.size(); i += 4) {
 		float delta_y = 0.f;
-		delta_y = (float)sin(PI * 2.f / 60.f * wing_fps + i) * 5.f; // 2番目の羽は中程度に動く
-		angle = (float)(sin(PI * 2.f / 60.f * wing_fps) * 5.f); // アニメーションに適した角度を計算
+		delta_y = (float)sin(PI * 2.f / 60.f * frame + i) * 5.f; // 2番目の羽は中程度に動く
+		angle = (float)(sin(PI * 2.f / 60.f * frame) * 5.f); // アニメーションに適した角度を計算
 
 		//３番目の羽だけ違う挙動に
 		if (i > 7 &&i < 12 ) {
-			delta_y = (float)sin(PI * 2.f / 60.f * (float)wing_fps + i) * 15.f;
+			delta_y = (float)sin(PI * 2.f / 60.f * (float)frame + i) * 15.f;
 		}
 		else if (i > 19 && i < 24) {
-			delta_y = (float)sin(PI * 2.f / 60.f * (float)wing_fps + i) * 15.f;
+			delta_y = (float)sin(PI * 2.f / 60.f * (float)frame + i) * 15.f;
 		}
 		else if (i > 31 && i < 36) {
-			delta_y = (float)sin(PI * 2.f / 60.f * (float)wing_fps + i) * 15.f;
+			delta_y = (float)sin(PI * 2.f / 60.f * (float)frame + i) * 15.f;
 		}
 
 		//右羽
